@@ -1,0 +1,99 @@
+site_name: Backpressure Economics
+site_description: Capacity-Constrained Monetary Flow Control for Agent Economies
+site_url: https://synthesi-protocol.github.io/synthesi/
+repo_url: https://github.com/synthesi-protocol/synthesi
+repo_name: synthesi
+
+docs_dir: website
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.inlinehilite
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - attr_list
+  - md_in_html
+  - footnotes
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - How It Works: explainer.md
+  - Paper:
+    - Overview: paper/index.md
+    - Abstract: paper/abstract.md
+    - Introduction: paper/introduction.md
+    - Background: paper/background.md
+    - Formal Model: paper/model.md
+    - Dynamic Pricing: paper/pricing.md
+    - Off-Chain Attestation: paper/offchain.md
+    - Throughput Optimality: paper/throughput.md
+    - Protocol Design: paper/protocol.md
+    - Security Analysis: paper/security.md
+    - Capacity Verification: paper/verification.md
+    - Evaluation: paper/evaluation.md
+    - Discussion: paper/discussion.md
+    - Conclusion: paper/conclusion.md
+  - Plan:
+    - Overview: plan/README.md
+    - Decisions: plan/00-DECISIONS.md
+    - Novelty Assessment: plan/01-NOVELTY-ASSESSMENT.md
+    - Paper Outline: plan/02-PAPER-OUTLINE.md
+    - Protocol Spec: plan/03-PROTOCOL-SPEC.md
+    - Contracts Blueprint: plan/04-CONTRACTS-BLUEPRINT.md
+    - Simulation Design: plan/05-SIMULATION-DESIGN.md
+    - Bibliography: plan/06-BIBLIOGRAPHY.md
+    - Implementation Roadmap: plan/07-IMPLEMENTATION-ROADMAP.md
+    - Gaps & Mitigations: plan/08-GAPS-AND-MITIGATIONS.md
+  - Research: research/RESEARCH-1.md
+  - Implementation:
+    - Contracts: implementation/contracts.md
+    - SDK: implementation/sdk.md
+    - Simulation: implementation/simulation.md

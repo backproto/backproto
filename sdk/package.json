@@ -1,0 +1,37 @@
+{
+  "name": "@synthesi/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the Backpressure Economics protocol",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./abis": {
+      "import": "./dist/abis/index.js",
+      "types": "./dist/abis/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "files": [
+    "dist",
+    "src/abis"
+  ],
+  "license": "MIT"
+}

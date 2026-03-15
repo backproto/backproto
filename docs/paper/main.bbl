@@ -1,0 +1,95 @@
+\begin{thebibliography}{17}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Adams et~al.(2021)Adams, Zinsmeister, Salem, Keefer, and Robinson]{adams2021uniswap}
+Hayden Adams, Noah Zinsmeister, Moody Salem, River Keefer, and Dan Robinson.
+\newblock Uniswap v3 core.
+\newblock In \emph{Uniswap Labs Technical Report}, 2021.
+
+\bibitem[Cha et~al.(2025)Cha, Kim, Kim, Lee, and Park]{cha2025stp}
+Hangyeol Cha, Taewook Kim, Hoyoung Kim, Donghyun Lee, and Yongjae Park.
+\newblock {STP}: Self-play {LLM} token pricing for inference markets.
+\newblock In \emph{Preprint}, 2025.
+
+\bibitem[{Coinbase}(2025)]{coinbase2025x402}
+{Coinbase}.
+\newblock x402: {HTTP} 402 payment required for agent commerce.
+\newblock Open protocol specification, 2025.
+
+\bibitem[Fisher(1933)]{fisher1933stamp}
+Irving Fisher.
+\newblock \emph{Stamp Scrip}.
+\newblock Adelphi Company, 1933.
+
+\bibitem[Georgiadis et~al.(2006)Georgiadis, Neely, and Tassiulas]{georgiadis2006resource}
+Leonidas Georgiadis, Michael~J. Neely, and Leandros Tassiulas.
+\newblock Resource allocation and cross-layer control in wireless networks.
+\newblock \emph{Foundations and Trends in Networking}, 1\penalty0 (1):\penalty0 1--144, 2006.
+
+\bibitem[Gesell(1916)]{gesell1916natural}
+Silvio Gesell.
+\newblock \emph{The Natural Economic Order}.
+\newblock Free Economy Publishing, 1916.
+\newblock Translated by Philip Pye.
+
+\bibitem[{Google}(2025)]{google2025ap2}
+{Google}.
+\newblock Agent-to-agent payment protocol ({AP2}).
+\newblock Technical specification, 2025.
+
+\bibitem[Jacobson(1988)]{jacobson1988congestion}
+Van Jacobson.
+\newblock Congestion avoidance and control.
+\newblock In \emph{Proceedings of ACM SIGCOMM}, pages 314--329. ACM, 1988.
+
+\bibitem[Kelly et~al.(1998)Kelly, Maulloo, and Tan]{kelly1998rate}
+Frank~P. Kelly, Aman~K. Maulloo, and David K.~H. Tan.
+\newblock Rate control for communication networks: Shadow prices, proportional fairness and stability.
+\newblock \emph{Journal of the Operational Research Society}, 49\penalty0 (3):\penalty0 237--252, 1998.
+
+\bibitem[Meyn and Tweedie(2009)]{meyn2009markov}
+Sean~P. Meyn and Richard~L. Tweedie.
+\newblock \emph{Markov Chains and Stochastic Stability}.
+\newblock Cambridge University Press, 2nd edition, 2009.
+
+\bibitem[Neely(2010)]{neely2010stochastic}
+Michael~J. Neely.
+\newblock \emph{Stochastic Network Optimization with Application to Communication and Queueing Systems}.
+\newblock Synthesis Lectures on Communication Networks. Morgan \& Claypool, 2010.
+
+\bibitem[{OpenAI} and {Stripe}(2025)]{openai2025acp}
+{OpenAI} and {Stripe}.
+\newblock Agent commerce platform ({ACP}).
+\newblock Platform documentation, 2025.
+
+\bibitem[Srikant(2004)]{srikant2004mathematics}
+R.~Srikant.
+\newblock \emph{The Mathematics of Internet Congestion Control}.
+\newblock Systems \& Control. Birkh{\"a}user, 2004.
+
+\bibitem[{Superfluid Finance}(2024)]{superfluid2024}
+{Superfluid Finance}.
+\newblock Superfluid protocol: Programmable cashflows.
+\newblock \url{https://docs.superfluid.finance/}, 2024.
+
+\bibitem[Tassiulas and Ephremides(1992)]{tassiulas1992stability}
+Leandros Tassiulas and Anthony Ephremides.
+\newblock Stability properties of constrained queueing systems and scheduling policies for maximum throughput in multihop radio networks.
+\newblock \emph{IEEE Transactions on Automatic Control}, 37\penalty0 (12):\penalty0 1936--1948, 1992.
+
+\bibitem[{Visa}(2025)]{visa2025tap}
+{Visa}.
+\newblock Transaction authorization protocol ({TAP}) for {AI} agents.
+\newblock Technical specification, 2025.
+
+\bibitem[Zhang and Zargham(2020)]{zhang2020token}
+Zixuan Zhang and Michael Zargham.
+\newblock Token engineering: A survey of token economy design patterns.
+\newblock \emph{IEEE Access}, 2020.
+\newblock Preprint.
+
+\end{thebibliography}

@@ -1,0 +1,65 @@
+\documentclass[11pt]{article}
+
+% ─── Packages ───
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm2e}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage[numbers]{natbib}
+\usepackage{microtype}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+% ─── Theorem Environments ───
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ─── Notation shortcuts ───
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Csmooth}{\bar{C}}
+\newcommand{\Craw}{C}
+\newcommand{\tasktype}{\tau}
+\newcommand{\bps}{\mathrm{BPS}}
+
+% ─── Title ───
+\title{\textbf{Backpressure Economics:} \\
+Capacity-Constrained Monetary Flow Control for Agent Economies}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/00-abstract}
+\end{abstract}
+
+\input{sections/01-introduction}
+\input{sections/02-background}
+\input{sections/03-model}
+\input{sections/03b-pricing}
+\input{sections/03c-offchain}
+\input{sections/04-throughput}
+\input{sections/05-protocol}
+\input{sections/06-security}
+\input{sections/06b-verification}
+\input{sections/07-evaluation}
+\input{sections/08-discussion}
+\input{sections/09-conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{bpe}
+
+\end{document}

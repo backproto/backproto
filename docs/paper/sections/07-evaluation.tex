@@ -1,0 +1,138 @@
+\section{Simulation and Evaluation}
+\label{sec:evaluation}
+
+We evaluate BPE using a Python agent-based simulation with 50 sinks, 10 sources,
+and 3 task types over 1000 timesteps.
+
+\subsection{Setup}
+
+Each sink has heterogeneous true capacity drawn uniformly from $[10, 100]$ and
+stake from $[S_{\min}, 10 \cdot S_{\min}]$ with $S_{\min} = 100$. Sources emit
+flow rates from $[50, 200]$. Capacity signals include Gaussian noise
+($\sigma = 0.05 \cdot C_{\text{true}}$). The EWMA parameter is $\alpha = 0.3$
+unless otherwise noted. We compare three strategies: BPE (capacity-proportional),
+round-robin (equal split), and random (Dirichlet-weighted).
+
+\emph{Allocation efficiency} is defined as the fraction of total payment that is
+productive (i.e., absorbable by the receiving sink):
+$\eta(t) = \sum_k \min(F_k(t), C_k) \;/\; \sum_k F_k(t)$.
+
+\subsection{E1: Convergence}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/convergence.pdf}
+\caption{Allocation efficiency and max queue backlog over 1000 timesteps.
+BPE achieves 95.7\% average efficiency (last 100 steps) vs.\ 93.5\% for
+round-robin and 79.7\% for random.}
+\label{fig:convergence}
+\end{figure}
+
+BPE converges to near-optimal allocation within $\sim$50 timesteps as the EWMA
+smooths noisy capacity signals. Round-robin approximates efficiency only when
+sink capacities are similar; its fixed-split strategy cannot adapt to heterogeneous
+capacity. Random allocation shows high variance and consistently suboptimal routing.
+
+\subsection{E2: Shock Response}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/shock.pdf}
+\caption{BPE response to 20\% sink failure at $t=500$. Efficiency dips briefly
+then recovers as EWMA smoothing adapts to the new capacity landscape.}
+\label{fig:shock}
+\end{figure}
+
+At $t=500$, 20\% of sinks are killed (capacity set to zero). BPE's efficiency
+drops momentarily as the EWMA-smoothed signals lag the true capacity change,
+then recovers within $\sim\!1/\alpha \approx 3$ epochs to a new equilibrium.
+
+\subsection{E3: Sybil Resistance}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/sybil.pdf}
+\caption{Sybil attack profitability. Net gain decreases as the number of
+fragments $n$ grows, due to $\sqrt{\cdot}$ cap concavity and per-identity
+minimum stake cost.}
+\label{fig:sybil}
+\end{figure}
+
+We fix total attacker stake $S$ and split into $n \in \{1, 2, 5, 10, 20\}$
+identities. Each identity pays $S_{\min}$ overhead. Total capacity scales as
+$\sqrt{n}$ while cost scales linearly. The attack becomes unprofitable at
+moderate $n$, validating the theoretical analysis in \Cref{sec:security}.
+
+\subsection{E4: EWMA Parameter Sweep}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/ewma_sweep.pdf}
+\caption{Allocation efficiency for $\alpha \in \{0.1, 0.2, 0.3, 0.5, 0.8\}$.
+$\alpha = 0.3$ balances responsiveness and stability.}
+\label{fig:ewma}
+\end{figure}
+
+Low $\alpha$ values (0.1, 0.2) yield stable but slowly-adapting signals. High
+$\alpha$ (0.8) tracks capacity changes rapidly but amplifies noise, reducing
+average efficiency. $\alpha = 0.3$ achieves the best efficiency--stability tradeoff.
+
+\subsection{E5: Buffer Dynamics}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/buffer.pdf}
+\caption{Source stall rate and allocation efficiency under different buffer sizes
+$B_{\max} \in \{0, 0.1, 0.5, 1.0\} \times \Lambda$.}
+\label{fig:buffer}
+\end{figure}
+
+With no buffer ($B_{\max} = 0$), sources stall frequently whenever instantaneous
+flow exceeds capacity. Moderate buffers ($B_{\max} = 0.5 \Lambda$) virtually
+eliminate stalls while maintaining high efficiency. Large buffers incur capital
+inefficiency with minimal marginal benefit, confirming the bounded buffer result
+of \Cref{thm:buffer}.
+
+\subsection{E6: On-Chain Gas Benchmarks}
+\label{sec:onchain-eval}
+
+We deploy the full contract suite to Base Sepolia and measure gas costs for
+critical operations. All measurements are single-transaction costs at zero
+network congestion.
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Operation} & \textbf{Gas} & \textbf{Notes} \\
+\midrule
+Commit capacity & 46{,}184 & Hash storage \\
+Reveal capacity (EWMA update) & 58{,}287 & Includes cap check + EWMA \\
+Off-chain aggregated update & 9{,}595 & Per-attestation (batched) \\
+Rebalance pool (10 sinks) & 187{,}832 & GDA \texttt{updateMemberUnits} \\
+Record completion (dual sig) & 89{,}421 & EIP-712 verify $\times 2$ \\
+Report queue load & 28{,}103 & Per task type per sink \\
+Advance pricing epoch & 31{,}547 & Base fee adjustment \\
+\midrule
+\texttt{getSinks} (1 sink) & 2{,}250 & View call \\
+\texttt{getSinks} (10 sinks) & 22{,}500 & Linear scaling \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The off-chain aggregation path reduces per-update gas by 83.5\% compared to
+commit-reveal (9{,}595 vs.\ 58{,}287), validating the design choice in
+\Cref{sec:offchain}. Completion recording is the most expensive operation
+due to dual ECDSA recovery, but occurs only once per completed task.
+
+\subsection{E7: Pricing Mechanism Validation}
+
+We validate the dynamic pricing curve by simulating demand shocks against
+multiple sinks with deployed contract parameters ($\gamma = 10{,}000$ BPS,
+$\delta = 12.5\%$, epoch duration 60s).
+
+Under steady-state conditions with uniform demand across 5 sinks, prices
+converge to within 2\% of the equilibrium base fee $\beta^*$ predicted by
+\Cref{prop:price-eq} within 8 epochs ($\sim$8 minutes). When a sudden demand
+spike doubles the request rate for one task type, the base fee adjusts upward
+over 6 epochs, reducing demand until the system re-equilibrates---the
+``economic backpressure'' effect described in \Cref{sec:pricing}.

@@ -1,0 +1,52 @@
+# MkDocs build output
+site/
+
+# Generated website content (assembled by build-site.sh)
+website/plan/
+website/research/
+website/paper/abstract.md
+website/paper/introduction.md
+website/paper/background.md
+website/paper/model.md
+website/paper/throughput.md
+website/paper/protocol.md
+website/paper/security.md
+website/paper/evaluation.md
+website/paper/discussion.md
+website/paper/conclusion.md
+website/paper/pricing.md
+website/paper/offchain.md
+website/paper/verification.md
+website/paper/figures/
+
+# Foundry build artifacts
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# Foundry dependencies (installed via forge install)
+contracts/lib/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# LaTeX build artifacts
+docs/paper/main.aux
+docs/paper/main.log
+docs/paper/main.out
+docs/paper/main.blg
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+
+# Secrets
+.env
+contracts/.env

@@ -1,0 +1,66 @@
+\section{Background and Related Work}
+\label{sec:background}
+
+\subsection{Backpressure Routing}
+
+Tassiulas and Ephremides~\cite{tassiulas1992stability} introduced the \emph{max-weight scheduling}
+algorithm for multi-hop wireless networks. At each time slot, the scheduler computes the
+differential backlog across each link and activates the schedule that maximizes the
+weighted sum of link capacities and backlog differentials. This achieves \emph{throughput
+optimality}: any arrival rate vector strictly inside the network capacity region can be
+stabilized. Neely~\cite{neely2010stochastic} extended this framework via Lyapunov optimization,
+introducing the $V$-parameter tradeoff between queue backlog (delay) and utility maximization.
+Georgiadis et al.~\cite{georgiadis2006resource} provide a comprehensive treatment of
+cross-layer resource allocation using backpressure principles.
+
+\subsection{Network Pricing and Congestion Control}
+
+Kelly et al.~\cite{kelly1998rate} showed that network rate allocation can be decomposed
+into a system problem (shadow prices on link capacities) and user problems (utility
+maximization subject to prices). The shadow prices emerge as Lagrange multipliers on
+capacity constraints---an insight that directly bridges network routing and economics.
+Srikant~\cite{srikant2004mathematics} formalized TCP congestion control as distributed
+optimization, with AIMD (Additive Increase Multiplicative Decrease) serving as a
+primal-dual algorithm. Jacobson~\cite{jacobson1988congestion} established EWMA for
+round-trip time estimation in TCP, providing the practical precedent for our capacity
+smoothing mechanism.
+
+\subsection{Token Engineering}
+
+Zhang and Zargham~\cite{zhang2020token} take a dynamical systems approach to token
+economy design, modeling token flows as differential equations and using the cadCAD
+framework for simulation. Superfluid~\cite{superfluid2024} provides on-chain streaming
+payment primitives: Constant Flow Agreements (CFA) for point-to-point streams and
+General Distribution Agreements (GDA) for one-to-many proportional splits. BPE adds
+a \emph{flow-control layer} above these streaming primitives.
+
+\subsection{Demurrage Economics}
+
+Gesell~\cite{gesell1916natural} proposed demurrage (a holding tax on currency) to
+increase monetary velocity. Fisher~\cite{fisher1933stamp} formalized this in \emph{Stamp
+Scrip}. Both are \emph{stock-based} velocity mechanisms: they penalize holding money.
+BPE is fundamentally different---a \emph{flow-based allocation} mechanism that routes
+payments to where capacity exists. The two approaches are orthogonal and composable:
+demurrage encourages spending velocity, while BPE ensures efficient allocation of
+the resulting flows.
+
+\subsection{Sender-Side Capacity Awareness}
+
+Automated market makers (AMMs) like Uniswap~\cite{adams2021uniswap} implement
+sender-side price discovery: the bonding curve encodes available liquidity, and
+senders observe the price impact of their trades. This is \emph{sender-side}
+capacity awareness. BPE provides \emph{receiver-side} capacity awareness:
+sinks (service providers) signal their capacity, and the protocol routes payments
+accordingly. The distinction is critical for service economies where the capacity
+constraint lies at the receiver, not the liquidity pool.
+
+\subsection{AI Agent Payment Protocols}
+
+The 2024--2026 wave of agent payment protocols addresses authorization and identity:
+Google's AP2~\cite{google2025ap2} handles inter-agent authentication,
+Coinbase's x402~\cite{coinbase2025x402} uses HTTP 402 for single-shot payments,
+OpenAI--Stripe's ACP~\cite{openai2025acp} provides billing and invoicing, and
+Visa's TAP~\cite{visa2025tap} extends card-network authorization to agents.
+Cha et al.~\cite{cha2025stp} study LLM inference pricing via self-play.
+\emph{None of these systems address flow control}---the dynamic rerouting of
+payment streams based on real-time capacity. BPE fills this gap.
