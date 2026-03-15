@@ -20,8 +20,8 @@
   --yellow: #eab308;
   --red: #ef4444;
 
-  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono), "JetBrains Mono", "Fira Code", monospace;
+  --font-sans: "Geist", var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", var(--font-geist-mono), "JetBrains Mono", "Fira Code", monospace;
 
   --max-width: 720px;
   --max-width-wide: 1080px;
