@@ -1,0 +1,24 @@
+import type { Abi } from "viem";
+export declare const abis: {
+    readonly BackpressurePool: Abi;
+    readonly CapacityRegistry: Abi;
+    readonly StakeManager: Abi;
+    readonly EscrowBuffer: Abi;
+    readonly Pipeline: Abi;
+    readonly GDAv1Forwarder: Abi;
+    readonly PricingCurve: Abi;
+    readonly CompletionTracker: Abi;
+    readonly OffchainAggregator: Abi;
+    readonly DemurrageToken: Abi;
+    readonly VelocityMetrics: Abi;
+    readonly ReputationLedger: Abi;
+    readonly UniversalCapacityAdapter: Abi;
+    readonly RelayCapacityRegistry: Abi;
+    readonly RelayPaymentPool: Abi;
+    readonly LightningCapacityOracle: Abi;
+    readonly LightningRoutingPool: Abi;
+    readonly CrossProtocolRouter: Abi;
+    readonly OpenClawCapacityAdapter: Abi;
+    readonly OpenClawCompletionVerifier: Abi;
+    readonly OpenClawReputationBridge: Abi;
+};

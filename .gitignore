@@ -58,4 +58,3 @@ gtm/
 # Secrets
 .env
 contracts/.env
-sdk/dist/
