@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import styles from "./BackpressureFlow.module.css";
 
-/* ── Layout ─────────────────────────────────────────────────────── */
+/* ── Types ──────────────────────────────────────────────────────── */
 
 interface Node {
   x: number;
@@ -11,305 +11,361 @@ interface Node {
   r: number;
   label: string;
   color: string;
-  capacity: number;   // 0-1, how full this agent currently is
-  capDir: number;     // +1 filling, -1 draining
-  speed: number;      // capacity fill speed multiplier
+  capacity: number;
+  capDir: number;
+  speed: number;
+}
+
+const enum PType {
+  Payment = 0,   // sources → pool → sink (white)
+  Capacity = 1,  // sink → pool (colored, small — capacity attestation)
+  Overflow = 2,  // pool → escrow buffer (amber)
 }
 
 interface Particle {
-  t: number;          // 0-1 progress along path
-  target: number;     // index into agents[]
-  speed: number;      // units per frame
+  t: number;
+  kind: PType;
+  fromIdx: number;   // source index (Payment) or sink index (Capacity)
+  toIdx: number;     // sink index (Payment) or -1 (Capacity → pool)
+  speed: number;
   opacity: number;
   size: number;
   redirected: boolean;
 }
 
-const AGENT_COLORS = [
-  "#0d9488", // AI Agents — teal
-  "#6366f1", // Nostr Relays — indigo
-  "#d97706", // Lightning — amber
-  "#a16207", // DeFi Pools — gold
-  "#ec4899", // Compute — pink
-  "#8b5cf6", // Storage — violet
-  "#06b6d4", // Oracles — cyan
-  "#10b981", // IoT Mesh — emerald
-];
-const AGENT_LABELS = [
-  "AI Agents",
-  "Nostr Relays",
-  "Lightning",
-  "DeFi Pools",
-  "Compute",
-  "Storage",
-  "Oracles",
-  "IoT Mesh",
-];
+/* ── Domain config ──────────────────────────────────────────────── */
 
-/* Eased cubic bezier path from source → router → agent */
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t;
-}
+const SINK_COLORS = [
+  "#0d9488", "#6366f1", "#d97706", "#a16207",
+  "#ec4899", "#8b5cf6", "#06b6d4", "#10b981",
+];
+const SINK_LABELS = [
+  "AI Agents", "Nostr Relays", "Lightning", "DeFi Pools",
+  "Compute", "Storage", "Oracles", "IoT Mesh",
+];
+const SOURCE_COLORS = ["#e4e4e7", "#a1a1aa", "#71717a"];
+const SOURCE_LABELS = ["Apps", "Users", "Protocols"];
 
-function ease(t: number) {
-  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-}
+function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
+function ease(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+
+/* ── Component ──────────────────────────────────────────────────── */
 
 export default function BackpressureFlow() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef(0);
-  const stateRef = useRef<{
-    agents: Node[];
-    router: Node;
-    source: Node;
+
+  interface State {
+    sources: Node[];
+    pool: Node;
+    buffer: Node;
+    sinks: Node[];
     particles: Particle[];
-    w: number;
-    h: number;
-    dpr: number;
-    tick: number;
-  } | null>(null);
+    w: number; h: number; dpr: number; tick: number;
+  }
 
-  const initState = useCallback((w: number, h: number, dpr: number) => {
-    const sourceX = w * 0.07;
-    const routerX = w * 0.30;
-    const routerY = h * 0.5;
+  const stateRef = useRef<State | null>(null);
 
-    const source: Node = {
-      x: sourceX, y: h * 0.5, r: 18, label: "Demand",
-      color: "#e4e4e7", capacity: 0, capDir: 0, speed: 0,
-    };
+  const initState = useCallback((w: number, h: number, dpr: number): State => {
+    const poolX = w * 0.32;
+    const poolY = h * 0.45;
 
-    const router: Node = {
-      x: routerX, y: routerY, r: 22, label: "Router",
+    const sources: Node[] = SOURCE_LABELS.map((label, i) => ({
+      x: w * 0.06,
+      y: h * (0.22 + i * 0.25),
+      r: 12, label, color: SOURCE_COLORS[i],
+      capacity: 0, capDir: 0, speed: 0,
+    }));
+
+    const pool: Node = {
+      x: poolX, y: poolY, r: 22, label: "Pool",
       color: "#d97706", capacity: 0, capDir: 0, speed: 0,
     };
 
-    // Fan 8 agents in an arc from the router
-    const fanCenter = w * 0.68;
-    const fanRadiusX = w * 0.26;
-    const fanRadiusY = h * 0.40;
-    const count = AGENT_COLORS.length;
-    const arcStart = -Math.PI * 0.42;  // top of fan
-    const arcEnd = Math.PI * 0.42;     // bottom of fan
+    const buffer: Node = {
+      x: poolX, y: h * 0.88, r: 10, label: "Escrow",
+      color: "#f59e0b", capacity: 0, capDir: 0, speed: 0,
+    };
 
-    const agents: Node[] = AGENT_COLORS.map((color, i) => {
-      const angle = arcStart + (arcEnd - arcStart) * (i / (count - 1));
+    // Fan sinks in arc
+    const fanCX = w * 0.70;
+    const fanRX = w * 0.24;
+    const fanRY = h * 0.38;
+    const n = SINK_COLORS.length;
+    const arcS = -Math.PI * 0.42;
+    const arcE = Math.PI * 0.42;
+
+    const sinks: Node[] = SINK_COLORS.map((color, i) => {
+      const angle = arcS + (arcE - arcS) * (i / (n - 1));
       return {
-        x: fanCenter + Math.cos(angle) * fanRadiusX,
-        y: routerY + Math.sin(angle) * fanRadiusY,
-        r: 14,
-        label: AGENT_LABELS[i],
-        color,
+        x: fanCX + Math.cos(angle) * fanRX,
+        y: poolY + Math.sin(angle) * fanRY,
+        r: 14, label: SINK_LABELS[i], color,
         capacity: 0.1 + Math.random() * 0.3,
-        capDir: 1,
-        speed: 0.3 + Math.random() * 0.5,
+        capDir: 1, speed: 0.3 + Math.random() * 0.5,
       };
     });
 
-    return {
-      agents,
-      router,
-      source,
-      particles: [] as Particle[],
-      w,
-      h,
-      dpr,
-      tick: 0,
-    };
+    return { sources, pool, buffer, sinks, particles: [], w, h, dpr, tick: 0 };
   }, []);
 
-  /* ── Spawn a particle towards the best-available agent ──── */
-  function spawnParticle(state: NonNullable<typeof stateRef.current>) {
-    // Pick agent with lowest capacity (the BPE logic)
-    let best = 0;
-    let bestCap = state.agents[0].capacity;
-    for (let i = 1; i < state.agents.length; i++) {
-      if (state.agents[i].capacity < bestCap) {
-        best = i;
-        bestCap = state.agents[i].capacity;
-      }
-    }
+  /* ── Bezier helpers ─────────────────────────────────────── */
 
-    state.particles.push({
-      t: 0,
-      target: best,
+  function bezier2(ax: number, ay: number, cx: number, cy: number, bx: number, by: number, t: number): [number, number] {
+    const u = 1 - t;
+    return [u * u * ax + 2 * u * t * cx + t * t * bx, u * u * ay + 2 * u * t * cy + t * t * by];
+  }
+
+  function getPaymentPos(st: State, p: Particle): [number, number] {
+    const src = st.sources[p.fromIdx];
+    const pl = st.pool;
+    const sk = st.sinks[p.toIdx];
+    const t = ease(p.t);
+
+    if (t < 0.45) {
+      const lt = t / 0.45;
+      return bezier2(src.x, src.y, lerp(src.x, pl.x, 0.5), lerp(src.y, pl.y, 0.3), pl.x, pl.y, lt);
+    } else {
+      const lt = (t - 0.45) / 0.55;
+      return bezier2(pl.x, pl.y, lerp(pl.x, sk.x, 0.5), lerp(pl.y, sk.y, 0.3), sk.x, sk.y, lt);
+    }
+  }
+
+  function getCapacityPos(st: State, p: Particle): [number, number] {
+    const sk = st.sinks[p.fromIdx];
+    const pl = st.pool;
+    const t = ease(p.t);
+    return bezier2(sk.x, sk.y, lerp(sk.x, pl.x, 0.5), lerp(sk.y, pl.y, 0.6), pl.x, pl.y, t);
+  }
+
+  function getOverflowPos(st: State, p: Particle): [number, number] {
+    const pl = st.pool;
+    const bf = st.buffer;
+    const t = ease(p.t);
+    return [lerp(pl.x, bf.x, t), lerp(pl.y, bf.y, t)];
+  }
+
+  /* ── Spawn particles ────────────────────────────────────── */
+
+  function spawnPayment(st: State) {
+    // Pick sink with lowest capacity (BPE routing)
+    let best = 0, bestCap = st.sinks[0].capacity;
+    for (let i = 1; i < st.sinks.length; i++) {
+      if (st.sinks[i].capacity < bestCap) { best = i; bestCap = st.sinks[i].capacity; }
+    }
+    st.particles.push({
+      t: 0, kind: PType.Payment,
+      fromIdx: Math.floor(Math.random() * st.sources.length),
+      toIdx: best,
       speed: 0.004 + Math.random() * 0.003,
-      opacity: 0.5 + Math.random() * 0.5,
+      opacity: 0.6 + Math.random() * 0.4,
       size: 1.5 + Math.random() * 1.5,
       redirected: false,
     });
   }
 
-  /* ── Get position along the source → router → agent bezier path */
-  function getPos(
-    state: NonNullable<typeof stateRef.current>,
-    p: Particle,
-  ): [number, number] {
-    const s = state.source;
-    const r = state.router;
-    const a = state.agents[p.target];
-    const t = ease(p.t);
-
-    if (t < 0.45) {
-      // Source → Router segment
-      const st = t / 0.45;
-      const midX = lerp(s.x, r.x, 0.5);
-      const midY = s.y + (r.y - s.y) * 0.3;
-      // Quadratic bezier
-      const x = (1 - st) * (1 - st) * s.x + 2 * (1 - st) * st * midX + st * st * r.x;
-      const y = (1 - st) * (1 - st) * s.y + 2 * (1 - st) * st * midY + st * st * r.y;
-      return [x, y];
-    } else {
-      // Router → Agent segment
-      const st = (t - 0.45) / 0.55;
-      const midX = lerp(r.x, a.x, 0.5);
-      const midY = lerp(r.y, a.y, 0.35);
-      const x = (1 - st) * (1 - st) * r.x + 2 * (1 - st) * st * midX + st * st * a.x;
-      const y = (1 - st) * (1 - st) * r.y + 2 * (1 - st) * st * midY + st * st * a.y;
-      return [x, y];
-    }
+  function spawnCapacity(st: State) {
+    const idx = Math.floor(Math.random() * st.sinks.length);
+    st.particles.push({
+      t: 0, kind: PType.Capacity,
+      fromIdx: idx, toIdx: -1,
+      speed: 0.006 + Math.random() * 0.003,
+      opacity: 0.35 + Math.random() * 0.25,
+      size: 1.0 + Math.random() * 0.8,
+      redirected: false,
+    });
   }
 
-  /* ── Update simulation step ────────────────────────────── */
-  function updateSim(state: NonNullable<typeof stateRef.current>) {
-    state.tick++;
+  function spawnOverflow(st: State) {
+    st.particles.push({
+      t: 0, kind: PType.Overflow,
+      fromIdx: -1, toIdx: -1,
+      speed: 0.005 + Math.random() * 0.003,
+      opacity: 0.5, size: 1.2,
+      redirected: false,
+    });
+  }
 
-    // Spawn particles
-    const reducing = typeof window !== "undefined" && window.innerWidth < 640;
-    const spawnRate = reducing ? 3 : 2;
-    if (state.tick % spawnRate === 0) {
-      spawnParticle(state);
+  /* ── Simulation step ────────────────────────────────────── */
+
+  function updateSim(st: State) {
+    st.tick++;
+    const mobile = typeof window !== "undefined" && window.innerWidth < 640;
+    const rate = mobile ? 3 : 2;
+
+    // Spawn payment particles
+    if (st.tick % rate === 0) spawnPayment(st);
+
+    // Spawn capacity signals (less frequent, flowing backward)
+    if (st.tick % (rate * 4) === 0) spawnCapacity(st);
+
+    // Overflow: when average capacity > 0.75, divert some to escrow
+    const avgCap = st.sinks.reduce((s, k) => s + k.capacity, 0) / st.sinks.length;
+    if (avgCap > 0.75 && st.tick % (rate * 3) === 0) spawnOverflow(st);
+
+    // Update buffer capacity (fills from overflow, slowly drains)
+    st.buffer.capacity = Math.min(0.95, st.buffer.capacity + (avgCap > 0.75 ? 0.003 : -0.006));
+    st.buffer.capacity = Math.max(0, st.buffer.capacity);
+
+    // Update sink capacities (oscillate)
+    for (const k of st.sinks) {
+      k.capacity += k.capDir * k.speed * 0.005;
+      if (k.capacity >= 0.95) { k.capDir = -1; k.capacity = 0.95; }
+      else if (k.capacity <= 0.05) { k.capDir = 1; k.capacity = 0.05; }
     }
 
-    // Update agent capacities (oscillate)
-    for (const a of state.agents) {
-      a.capacity += a.capDir * a.speed * 0.005;
-      if (a.capacity >= 0.95) {
-        a.capDir = -1;
-        a.capacity = 0.95;
-      } else if (a.capacity <= 0.05) {
-        a.capDir = 1;
-        a.capacity = 0.05;
-      }
-    }
+    // Move particles
+    for (let i = st.particles.length - 1; i >= 0; i--) {
+      const p = st.particles[i];
 
-    // Update particles
-    for (let i = state.particles.length - 1; i >= 0; i--) {
-      const p = state.particles[i];
-      const agent = state.agents[p.target];
+      if (p.kind === PType.Payment) {
+        const sink = st.sinks[p.toIdx];
+        const capFactor = sink.capacity > 0.8 ? 0.3 : sink.capacity > 0.6 ? 0.6 : 1;
 
-      // Slow down if target agent is near capacity (backpressure!)
-      const capacityFactor = agent.capacity > 0.8 ? 0.3 : agent.capacity > 0.6 ? 0.6 : 1;
-
-      // If agent is overloaded and particle hasn't passed router yet, redirect
-      if (!p.redirected && p.t < 0.4 && agent.capacity > 0.85) {
-        let best = p.target;
-        let bestCap = agent.capacity;
-        for (let j = 0; j < state.agents.length; j++) {
-          if (j !== p.target && state.agents[j].capacity < bestCap) {
-            best = j;
-            bestCap = state.agents[j].capacity;
+        // Redirect if saturated and still before pool
+        if (!p.redirected && p.t < 0.4 && sink.capacity > 0.85) {
+          let best = p.toIdx, bestC = sink.capacity;
+          for (let j = 0; j < st.sinks.length; j++) {
+            if (j !== p.toIdx && st.sinks[j].capacity < bestC) { best = j; bestC = st.sinks[j].capacity; }
           }
+          if (best !== p.toIdx) { p.toIdx = best; p.redirected = true; }
         }
-        if (best !== p.target) {
-          p.target = best;
-          p.redirected = true;
+
+        p.t += p.speed * capFactor;
+        if (p.t >= 1) {
+          sink.capacity = Math.min(0.95, sink.capacity + 0.03);
+          st.particles.splice(i, 1);
         }
-      }
-
-      p.t += p.speed * capacityFactor;
-
-      // Particle arrived — increase agent capacity
-      if (p.t >= 1) {
-        agent.capacity = Math.min(0.95, agent.capacity + 0.04);
-        state.particles.splice(i, 1);
+      } else if (p.kind === PType.Capacity) {
+        p.t += p.speed;
+        if (p.t >= 1) st.particles.splice(i, 1);
+      } else {
+        p.t += p.speed;
+        if (p.t >= 1) st.particles.splice(i, 1);
       }
     }
   }
 
-  /* ── Draw frame ────────────────────────────────────────── */
-  function drawFrame(
-    ctx: CanvasRenderingContext2D,
-    state: NonNullable<typeof stateRef.current>,
-  ) {
-    const { w, h, dpr } = state;
+  /* ── Draw ───────────────────────────────────────────────── */
+
+  function drawFrame(ctx: CanvasRenderingContext2D, st: State) {
+    const { w, h, dpr } = st;
     ctx.clearRect(0, 0, w * dpr, h * dpr);
     ctx.save();
     ctx.scale(dpr, dpr);
 
-    // ─── Connection lines (source → router → each agent) ───
-    const s = state.source;
-    const r = state.router;
+    const pl = st.pool;
 
-    for (const a of state.agents) {
-      const load = a.capacity;
-      const alpha = 0.06 + (1 - load) * 0.12;
-      ctx.strokeStyle = a.color;
-      ctx.globalAlpha = alpha;
+    // ── Connection lines: sources → pool ────────────────────
+    ctx.setLineDash([4, 6]);
+    for (const src of st.sources) {
+      ctx.strokeStyle = "#52525b";
+      ctx.globalAlpha = 0.12;
       ctx.lineWidth = 1;
-      ctx.setLineDash([4, 6]);
-
-      // Source to router
       ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.quadraticCurveTo(lerp(s.x, r.x, 0.5), s.y + (r.y - s.y) * 0.3, r.x, r.y);
-      ctx.stroke();
-
-      // Router to agent
-      ctx.beginPath();
-      ctx.moveTo(r.x, r.y);
-      ctx.quadraticCurveTo(lerp(r.x, a.x, 0.5), lerp(r.y, a.y, 0.35), a.x, a.y);
+      ctx.moveTo(src.x, src.y);
+      ctx.quadraticCurveTo(lerp(src.x, pl.x, 0.5), lerp(src.y, pl.y, 0.3), pl.x, pl.y);
       ctx.stroke();
     }
+
+    // ── Connection lines: pool → sinks (thickness ~ allocation weight) ──
+    for (const k of st.sinks) {
+      const weight = 1 - k.capacity; // more capacity free = thicker line
+      ctx.strokeStyle = k.color;
+      ctx.globalAlpha = 0.06 + weight * 0.14;
+      ctx.lineWidth = 0.5 + weight * 1.5;
+      ctx.beginPath();
+      ctx.moveTo(pl.x, pl.y);
+      ctx.quadraticCurveTo(lerp(pl.x, k.x, 0.5), lerp(pl.y, k.y, 0.3), k.x, k.y);
+      ctx.stroke();
+    }
+
+    // ── Connection lines: sinks → pool (capacity signal, faint) ──
+    for (const k of st.sinks) {
+      ctx.strokeStyle = k.color;
+      ctx.globalAlpha = 0.04;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(k.x, k.y);
+      ctx.quadraticCurveTo(lerp(k.x, pl.x, 0.5), lerp(k.y, pl.y, 0.6), pl.x, pl.y);
+      ctx.stroke();
+    }
+
+    // ── Connection line: pool → buffer ──
+    ctx.strokeStyle = "#f59e0b";
+    ctx.globalAlpha = 0.08 + st.buffer.capacity * 0.1;
+    ctx.lineWidth = 0.5 + st.buffer.capacity;
+    ctx.beginPath();
+    ctx.moveTo(pl.x, pl.y);
+    ctx.lineTo(st.buffer.x, st.buffer.y);
+    ctx.stroke();
+
     ctx.setLineDash([]);
     ctx.globalAlpha = 1;
 
-    // ─── Particles ──────────────────────────────────────────
-    for (const p of state.particles) {
-      const [px, py] = getPos(state, p);
-      const agent = state.agents[p.target];
-      const glow = p.redirected ? "#f59e0b" : agent.color;
+    // ── Particles ───────────────────────────────────────────
+    for (const p of st.particles) {
+      let px: number, py: number, glowColor: string, coreColor: string;
+
+      if (p.kind === PType.Payment) {
+        [px, py] = getPaymentPos(st, p);
+        const sink = st.sinks[p.toIdx];
+        glowColor = p.redirected ? "#f59e0b" : sink.color;
+        coreColor = p.redirected ? "#f59e0b" : "#e4e4e7";
+      } else if (p.kind === PType.Capacity) {
+        [px, py] = getCapacityPos(st, p);
+        glowColor = st.sinks[p.fromIdx].color;
+        coreColor = glowColor;
+      } else {
+        [px, py] = getOverflowPos(st, p);
+        glowColor = "#f59e0b";
+        coreColor = "#f59e0b";
+      }
 
       // Glow
       ctx.beginPath();
       ctx.arc(px, py, p.size * 4, 0, Math.PI * 2);
       const grad = ctx.createRadialGradient(px, py, 0, px, py, p.size * 4);
-      grad.addColorStop(0, glow + "40");
+      grad.addColorStop(0, glowColor + "40");
       grad.addColorStop(1, "transparent");
       ctx.fillStyle = grad;
       ctx.fill();
 
-      // Core dot
+      // Core
       ctx.beginPath();
       ctx.arc(px, py, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = p.redirected ? "#f59e0b" : "#e4e4e7";
+      ctx.fillStyle = coreColor;
       ctx.globalAlpha = p.opacity;
       ctx.fill();
       ctx.globalAlpha = 1;
     }
 
-    // ─── Source node ────────────────────────────────────────
-    drawNode(ctx, s, false);
+    // ── Draw nodes ──────────────────────────────────────────
+    for (const src of st.sources) drawNode(ctx, src, false);
+    drawNode(ctx, pl, false);
+    drawNode(ctx, st.buffer, true);
+    for (const k of st.sinks) drawNode(ctx, k, true);
 
-    // ─── Router node ────────────────────────────────────────
-    drawNode(ctx, r, false);
+    // ── Flow direction labels ───────────────────────────────
+    ctx.font = "italic 8px var(--font-mono), monospace";
+    ctx.fillStyle = "#52525b";
+    ctx.textAlign = "center";
 
-    // ─── Agent nodes with capacity bars ─────────────────────
-    for (const a of state.agents) {
-      drawNode(ctx, a, true);
-    }
+    const lx = lerp(st.sources[1].x, pl.x, 0.5);
+    ctx.fillText("payments →", lx, pl.y - 22);
+
+    const rx = lerp(pl.x, st.sinks[3].x, 0.35);
+    ctx.fillText("distribute →", rx, pl.y - 22);
+
+    const bx = lerp(st.sinks[3].x, pl.x, 0.35);
+    ctx.fillText("← capacity signals", bx, pl.y + 28);
 
     ctx.restore();
   }
 
-  function drawNode(
-    ctx: CanvasRenderingContext2D,
-    node: Node,
-    showCapacity: boolean,
-  ) {
+  function drawNode(ctx: CanvasRenderingContext2D, node: Node, showCapacity: boolean) {
     const { x, y, r, label, color, capacity } = node;
 
-    // Outer ring
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.strokeStyle = color;
@@ -318,13 +374,11 @@ export default function BackpressureFlow() {
     ctx.stroke();
     ctx.globalAlpha = 1;
 
-    // Fill
     ctx.beginPath();
     ctx.arc(x, y, r - 1, 0, Math.PI * 2);
     ctx.fillStyle = color + "15";
     ctx.fill();
 
-    // Center dot
     ctx.beginPath();
     ctx.arc(x, y, 3, 0, Math.PI * 2);
     ctx.fillStyle = color;
@@ -332,26 +386,21 @@ export default function BackpressureFlow() {
     ctx.fill();
     ctx.globalAlpha = 1;
 
-    // Label
     ctx.font = "500 9px var(--font-mono), monospace";
     ctx.fillStyle = "#a1a1aa";
     ctx.textAlign = "center";
     ctx.fillText(label, x, y + r + 14);
 
-    // Capacity bar
     if (showCapacity) {
       const barW = r * 2.4;
       const barH = 2.5;
       const barX = x - barW / 2;
       const barY = y + r + 19;
 
-      // Track
       ctx.fillStyle = "#27272a";
       ctx.fillRect(barX, barY, barW, barH);
 
-      // Fill — color shifts to red when high
-      const fillColor =
-        capacity > 0.8 ? "#ef4444" : capacity > 0.6 ? "#eab308" : color;
+      const fillColor = capacity > 0.8 ? "#ef4444" : capacity > 0.6 ? "#eab308" : color;
       ctx.fillStyle = fillColor;
       ctx.globalAlpha = 0.8;
       ctx.fillRect(barX, barY, barW * capacity, barH);
@@ -359,11 +408,11 @@ export default function BackpressureFlow() {
     }
   }
 
-  /* ── Setup and animation loop ──────────────────────────── */
+  /* ── Lifecycle ──────────────────────────────────────────── */
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -379,11 +428,11 @@ export default function BackpressureFlow() {
       } else {
         const old = stateRef.current;
         const s = initState(rect.width, rect.height, dpr);
-        // Preserve capacities
-        for (let i = 0; i < s.agents.length; i++) {
-          s.agents[i].capacity = old.agents[i]?.capacity ?? s.agents[i].capacity;
-          s.agents[i].capDir = old.agents[i]?.capDir ?? s.agents[i].capDir;
+        for (let i = 0; i < s.sinks.length; i++) {
+          s.sinks[i].capacity = old.sinks[i]?.capacity ?? s.sinks[i].capacity;
+          s.sinks[i].capDir = old.sinks[i]?.capDir ?? s.sinks[i].capDir;
         }
+        s.buffer.capacity = old.buffer.capacity;
         s.tick = old.tick;
         stateRef.current = s;
       }
