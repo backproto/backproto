@@ -83,6 +83,26 @@
   margin: 1.5rem 0;
 }
 
+.diagram :global(.node rect),
+.diagram :global(.node polygon),
+.diagram :global(.cluster rect) {
+  rx: 8;
+  ry: 8;
+}
+
+.diagram :global(.edgeLabel) {
+  padding: 4px 8px;
+}
+
+.diagram :global(.edgeLabel rect) {
+  rx: 6;
+  ry: 6;
+}
+
+.diagram :global(.edgePath path) {
+  stroke-width: 1.5px;
+}
+
 .links {
   list-style: none;
   padding: 0;

@@ -1,12 +1,36 @@
 import Mermaid from "../components/Mermaid";
+import { Radio, Zap, Coins, Globe, PawPrint } from "lucide-react";
 import styles from "./page.module.css";
 
 export const metadata = { title: "How It Works" };
 
+function StepNum({ n }: { n: number }) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 24,
+        height: 24,
+        borderRadius: "50%",
+        background: "var(--accent-dim)",
+        fontSize: "0.8rem",
+        fontWeight: 700,
+        color: "var(--accent-hover)",
+        marginRight: "0.4rem",
+        verticalAlign: "text-bottom",
+      }}
+    >
+      {n}
+    </span>
+  );
+}
+
 export default function ExplainerPage() {
   return (
     <div className={styles.page}>
-      <h1>How BPE Works - The Plain-Language Guide</h1>
+      <h1>How BPE Works: The Plain-Language Guide</h1>
       <p className={styles.subtitle}>
         <strong>No math degree required.</strong> This page explains Backpressure
         Economics (BPE) from scratch, with pictures.
@@ -16,7 +40,7 @@ export default function ExplainerPage() {
 
       <h2>The Problem: AI Agents Need to Pay Each Other</h2>
       <p>
-        Imagine a world where AI agents do work for each other - and pay with
+        Imagine a world where AI agents do work for each other, paying with
         cryptocurrency in real-time, streaming tiny amounts every second, like a
         running meter.
       </p>
@@ -43,11 +67,11 @@ export default function ExplainerPage() {
       <div className={styles.diagram}>
         <Mermaid
           chart={`graph LR
-    A[Translation Agent<br/>Sending $10/min] -->|payment stream| B[LLM Agent<br/>⚠️ At capacity!]
+    A[Translation Agent<br/>Sending $10/min] -->|payment stream| B[LLM Agent<br/>At capacity!]
     C[Chat Agent<br/>Sending $5/min] -->|payment stream| B
     D[Writing Agent<br/>Sending $8/min] -->|payment stream| B
 
-    style B fill:#ff6b6b,color:#fff`}
+    style B fill:#be123c,color:#fff`}
         />
       </div>
 
@@ -57,7 +81,7 @@ export default function ExplainerPage() {
         restaurant meal that never arrives because the kitchen is overwhelmed.
       </p>
       <p>
-        <strong>In data networks, this is a solved problem</strong> - routers
+        <strong>In data networks, this is a solved problem.</strong> Routers
         drop packets or reroute traffic when links are congested. But in payment
         networks? No one has built this. That&apos;s what BPE does.
       </p>
@@ -185,11 +209,11 @@ export default function ExplainerPage() {
       <div className={styles.diagram}>
         <Mermaid
           chart={`graph LR
-    A[Translation Agent<br/>Sending $10/min] -->|$7/min| B[LLM Agent A<br/>✅ 70% free]
-    A -->|$3/min| C[LLM Agent B<br/>⚠️ 30% free]
+    A[Translation Agent<br/>Sending $10/min] -->|$7/min| B[LLM Agent A<br/>70% free]
+    A -->|$3/min| C[LLM Agent B<br/>30% free]
 
-    style B fill:#51cf66,color:#fff
-    style C fill:#ffd43b,color:#000`}
+    style B fill:#0d9488,color:#fff
+    style C fill:#a16207,color:#fff`}
         />
       </div>
 
@@ -209,33 +233,33 @@ export default function ExplainerPage() {
       <div className={styles.diagram}>
         <Mermaid
           chart={`graph TB
-    subgraph "1️⃣ DECLARE"
+    subgraph "1 · DECLARE"
         S1[Each agent announces<br/>how much work it can handle]
     end
 
-    subgraph "2️⃣ VERIFY"
+    subgraph "2 · VERIFY"
         S2[The system checks<br/>if they're telling the truth]
     end
 
-    subgraph "3️⃣ PRICE"
+    subgraph "3 · PRICE"
         S4[Busy agents become<br/>more expensive]
     end
 
-    subgraph "4️⃣ ROUTE"
+    subgraph "4 · ROUTE"
         S3[Payments flow to agents<br/>based on their capacity]
     end
 
-    subgraph "5️⃣ BUFFER"
+    subgraph "5 · BUFFER"
         S5[Overflow payments are<br/>held safely until capacity frees up]
     end
 
     S1 --> S2 --> S4 --> S3 --> S5
 
-    style S1 fill:#339af0,color:#fff
-    style S2 fill:#845ef7,color:#fff
-    style S4 fill:#f76707,color:#fff
-    style S3 fill:#51cf66,color:#fff
-    style S5 fill:#ffd43b,color:#000`}
+    style S1 fill:#2563eb,color:#fff
+    style S2 fill:#6366f1,color:#fff
+    style S4 fill:#d97706,color:#fff
+    style S3 fill:#0d9488,color:#fff
+    style S5 fill:#a16207,color:#fff`}
         />
       </div>
 
@@ -243,14 +267,14 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>1️⃣ Declare: &quot;Here&apos;s How Much I Can Handle&quot;</h3>
+      <h3><StepNum n={1} /> Declare: &quot;Here&apos;s How Much I Can Handle&quot;</h3>
       <p>
         Every AI agent that wants to receive payments (<strong>called a
         &quot;sink&quot;</strong>) tells the network how much work it can
         process. Think of it like a restaurant posting how many tables are open.
       </p>
       <p>
-        But there&apos;s a catch - agents might lie to get more money. So
+        But there&apos;s a catch: agents might lie to get more money. So
         declarations go through two safeguards:
       </p>
       <p>
@@ -266,16 +290,16 @@ export default function ExplainerPage() {
     A[Agent deposits<br/>100 tokens] -->|stake| B[Allowed to claim<br/>capacity of 10]
     C[Agent deposits<br/>400 tokens] -->|stake| D[Allowed to claim<br/>capacity of 20]
 
-    style A fill:#e9ecef
-    style C fill:#e9ecef
-    style B fill:#339af0,color:#fff
-    style D fill:#339af0,color:#fff`}
+    style A fill:#374151,color:#e0e0e0
+    style C fill:#374151,color:#e0e0e0
+    style B fill:#2563eb,color:#fff
+    style D fill:#2563eb,color:#fff`}
         />
       </div>
 
       <p>
         Notice something? Depositing 4x more only gives you 2x more capacity.
-        This is by design - it makes the &quot;create fake identities&quot;
+        This is by design. It makes the &quot;create fake identities&quot;
         attack unprofitable.
       </p>
       <p>
@@ -287,7 +311,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>2️⃣ Verify: &quot;Prove You Actually Did the Work&quot;</h3>
+      <h3><StepNum n={2} /> Verify: &quot;Prove You Actually Did the Work&quot;</h3>
       <p>
         Declaring capacity is one thing. Actually doing the work is another. BPE
         has a built-in lie detector:
@@ -296,9 +320,9 @@ export default function ExplainerPage() {
       <div className={styles.diagram}>
         <Mermaid
           chart={`sequenceDiagram
-    participant Source as 📱 App (Source)
-    participant Sink as 🤖 AI Agent (Sink)
-    participant Chain as ⛓️ Blockchain
+    participant Source as App (Source)
+    participant Sink as AI Agent (Sink)
+    participant Chain as Blockchain
 
     Source->>Sink: Send task request
     Sink->>Sink: Do the work
@@ -311,7 +335,7 @@ export default function ExplainerPage() {
       </div>
 
       <p>
-        Every completed task produces a <strong>dual-signed receipt</strong> -
+        Every completed task produces a <strong>dual-signed receipt</strong>:
         both the agent doing the work AND the agent requesting it must sign off.
         The blockchain counts these receipts and compares them to what the agent{" "}
         <em>claimed</em> it could do.
@@ -327,7 +351,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>3️⃣ Price: Busy Agents Cost More</h3>
+      <h3><StepNum n={3} /> Price: Busy Agents Cost More</h3>
       <p>
         Just like Uber&apos;s surge pricing, BPE makes busy agents more
         expensive:
@@ -335,31 +359,30 @@ export default function ExplainerPage() {
 
       <div className={styles.diagram}>
         <Mermaid
-          chart={`graph TB
-    subgraph "Low demand"
-        A1[Queue: 2 tasks waiting] --> B1["Price: $1.00/task"]
-    end
-    subgraph "Medium demand"
-        A2[Queue: 10 tasks waiting] --> B2["Price: $1.80/task"]
-    end
-    subgraph "High demand"
-        A3[Queue: 50 tasks waiting] --> B3["Price: $5.00/task"]
-    end
+          chart={`graph LR
+    A1["Low demand<br/>Queue: 2"] --> B1["$1.00/task"]
+    B1 --> A2["Medium demand<br/>Queue: 10"]
+    A2 --> B2["$1.80/task"]
+    B2 --> A3["High demand<br/>Queue: 50"]
+    A3 --> B3["$5.00/task"]
 
-    style B1 fill:#51cf66,color:#fff
-    style B2 fill:#ffd43b,color:#000
-    style B3 fill:#ff6b6b,color:#fff`}
+    style A1 fill:#0d9488,color:#fff
+    style B1 fill:#0d9488,color:#fff
+    style A2 fill:#a16207,color:#fff
+    style B2 fill:#a16207,color:#fff
+    style A3 fill:#be123c,color:#fff
+    style B3 fill:#be123c,color:#fff`}
         />
       </div>
 
       <p>The price has two parts:</p>
       <ul>
         <li>
-          <strong>Base fee</strong> - goes up when demand is high across the
+          <strong>Base fee:</strong> goes up when demand is high across the
           board (like gas prices during a shortage)
         </li>
         <li>
-          <strong>Queue premium</strong> - goes up for a specific agent when
+          <strong>Queue premium:</strong> goes up for a specific agent when
           their personal queue is long
         </li>
       </ul>
@@ -370,7 +393,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>4️⃣ Route: Money Flows Where Capacity Is</h3>
+      <h3><StepNum n={4} /> Route: Money Flows Where Capacity Is</h3>
       <p>
         This is the magic step. A smart contract called the{" "}
         <strong>Backpressure Pool</strong> collects all incoming payment streams
@@ -392,18 +415,18 @@ export default function ExplainerPage() {
     S2["Agent B - 30% capacity<br/>Gets $4.50/min"]
     S3["Agent C - 20% capacity<br/>Gets $3.00/min"]
 
-    style Pool fill:#339af0,color:#fff
-    style S1 fill:#51cf66,color:#fff
-    style S2 fill:#51cf66,color:#fff
-    style S3 fill:#51cf66,color:#fff`}
+    style Pool fill:#2563eb,color:#fff
+    style S1 fill:#0d9488,color:#fff
+    style S2 fill:#0d9488,color:#fff
+    style S3 fill:#0d9488,color:#fff`}
         />
       </div>
 
       <p>
         The pool divides money in proportion to each agent&apos;s verified
         capacity. Agents with more verified capacity get a bigger slice. This
-        happens <strong>automatically and continuously</strong> - no middleman,
-        no manual intervention.
+        happens <strong>automatically and continuously</strong>, with no
+        middleman, no manual intervention.
       </p>
       <p>
         When capacity changes (an agent gets busier, or a new agent joins),
@@ -412,10 +435,10 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>5️⃣ Buffer: A Safety Net for Overflow</h3>
+      <h3><StepNum n={5} /> Buffer: A Safety Net for Overflow</h3>
       <p>
         What if ALL agents are at capacity and money keeps coming in? Instead of
-        losing it, BPE holds it in an <strong>escrow buffer</strong> - like a
+        losing it, BPE holds it in an <strong>escrow buffer</strong>, like a
         waiting room.
       </p>
 
@@ -427,8 +450,8 @@ export default function ExplainerPage() {
     CHECK -->|No| BUFFER["Escrow Buffer<br/>Holds excess safely"]
     BUFFER -->|When capacity frees up| POOL
 
-    style BUFFER fill:#ffd43b,color:#000
-    style POOL fill:#51cf66,color:#fff`}
+    style BUFFER fill:#a16207,color:#fff
+    style POOL fill:#0d9488,color:#fff`}
         />
       </div>
 
@@ -464,15 +487,15 @@ export default function ExplainerPage() {
 
     ATTEST --> AGG
 
-    style ATTEST fill:#e9ecef
-    style AGG fill:#845ef7,color:#fff
-    style REG fill:#339af0,color:#fff
-    style SM fill:#339af0,color:#fff
-    style POOL fill:#51cf66,color:#fff
-    style PRICE fill:#f76707,color:#fff
-    style GDA fill:#51cf66,color:#fff
-    style BUF fill:#ffd43b,color:#000
-    style COMP fill:#ff6b6b,color:#fff`}
+    style ATTEST fill:#374151,color:#e0e0e0
+    style AGG fill:#6366f1,color:#fff
+    style REG fill:#2563eb,color:#fff
+    style SM fill:#2563eb,color:#fff
+    style POOL fill:#0d9488,color:#fff
+    style PRICE fill:#d97706,color:#fff
+    style GDA fill:#0d9488,color:#fff
+    style BUF fill:#a16207,color:#fff
+    style COMP fill:#be123c,color:#fff`}
         />
       </div>
 
@@ -481,7 +504,7 @@ export default function ExplainerPage() {
       <h2>Why Should I Care?</h2>
       <p>
         BPE matters because AI agents are starting to transact with each other
-        autonomously - paying for compute, data, and services without humans in
+        autonomously, paying for compute, data, and services without humans in
         the loop. Today&apos;s payment systems can&apos;t handle this:
       </p>
 
@@ -507,7 +530,7 @@ export default function ExplainerPage() {
           <tr>
             <td>New agent joins</td>
             <td>Manual integration</td>
-            <td>Permissionless - just stake and register</td>
+            <td>Permissionless: just stake and register</td>
           </tr>
           <tr>
             <td>Demand spikes</td>
@@ -539,27 +562,27 @@ export default function ExplainerPage() {
         CORE["Capacity Registry<br/>Stake Manager<br/>Backpressure Pool<br/>Pricing Curve<br/>Completion Tracker<br/>Escrow Buffer<br/>Pipeline<br/>Aggregator"]
     end
 
-    AI["🤖 AI Agents<br/>8 contracts"] --> CORE
-    NOSTR["📡 Nostr Relays<br/>2 contracts"] --> CORE
-    LN["⚡ Lightning<br/>3 contracts"] --> CORE
-    DEM["💸 Demurrage<br/>2 contracts"] --> CORE
-    OC["🐾 OpenClaw<br/>3 contracts"] --> CORE
+    AI["AI Agents<br/>8 contracts"] --> CORE
+    NOSTR["Nostr Relays<br/>2 contracts"] --> CORE
+    LN["Lightning<br/>3 contracts"] --> CORE
+    DEM["Demurrage<br/>2 contracts"] --> CORE
+    OC["OpenClaw<br/>3 contracts"] --> CORE
 
-    CORE --> PLAT["🌐 Platform Layer<br/>2 contracts<br/>Universal Adapter + Reputation"]
+    CORE --> PLAT["Platform Layer<br/>2 contracts<br/>Universal Adapter + Reputation"]
 
-    style CORE fill:#339af0,color:#fff
-    style AI fill:#51cf66,color:#fff
-    style NOSTR fill:#845ef7,color:#fff
-    style LN fill:#ffd43b,color:#000
-    style DEM fill:#f76707,color:#fff
-    style OC fill:#ff6b6b,color:#fff
-    style PLAT fill:#e9ecef`}
+    style CORE fill:#2563eb,color:#fff
+    style AI fill:#0d9488,color:#fff
+    style NOSTR fill:#6366f1,color:#fff
+    style LN fill:#a16207,color:#fff
+    style DEM fill:#d97706,color:#fff
+    style OC fill:#be123c,color:#fff
+    style PLAT fill:#374151,color:#e0e0e0`}
         />
       </div>
 
       <hr />
 
-      <h3>📡 Nostr Relays: Making Relay Operation Sustainable</h3>
+      <h3><Radio size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Nostr Relays: Making Relay Operation Sustainable</h3>
       <p>
         <a href="https://nostr.com/">Nostr</a> is a decentralized social
         protocol. Messages are distributed through relays, servers operated by
@@ -595,9 +618,9 @@ export default function ExplainerPage() {
         <Mermaid
           chart={`graph LR
     subgraph "Relay Operators"
-        R1["Relay A<br/>📡 High capacity"]
-        R2["Relay B<br/>📡 Medium capacity"]
-        R3["Relay C<br/>📡 Low capacity"]
+        R1["Relay A<br/>High capacity"]
+        R2["Relay B<br/>Medium capacity"]
+        R3["Relay C<br/>Low capacity"]
     end
 
     R1 -->|capacity attestations| REG["Relay Capacity<br/>Registry"]
@@ -610,10 +633,10 @@ export default function ExplainerPage() {
     POOL -->|"30% of revenue"| R2
     POOL -->|"10% of revenue"| R3
 
-    USERS["Nostr Users<br/>💰 Subscription streams"] --> POOL
+    USERS["Nostr Users<br/>Subscription streams"] --> POOL
 
-    style REG fill:#845ef7,color:#fff
-    style POOL fill:#51cf66,color:#fff`}
+    style REG fill:#6366f1,color:#fff
+    style POOL fill:#0d9488,color:#fff`}
         />
       </div>
 
@@ -627,7 +650,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>⚡ Lightning Network: Better Routing Through Capacity Signals</h3>
+      <h3><Zap size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Lightning Network: Better Routing Through Capacity Signals</h3>
       <p>
         The <a href="https://lightning.network/">Lightning Network</a> enables
         instant Bitcoin payments through a network of payment channels. But
@@ -691,9 +714,9 @@ export default function ExplainerPage() {
         <Mermaid
           chart={`graph TB
     subgraph "Lightning Nodes"
-        N1["Node A<br/>⚡ 5 BTC capacity"]
-        N2["Node B<br/>⚡ 2 BTC capacity"]
-        N3["Node C<br/>⚡ 0.5 BTC capacity"]
+        N1["Node A<br/>5 BTC capacity"]
+        N2["Node B<br/>2 BTC capacity"]
+        N3["Node C<br/>0.5 BTC capacity"]
     end
 
     N1 -->|signed attestation| ORACLE["Lightning Capacity<br/>Oracle (EWMA)"]
@@ -706,13 +729,13 @@ export default function ExplainerPage() {
     RPOOL -->|"Some incentives"| N2
     RPOOL -->|"Fewer incentives"| N3
 
-    ROUTER["Cross-Protocol<br/>Router"] --> LN["⚡ Lightning"]
-    ROUTER --> SF["🌊 Superfluid"]
-    ROUTER --> OC["⛓️ On-chain"]
+    ROUTER["Cross-Protocol<br/>Router"] --> LN["Lightning"]
+    ROUTER --> SF["Superfluid"]
+    ROUTER --> OC["On-chain"]
 
-    style ORACLE fill:#ffd43b,color:#000
-    style RPOOL fill:#51cf66,color:#fff
-    style ROUTER fill:#339af0,color:#fff`}
+    style ORACLE fill:#a16207,color:#fff
+    style RPOOL fill:#0d9488,color:#fff
+    style ROUTER fill:#2563eb,color:#fff`}
         />
       </div>
 
@@ -725,7 +748,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>💸 Demurrage: Tokens That Lose Value Over Time</h3>
+      <h3><Coins size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Demurrage: Tokens That Lose Value Over Time</h3>
       <p>
         Most tokens just sit in wallets. In an agent economy, that&apos;s a
         problem: idle money means idle capacity.{" "}
@@ -751,8 +774,8 @@ export default function ExplainerPage() {
         B2 --> B3["Day 365: ~951 tokens"]
     end
 
-    style A3 fill:#e9ecef
-    style B3 fill:#ffd43b,color:#000`}
+    style A3 fill:#374151,color:#e0e0e0
+    style B3 fill:#a16207,color:#fff`}
         />
       </div>
 
@@ -786,7 +809,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>🌐 Platform Layer: Plugging It All Together</h3>
+      <h3><Globe size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> Platform Layer: Plugging It All Together</h3>
       <p>
         With four different domains using BPE, there&apos;s a coordination
         problem: how do you share infrastructure and reputation across domains?
@@ -805,7 +828,7 @@ export default function ExplainerPage() {
       </p>
       <ul>
         <li>
-          An AI agent operator who reliably runs a Lightning node too gets credit
+          An AI agent operator who also reliably runs a Lightning node gets credit
           for both
         </li>
         <li>
@@ -824,17 +847,17 @@ export default function ExplainerPage() {
       <div className={styles.diagram}>
         <Mermaid
           chart={`graph TB
-    AI["🤖 AI Agent<br/>Reputation: 85"] --> LEDGER
-    RELAY["📡 Relay Operator<br/>Reputation: 92"] --> LEDGER
-    LN["⚡ Lightning Node<br/>Reputation: 78"] --> LEDGER
+    AI["AI Agent<br/>Reputation: 85"] --> LEDGER
+    RELAY["Relay Operator<br/>Reputation: 92"] --> LEDGER
+    LN["Lightning Node<br/>Reputation: 78"] --> LEDGER
 
     LEDGER["Reputation Ledger<br/>Cross-domain scoring"] --> SCORE["Combined Score<br/>Weighted average<br/>3× penalty for negatives"]
 
     SCORE --> DISCOUNT["Stake Discount<br/>Up to 50% off<br/>required deposit"]
 
-    style LEDGER fill:#339af0,color:#fff
-    style SCORE fill:#845ef7,color:#fff
-    style DISCOUNT fill:#51cf66,color:#fff`}
+    style LEDGER fill:#2563eb,color:#fff
+    style SCORE fill:#6366f1,color:#fff
+    style DISCOUNT fill:#0d9488,color:#fff`}
         />
       </div>
 
@@ -846,7 +869,7 @@ export default function ExplainerPage() {
 
       <hr />
 
-      <h3>🐾 OpenClaw Agents: Coordinating Skill Networks at Scale</h3>
+      <h3><PawPrint size={20} style={{ display: "inline", verticalAlign: "text-bottom", marginRight: "0.4rem" }} /> OpenClaw Agents: Coordinating Skill Networks at Scale</h3>
       <p>
         <a href="https://openclaw.com/">OpenClaw</a> is the largest
         open-source AI agent framework (315k+ GitHub stars) with ClawHub, a
@@ -1030,11 +1053,11 @@ export default function ExplainerPage() {
     C --> D["Better<br/>Lightning UX"]
     D --> E["More Bitcoin<br/>adoption"]
 
-    style A fill:#ffd43b,color:#000
-    style B fill:#ffd43b,color:#000
-    style C fill:#51cf66,color:#fff
-    style D fill:#51cf66,color:#fff
-    style E fill:#f76707,color:#fff`}
+    style A fill:#a16207,color:#fff
+    style B fill:#a16207,color:#fff
+    style C fill:#0d9488,color:#fff
+    style D fill:#0d9488,color:#fff
+    style E fill:#d97706,color:#fff`}
         />
       </div>
 

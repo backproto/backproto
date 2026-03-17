@@ -1,4 +1,4 @@
-# How BPE Works - The Plain-Language Guide
+# How BPE Works (The Plain-Language Guide)
 
 **No math degree required.** This page explains Backpressure Economics (BPE) from scratch, with pictures.
 
@@ -6,7 +6,7 @@
 
 ## The Problem: AI Agents Need to Pay Each Other
 
-Imagine a world where AI agents do work for each other - and pay with cryptocurrency in real-time, streaming tiny amounts every second, like a running meter.
+Imagine a world where AI agents do work for each other and pay with cryptocurrency in real-time, streaming tiny amounts every second, like a running meter.
 
 - A **translation agent** pays an **LLM agent** to generate text
 - A **photo app** pays an **image generation agent** to create pictures
@@ -18,16 +18,16 @@ These payments flow continuously, like water through pipes.
 
 ```mermaid
 graph LR
-    A[Translation Agent<br/>Sending $10/min] -->|payment stream| B[LLM Agent<br/>⚠️ At capacity!]
+    A[Translation Agent<br/>Sending $10/min] -->|payment stream| B[LLM Agent<br/>At capacity!]
     C[Chat Agent<br/>Sending $5/min] -->|payment stream| B
     D[Writing Agent<br/>Sending $8/min] -->|payment stream| B
 
-    style B fill:#ff6b6b,color:#fff
+    style B fill:#be123c,color:#fff
 ```
 
 The LLM agent can only handle so much work. But the money keeps flowing in, whether the work gets done or not. It's like paying for a restaurant meal that never arrives because the kitchen is overwhelmed.
 
-**In data networks, this is a solved problem** - routers drop packets or reroute traffic when links are congested. But in payment networks? No one has built this. That's what BPE does.
+**In data networks, this is a solved problem.** Routers drop packets or reroute traffic when links are congested. But in payment networks? No one has built this. That's what BPE does.
 
 ---
 
@@ -45,7 +45,7 @@ Fair question. If you're coming from the AI/ML world, you might wonder why any o
 
 **Composability.** Every contract on the network can call every other contract. BPE's routing pools can plug into lending protocols, insurance contracts, or any other on-chain system without needing an integration partner. This means new domains (Nostr relays, Lightning channels, anything else) can plug into the same capacity infrastructure without anyone's permission.
 
-### Key concepts (quick glossary for AI developers)
+### Key concepts (quick glossary for developers)
 
 | Concept | What it is | Why BPE needs it |
 |---------|-----------|------------------|
@@ -72,11 +72,11 @@ BPE borrows a brilliant idea from how the internet works: **backpressure routing
 
 ```mermaid
 graph LR
-    A[Translation Agent<br/>Sending $10/min] -->|$7/min| B[LLM Agent A<br/>✅ 70% free]
-    A -->|$3/min| C[LLM Agent B<br/>⚠️ 30% free]
+    A[Translation Agent<br/>Sending $10/min] -->|$7/min| B[LLM Agent A<br/>70% free]
+    A -->|$3/min| C[LLM Agent B<br/>30% free]
 
-    style B fill:#51cf66,color:#fff
-    style C fill:#ffd43b,color:#000
+    style B fill:#0d9488,color:#fff
+    style C fill:#a16207,color:#fff
 ```
 
 When Agent A has lots of spare capacity, it gets a bigger share of the payments. When Agent B is almost full, it gets less. The system automatically reroutes money toward whoever can actually do the work.
@@ -89,44 +89,44 @@ There are five key ideas, and they form a pipeline:
 
 ```mermaid
 graph TB
-    subgraph "1️⃣ DECLARE"
+    subgraph "1 · DECLARE"
         S1[Each agent announces<br/>how much work it can handle]
     end
 
-    subgraph "2️⃣ VERIFY"
+    subgraph "2 · VERIFY"
         S2[The system checks<br/>if they're telling the truth]
     end
 
-    subgraph "3️⃣ PRICE"
+    subgraph "3 · PRICE"
         S4[Busy agents become<br/>more expensive]
     end
 
-    subgraph "4️⃣ ROUTE"
+    subgraph "4 · ROUTE"
         S3[Payments flow to agents<br/>based on their capacity]
     end
 
-    subgraph "5️⃣ BUFFER"
+    subgraph "5 · BUFFER"
         S5[Overflow payments are<br/>held safely until capacity frees up]
     end
 
     S1 --> S2 --> S4 --> S3 --> S5
 
-    style S1 fill:#339af0,color:#fff
-    style S2 fill:#845ef7,color:#fff
-    style S4 fill:#f76707,color:#fff
-    style S3 fill:#51cf66,color:#fff
-    style S5 fill:#ffd43b,color:#000
+    style S1 fill:#2563eb,color:#fff
+    style S2 fill:#6366f1,color:#fff
+    style S4 fill:#d97706,color:#fff
+    style S3 fill:#0d9488,color:#fff
+    style S5 fill:#a16207,color:#fff
 ```
 
 Let's walk through each one.
 
 ---
 
-### 1️⃣ Declare: "Here's How Much I Can Handle"
+### 1. Declare: "Here's How Much I Can Handle"
 
 Every AI agent that wants to receive payments (**called a "sink"**) tells the network how much work it can process. Think of it like a restaurant posting how many tables are open.
 
-But there's a catch - agents might lie to get more money. So declarations go through two safeguards:
+But there's a catch: agents might lie to get more money. So declarations go through two safeguards:
 
 **Stake to play.** Every agent must put down a deposit (like a security deposit on an apartment). The more you deposit, the more capacity you're allowed to claim. This prevents someone from creating a thousand fake agents to steal payments.
 
@@ -135,27 +135,27 @@ graph LR
     A[Agent deposits<br/>100 tokens] -->|stake| B[Allowed to claim<br/>capacity of 10]
     C[Agent deposits<br/>400 tokens] -->|stake| D[Allowed to claim<br/>capacity of 20]
 
-    style A fill:#e9ecef
-    style C fill:#e9ecef
-    style B fill:#339af0,color:#fff
-    style D fill:#339af0,color:#fff
+    style A fill:#374151,color:#e0e0e0
+    style C fill:#374151,color:#e0e0e0
+    style B fill:#2563eb,color:#fff
+    style D fill:#2563eb,color:#fff
 ```
 
-Notice something? Depositing 4x more only gives you 2x more capacity. This is by design - it makes the "create fake identities" attack unprofitable.
+Notice something? Depositing 4x more only gives you 2x more capacity. This is by design. It makes the "create fake identities" attack unprofitable.
 
 **Commit-reveal.** Agents don't just blurt out their capacity. They first submit a sealed commitment (like a sealed auction bid), then reveal the actual number later. This prevents other agents from seeing your number and gaming the system.
 
 ---
 
-### 2️⃣ Verify: "Prove You Actually Did the Work"
+### 2. Verify: "Prove You Actually Did the Work"
 
 Declaring capacity is one thing. Actually doing the work is another. BPE has a built-in lie detector:
 
 ```mermaid
 sequenceDiagram
-    participant Source as 📱 App (Source)
-    participant Sink as 🤖 AI Agent (Sink)
-    participant Chain as ⛓️ Blockchain
+    participant Source as App (Source)
+    participant Sink as AI Agent (Sink)
+    participant Chain as Blockchain
 
     Source->>Sink: Send task request
     Sink->>Sink: Do the work
@@ -166,43 +166,42 @@ sequenceDiagram
     Note over Chain: If completions < 50% of declared capacity<br/>for 3 periods in a row → slash the deposit!
 ```
 
-Every completed task produces a **dual-signed receipt** - both the agent doing the work AND the agent requesting it must sign off. The blockchain counts these receipts and compares them to what the agent *claimed* it could do.
+Every completed task produces a **dual-signed receipt**: both the agent doing the work AND the agent requesting it must sign off. The blockchain counts these receipts and compares them to what the agent *claimed* it could do.
 
 **If an agent claims it can handle 100 tasks per period but only completes 40?** After three bad periods in a row, 10% of its deposit gets taken away. This makes lying about capacity a losing strategy.
 
 ---
 
-### 3️⃣ Price: Busy Agents Cost More
+### 3. Price: Busy Agents Cost More
 
 Just like Uber's surge pricing, BPE makes busy agents more expensive:
 
 ```mermaid
-graph TB
-    subgraph "Low demand"
-        A1[Queue: 2 tasks waiting] --> B1["Price: $1.00/task"]
-    end
-    subgraph "Medium demand"
-        A2[Queue: 10 tasks waiting] --> B2["Price: $1.80/task"]
-    end
-    subgraph "High demand"
-        A3[Queue: 50 tasks waiting] --> B3["Price: $5.00/task"]
-    end
+graph LR
+    A1["Low demand<br/>Queue: 2"] --> B1["$1.00/task"]
+    B1 --> A2["Medium demand<br/>Queue: 10"]
+    A2 --> B2["$1.80/task"]
+    B2 --> A3["High demand<br/>Queue: 50"]
+    A3 --> B3["$5.00/task"]
 
-    style B1 fill:#51cf66,color:#fff
-    style B2 fill:#ffd43b,color:#000
-    style B3 fill:#ff6b6b,color:#fff
+    style A1 fill:#0d9488,color:#fff
+    style B1 fill:#0d9488,color:#fff
+    style A2 fill:#a16207,color:#fff
+    style B2 fill:#a16207,color:#fff
+    style A3 fill:#be123c,color:#fff
+    style B3 fill:#be123c,color:#fff
 ```
 
 The price has two parts:
 
-- **Base fee** - goes up when demand is high across the board (like gas prices during a shortage)
-- **Queue premium** - goes up for a specific agent when their personal queue is long
+- **Base fee:** goes up when demand is high across the board (like gas prices during a shortage)
+- **Queue premium:** goes up for a specific agent when their personal queue is long
 
 This naturally pushes demand toward agents that have spare capacity, because they're cheaper.
 
 ---
 
-### 4️⃣ Route: Money Flows Where Capacity Is
+### 4. Route: Money Flows Where Capacity Is
 
 This is the magic step. A smart contract called the **Backpressure Pool** collects all incoming payment streams and redistributes them automatically.
 
@@ -220,21 +219,21 @@ graph TB
     S2["Agent B - 30% capacity<br/>Gets $4.50/min"]
     S3["Agent C - 20% capacity<br/>Gets $3.00/min"]
 
-    style Pool fill:#339af0,color:#fff
-    style S1 fill:#51cf66,color:#fff
-    style S2 fill:#51cf66,color:#fff
-    style S3 fill:#51cf66,color:#fff
+    style Pool fill:#2563eb,color:#fff
+    style S1 fill:#0d9488,color:#fff
+    style S2 fill:#0d9488,color:#fff
+    style S3 fill:#0d9488,color:#fff
 ```
 
-The pool divides money in proportion to each agent's verified capacity. Agents with more verified capacity get a bigger slice. This happens **automatically and continuously** - no middleman, no manual intervention.
+The pool divides money in proportion to each agent's verified capacity. Agents with more verified capacity get a bigger slice. This happens **automatically and continuously**, with no middleman, no manual intervention.
 
 When capacity changes (an agent gets busier, or a new agent joins), anyone can trigger a **rebalance** to update the split.
 
 ---
 
-### 5️⃣ Buffer: A Safety Net for Overflow
+### 5. Buffer: A Safety Net for Overflow
 
-What if ALL agents are at capacity and money keeps coming in? Instead of losing it, BPE holds it in an **escrow buffer** - like a waiting room.
+What if ALL agents are at capacity and money keeps coming in? Instead of losing it, BPE holds it in an **escrow buffer**, like a waiting room.
 
 ```mermaid
 graph LR
@@ -243,8 +242,8 @@ graph LR
     CHECK -->|No| BUFFER["Escrow Buffer<br/>Holds excess safely"]
     BUFFER -->|When capacity frees up| POOL
 
-    style BUFFER fill:#ffd43b,color:#000
-    style POOL fill:#51cf66,color:#fff
+    style BUFFER fill:#a16207,color:#fff
+    style POOL fill:#0d9488,color:#fff
 ```
 
 When capacity frees up, the buffer drains automatically. If the buffer itself fills up, sources get a clear signal: stop sending until things clear up.
@@ -273,28 +272,28 @@ graph TB
 
     ATTEST --> AGG
 
-    style ATTEST fill:#e9ecef
-    style AGG fill:#845ef7,color:#fff
-    style REG fill:#339af0,color:#fff
-    style SM fill:#339af0,color:#fff
-    style POOL fill:#51cf66,color:#fff
-    style PRICE fill:#f76707,color:#fff
-    style GDA fill:#51cf66,color:#fff
-    style BUF fill:#ffd43b,color:#000
-    style COMP fill:#ff6b6b,color:#fff
+    style ATTEST fill:#374151,color:#e0e0e0
+    style AGG fill:#6366f1,color:#fff
+    style REG fill:#2563eb,color:#fff
+    style SM fill:#2563eb,color:#fff
+    style POOL fill:#0d9488,color:#fff
+    style PRICE fill:#d97706,color:#fff
+    style GDA fill:#0d9488,color:#fff
+    style BUF fill:#a16207,color:#fff
+    style COMP fill:#be123c,color:#fff
 ```
 
 ---
 
 ## Why Should I Care?
 
-BPE matters because AI agents are starting to transact with each other autonomously - paying for compute, data, and services without humans in the loop. Today's payment systems can't handle this:
+BPE matters because AI agents are starting to transact with each other autonomously, paying for compute, data, and services without humans in the loop. Today's payment systems can't handle this:
 
 | Problem | Traditional Payments | BPE |
 |---------|---------------------|-----|
 | Agent gets overwhelmed | Money wasted, work unfinished | Money reroutes to available agents |
 | Agent lies about capacity | No way to know | Automatic detection and penalty |
-| New agent joins | Manual integration | Permissionless - just stake and register |
+| New agent joins | Manual integration | Permissionless: just stake and register |
 | Demand spikes | System breaks | Prices rise, demand balances naturally |
 | Agent goes offline | Payments lost | Buffer holds funds, pool rebalances |
 
@@ -310,26 +309,26 @@ graph TB
         CORE["Capacity Registry<br/>Stake Manager<br/>Backpressure Pool<br/>Pricing Curve<br/>Completion Tracker<br/>Escrow Buffer<br/>Pipeline<br/>Aggregator"]
     end
 
-    AI["🤖 AI Agents<br/>8 contracts"] --> CORE
-    NOSTR["📡 Nostr Relays<br/>2 contracts"] --> CORE
-    LN["⚡ Lightning<br/>3 contracts"] --> CORE
-    DEM["💸 Demurrage<br/>2 contracts"] --> CORE
-    OC["🐾 OpenClaw<br/>3 contracts"] --> CORE
+    AI["AI Agents<br/>8 contracts"] --> CORE
+    NOSTR["Nostr Relays<br/>2 contracts"] --> CORE
+    LN["Lightning<br/>3 contracts"] --> CORE
+    DEM["Demurrage<br/>2 contracts"] --> CORE
+    OC["OpenClaw<br/>3 contracts"] --> CORE
 
-    CORE --> PLAT["🌐 Platform Layer<br/>2 contracts<br/>Universal Adapter + Reputation"]
+    CORE --> PLAT["Platform Layer<br/>2 contracts<br/>Universal Adapter + Reputation"]
 
-    style CORE fill:#339af0,color:#fff
-    style AI fill:#51cf66,color:#fff
-    style NOSTR fill:#845ef7,color:#fff
-    style LN fill:#ffd43b,color:#000
-    style DEM fill:#f76707,color:#fff
-    style OC fill:#ff6b6b,color:#fff
-    style PLAT fill:#e9ecef
+    style CORE fill:#2563eb,color:#fff
+    style AI fill:#0d9488,color:#fff
+    style NOSTR fill:#6366f1,color:#fff
+    style LN fill:#a16207,color:#fff
+    style DEM fill:#d97706,color:#fff
+    style OC fill:#be123c,color:#fff
+    style PLAT fill:#374151,color:#e0e0e0
 ```
 
 ---
 
-### 📡 Nostr Relays: Making Relay Operation Sustainable
+### Nostr Relays: Making Relay Operation Sustainable
 
 [Nostr](https://nostr.com/) is a decentralized social protocol. Messages are distributed through relays, servers operated by volunteers. Most relays run at a loss or depend on donations. Users have no way to discover which relays have capacity, and relays have no way to price their services based on actual load.
 
@@ -345,9 +344,9 @@ Backproto adds an economic layer for Nostr relays using the same BPE primitives:
 ```mermaid
 graph LR
     subgraph "Relay Operators"
-        R1["Relay A<br/>📡 High capacity"]
-        R2["Relay B<br/>📡 Medium capacity"]
-        R3["Relay C<br/>📡 Low capacity"]
+        R1["Relay A<br/>High capacity"]
+        R2["Relay B<br/>Medium capacity"]
+        R3["Relay C<br/>Low capacity"]
     end
 
     R1 -->|capacity attestations| REG["Relay Capacity<br/>Registry"]
@@ -360,17 +359,17 @@ graph LR
     POOL -->|"30% of revenue"| R2
     POOL -->|"10% of revenue"| R3
 
-    USERS["Nostr Users<br/>💰 Subscription streams"] --> POOL
+    USERS["Nostr Users<br/>Subscription streams"] --> POOL
 
-    style REG fill:#845ef7,color:#fff
-    style POOL fill:#51cf66,color:#fff
+    style REG fill:#6366f1,color:#fff
+    style POOL fill:#0d9488,color:#fff
 ```
 
 The result: relay operators who invest in real capacity earn proportionally more. Operators who overcommit get less (and get slashed). Users get a reliable discovery mechanism for quality relays. We've drafted **NIP-XX**, a Nostr Improvement Proposal to standardize this.
 
 ---
 
-### ⚡ Lightning Network: Better Routing Through Capacity Signals
+### Lightning Network: Better Routing Through Capacity Signals
 
 The [Lightning Network](https://lightning.network/) enables instant Bitcoin payments through a network of payment channels. But routing payments through Lightning is unreliable: senders rely on stale gossip data about channel liquidity and have to probe routes by trial and error until one works.
 
@@ -391,9 +390,9 @@ Backproto adds a **real-time capacity signaling layer** for Lightning, without m
 ```mermaid
 graph TB
     subgraph "Lightning Nodes"
-        N1["Node A<br/>⚡ 5 BTC capacity"]
-        N2["Node B<br/>⚡ 2 BTC capacity"]
-        N3["Node C<br/>⚡ 0.5 BTC capacity"]
+        N1["Node A<br/>5 BTC capacity"]
+        N2["Node B<br/>2 BTC capacity"]
+        N3["Node C<br/>0.5 BTC capacity"]
     end
 
     N1 -->|signed attestation| ORACLE["Lightning Capacity<br/>Oracle (EWMA)"]
@@ -406,20 +405,20 @@ graph TB
     RPOOL -->|"Some incentives"| N2
     RPOOL -->|"Fewer incentives"| N3
 
-    ROUTER["Cross-Protocol<br/>Router"] --> LN["⚡ Lightning"]
-    ROUTER --> SF["🌊 Superfluid"]
-    ROUTER --> OC["⛓️ On-chain"]
+    ROUTER["Cross-Protocol<br/>Router"] --> LN["Lightning"]
+    ROUTER --> SF["Superfluid"]
+    ROUTER --> OC["On-chain"]
 
-    style ORACLE fill:#ffd43b,color:#000
-    style RPOOL fill:#51cf66,color:#fff
-    style ROUTER fill:#339af0,color:#fff
+    style ORACLE fill:#a16207,color:#fff
+    style RPOOL fill:#0d9488,color:#fff
+    style ROUTER fill:#2563eb,color:#fff
 ```
 
 This runs on Base (L2) as a **sidecar** to Lightning. It doesn't change how Lightning works. It provides an external capacity signaling and incentive layer that pathfinding algorithms and node operators can use to make better decisions.
 
 ---
 
-### 💸 Demurrage: Tokens That Lose Value Over Time
+### Demurrage: Tokens That Lose Value Over Time
 
 Most tokens just sit in wallets. In an agent economy, that's a problem: idle money means idle capacity. **Demurrage** is an old economic idea (proposed by Silvio Gesell in 1916) that puts a holding cost on currency, effectively encouraging people to spend it rather than hoard it.
 
@@ -437,8 +436,8 @@ graph LR
         B2 --> B3["Day 365: ~951 tokens"]
     end
 
-    style A3 fill:#e9ecef
-    style B3 fill:#ffd43b,color:#000
+    style A3 fill:#374151,color:#e0e0e0
+    style B3 fill:#a16207,color:#fff
 ```
 
 **Key details:**
@@ -452,7 +451,7 @@ graph LR
 
 ---
 
-### 🌐 Platform Layer: Plugging It All Together
+### Platform Layer: Plugging It All Together
 
 With four different domains using BPE, there's a coordination problem: how do you share infrastructure and reputation across domains? That's what the platform layer handles.
 
@@ -460,30 +459,30 @@ With four different domains using BPE, there's a coordination problem: how do yo
 
 **ReputationLedger.** A cross-domain reputation system that makes your track record portable:
 
-- An AI agent operator who reliably runs a Lightning node too gets credit for both
+- An AI agent operator who also reliably runs a Lightning node gets credit for both
 - **Negative signals weigh 3x more than positive ones**: one domain of bad behavior hurts your overall score disproportionately, making it harder for bad actors to hide behind good performance elsewhere
 - Good cross-domain reputation earns **up to 50% stake discounts**: if you've proven reliable in multiple domains, you need less collateral to participate
 
 ```mermaid
 graph TB
-    AI["🤖 AI Agent<br/>Reputation: 85"] --> LEDGER
-    RELAY["📡 Relay Operator<br/>Reputation: 92"] --> LEDGER
-    LN["⚡ Lightning Node<br/>Reputation: 78"] --> LEDGER
+    AI["AI Agent<br/>Reputation: 85"] --> LEDGER
+    RELAY["Relay Operator<br/>Reputation: 92"] --> LEDGER
+    LN["Lightning Node<br/>Reputation: 78"] --> LEDGER
 
     LEDGER["Reputation Ledger<br/>Cross-domain scoring"] --> SCORE["Combined Score<br/>Weighted average<br/>3× penalty for negatives"]
 
     SCORE --> DISCOUNT["Stake Discount<br/>Up to 50% off<br/>required deposit"]
 
-    style LEDGER fill:#339af0,color:#fff
-    style SCORE fill:#845ef7,color:#fff
-    style DISCOUNT fill:#51cf66,color:#fff
+    style LEDGER fill:#2563eb,color:#fff
+    style SCORE fill:#6366f1,color:#fff
+    style DISCOUNT fill:#0d9488,color:#fff
 ```
 
 The platform layer is what turns Backproto from "a routing protocol for AI agents" into "a universal capacity coordination layer for decentralized networks."
 
 ---
 
-### 🐾 OpenClaw Agents: Coordinating Skill Networks at Scale
+### OpenClaw Agents: Coordinating Skill Networks at Scale
 
 [OpenClaw](https://openclaw.com/) is the largest open-source AI agent framework (315k+ GitHub stars) with ClawHub, a marketplace of 700+ installable agent skills. As OpenClaw deployments grow from single agents to multi-agent pipelines, a coordination problem emerges: which agent gets the next task, how do you verify it was completed, and how do you build trust across skill types?
 
@@ -567,11 +566,11 @@ graph LR
     C --> D["Better<br/>Lightning UX"]
     D --> E["More Bitcoin<br/>adoption"]
 
-    style A fill:#ffd43b,color:#000
-    style B fill:#ffd43b,color:#000
-    style C fill:#51cf66,color:#fff
-    style D fill:#51cf66,color:#fff
-    style E fill:#f76707,color:#fff
+    style A fill:#a16207,color:#fff
+    style B fill:#a16207,color:#fff
+    style C fill:#0d9488,color:#fff
+    style D fill:#0d9488,color:#fff
+    style E fill:#d97706,color:#fff
 ```
 
 The economic incentive layer also addresses a structural problem: Lightning routing is somewhat of a public good (routers earn small fees relative to the capital they lock up). By providing streaming revenue proportional to verified capacity, Backproto makes routing more financially sustainable, which should attract more liquidity into the network.

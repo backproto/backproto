@@ -20,6 +20,15 @@
   --yellow: #eab308;
   --red: #ef4444;
 
+  /* Mermaid diagram palette — dark-mode native jewel tones */
+  --diagram-teal: #0d9488;
+  --diagram-slate: #6366f1;
+  --diagram-amber: #d97706;
+  --diagram-rose: #be123c;
+  --diagram-blue: #2563eb;
+  --diagram-gold: #a16207;
+  --diagram-muted: #374151;
+
   --font-sans: "Geist", var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   --font-mono: "Geist Mono", var(--font-geist-mono), "JetBrains Mono", "Fira Code", monospace;
 
