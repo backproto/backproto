@@ -34,6 +34,15 @@ export default function PaperIndex() {
       <p className={styles.subtitle}>
         Capacity-Constrained Monetary Flow Control for Agent Economies
       </p>
+      <p className={styles.pdfLink}>
+        <a
+          href="https://github.com/backproto/backproto/blob/main/docs/paper/main.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ↓ Download full paper (PDF)
+        </a>
+      </p>
       <p className={styles.description}>
         This paper presents the formal theory, protocol design, and evaluation
         of Backpressure Economics (BPE). It adapts the Tassiulas-Ephremides
