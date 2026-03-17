@@ -80,7 +80,9 @@ export default function Home() {
     <>
       {/* ─── 1. Hero ───────────────────────────────────────── */}
       <section className={styles.hero}>
-        <BackpressureFlow />
+        <div className={styles.heroCanvas}>
+          <BackpressureFlow />
+        </div>
         <div className={styles.heroContent}>
           <h1 className={styles.title}>
             Capacity-aware routing for decentralized networks

@@ -25,8 +25,26 @@ interface Particle {
   redirected: boolean;
 }
 
-const AGENT_COLORS = ["#0d9488", "#d97706", "#a16207", "#6366f1"];
-const AGENT_LABELS = ["AI Agents", "Demurrage", "Lightning", "Nostr"];
+const AGENT_COLORS = [
+  "#0d9488", // AI Agents — teal
+  "#6366f1", // Nostr Relays — indigo
+  "#d97706", // Lightning — amber
+  "#a16207", // DeFi Pools — gold
+  "#ec4899", // Compute — pink
+  "#8b5cf6", // Storage — violet
+  "#06b6d4", // Oracles — cyan
+  "#10b981", // IoT Mesh — emerald
+];
+const AGENT_LABELS = [
+  "AI Agents",
+  "Nostr Relays",
+  "Lightning",
+  "DeFi Pools",
+  "Compute",
+  "Storage",
+  "Oracles",
+  "IoT Mesh",
+];
 
 /* Eased cubic bezier path from source → router → agent */
 function lerp(a: number, b: number, t: number) {
@@ -52,12 +70,9 @@ export default function BackpressureFlow() {
   } | null>(null);
 
   const initState = useCallback((w: number, h: number, dpr: number) => {
-    const cx = w / 2;
-    const sourceX = w * 0.08;
-    const routerX = w * 0.35;
-    const agentStartX = w * 0.62;
-    const agentEndX = w * 0.92;
-    const agentSpanX = agentEndX - agentStartX;
+    const sourceX = w * 0.07;
+    const routerX = w * 0.30;
+    const routerY = h * 0.5;
 
     const source: Node = {
       x: sourceX, y: h * 0.5, r: 18, label: "Demand",
@@ -65,20 +80,31 @@ export default function BackpressureFlow() {
     };
 
     const router: Node = {
-      x: routerX, y: h * 0.5, r: 22, label: "Router",
+      x: routerX, y: routerY, r: 22, label: "Router",
       color: "#d97706", capacity: 0, capDir: 0, speed: 0,
     };
 
-    const agents: Node[] = AGENT_COLORS.map((color, i) => ({
-      x: agentStartX + (agentSpanX * i) / (AGENT_COLORS.length - 1),
-      y: h * (0.2 + (i % 2 === 0 ? 0 : 0.15) + i * 0.15),
-      r: 16,
-      label: AGENT_LABELS[i],
-      color,
-      capacity: 0.1 + Math.random() * 0.3,
-      capDir: 1,
-      speed: 0.3 + Math.random() * 0.5,
-    }));
+    // Fan 8 agents in an arc from the router
+    const fanCenter = w * 0.68;
+    const fanRadiusX = w * 0.26;
+    const fanRadiusY = h * 0.40;
+    const count = AGENT_COLORS.length;
+    const arcStart = -Math.PI * 0.42;  // top of fan
+    const arcEnd = Math.PI * 0.42;     // bottom of fan
+
+    const agents: Node[] = AGENT_COLORS.map((color, i) => {
+      const angle = arcStart + (arcEnd - arcStart) * (i / (count - 1));
+      return {
+        x: fanCenter + Math.cos(angle) * fanRadiusX,
+        y: routerY + Math.sin(angle) * fanRadiusY,
+        r: 14,
+        label: AGENT_LABELS[i],
+        color,
+        capacity: 0.1 + Math.random() * 0.3,
+        capDir: 1,
+        speed: 0.3 + Math.random() * 0.5,
+      };
+    });
 
     return {
       agents,
@@ -307,17 +333,17 @@ export default function BackpressureFlow() {
     ctx.globalAlpha = 1;
 
     // Label
-    ctx.font = "500 10px var(--font-mono), monospace";
+    ctx.font = "500 9px var(--font-mono), monospace";
     ctx.fillStyle = "#a1a1aa";
     ctx.textAlign = "center";
-    ctx.fillText(label, x, y + r + 16);
+    ctx.fillText(label, x, y + r + 14);
 
     // Capacity bar
     if (showCapacity) {
-      const barW = r * 2.2;
-      const barH = 3;
+      const barW = r * 2.4;
+      const barH = 2.5;
       const barX = x - barW / 2;
-      const barY = y + r + 22;
+      const barY = y + r + 19;
 
       // Track
       ctx.fillStyle = "#27272a";

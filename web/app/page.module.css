@@ -2,10 +2,15 @@
 
 .hero {
   position: relative;
-  min-height: 420px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   overflow: hidden;
+}
+
+.heroCanvas {
+  position: relative;
+  width: 100%;
+  height: 380px;
 }
 
 .heroContent {
@@ -14,7 +19,7 @@
   max-width: var(--max-width-wide);
   width: 100%;
   margin: 0 auto;
-  padding: 8rem 1.5rem 4rem;
+  padding: 1.5rem 1.5rem 3rem;
 }
 
 .title {
@@ -24,14 +29,14 @@
   letter-spacing: -0.04em;
   line-height: 1.18;
   color: #fff;
-  max-width: 480px;
+  max-width: 560px;
   margin: 0 0 1rem;
 }
 
 .subtitle {
   font-size: 1.05rem;
   color: var(--text-muted);
-  max-width: 480px;
+  max-width: 520px;
   line-height: 1.6;
   margin: 0 0 1.5rem;
 }
@@ -461,12 +466,12 @@
     display: none;
   }
 
-  .hero {
-    min-height: 360px;
+  .heroCanvas {
+    height: 300px;
   }
 
   .heroContent {
-    padding: 5rem 1.5rem 3rem;
+    padding: 1.5rem 1.5rem 2rem;
   }
 }
 
