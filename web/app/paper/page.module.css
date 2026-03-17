@@ -13,7 +13,28 @@
 .subtitle {
   color: var(--text-secondary);
   font-size: 1.05rem;
-  margin-bottom: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.pdfLink {
+  margin-bottom: 1.5rem;
+}
+
+.pdfLink a {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #d97706;
+  border: 1px solid #d97706;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.pdfLink a:hover {
+  background: #d97706;
+  color: #000;
 }
 
 .description {
