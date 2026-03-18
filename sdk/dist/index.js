@@ -17,5 +17,11 @@ export * as relay from "./actions/relay.js";
 export * as lightning from "./actions/lightning.js";
 export * as platform from "./actions/platform.js";
 export * as openclaw from "./actions/openclaw.js";
+// Action modules: V2 — recursive composition, quality, token mechanics
+export * as nestedPool from "./actions/nestedPool.js";
+export * as economy from "./actions/economy.js";
+export * as quality from "./actions/quality.js";
+export * as velocityToken from "./actions/velocityToken.js";
+export * as urgencyToken from "./actions/urgencyToken.js";
 // Signing helpers
 export * from "./signing.js";

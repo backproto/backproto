@@ -1,0 +1,398 @@
+[
+    {
+        "type": "constructor",
+        "inputs": [
+            {
+                "name": "gda_",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "superToken_",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "stakeToken_",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "stakeUnit_",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "owner_",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "GDA",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "STAKE_TOKEN",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "STAKE_UNIT",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "SUPER_TOKEN",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "deployEconomy",
+        "inputs": [
+            {
+                "name": "config",
+                "type": "tuple",
+                "internalType": "struct IEconomyFactory.EconomyConfig",
+                "components": [
+                    {
+                        "name": "template",
+                        "type": "uint8",
+                        "internalType": "enum IEconomyFactory.Template"
+                    },
+                    {
+                        "name": "taskTypeIds",
+                        "type": "bytes32[]",
+                        "internalType": "bytes32[]"
+                    },
+                    {
+                        "name": "minStake",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "name": "bufferMax",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            }
+        ],
+        "outputs": [
+            {
+                "name": "deployment",
+                "type": "tuple",
+                "internalType": "struct IEconomyFactory.EconomyDeployment",
+                "components": [
+                    {
+                        "name": "economyId",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    },
+                    {
+                        "name": "stakeManager",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "capacityRegistry",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "backpressurePool",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "escrowBuffer",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "pricingCurve",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "pipeline",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ]
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "economyCount",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getEconomiesByOwner",
+        "inputs": [
+            {
+                "name": "owner_",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32[]",
+                "internalType": "bytes32[]"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getEconomy",
+        "inputs": [
+            {
+                "name": "economyId",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "tuple",
+                "internalType": "struct IEconomyFactory.EconomyDeployment",
+                "components": [
+                    {
+                        "name": "economyId",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    },
+                    {
+                        "name": "stakeManager",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "capacityRegistry",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "backpressurePool",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "escrowBuffer",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "pricingCurve",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "pipeline",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "owner",
+                        "type": "address",
+                        "internalType": "address"
+                    }
+                ]
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "owner",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "renounceOwnership",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "transferOwnership",
+        "inputs": [
+            {
+                "name": "newOwner",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "event",
+        "name": "EconomyDeployed",
+        "inputs": [
+            {
+                "name": "economyId",
+                "type": "bytes32",
+                "indexed": true,
+                "internalType": "bytes32"
+            },
+            {
+                "name": "template",
+                "type": "uint8",
+                "indexed": false,
+                "internalType": "enum IEconomyFactory.Template"
+            },
+            {
+                "name": "owner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "stakeManager",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            },
+            {
+                "name": "capacityRegistry",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            },
+            {
+                "name": "backpressurePool",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "OwnershipTransferred",
+        "inputs": [
+            {
+                "name": "previousOwner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "newOwner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "EconomyAlreadyExists",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "EconomyDoesNotExist",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "NoTaskTypes",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "OwnableInvalidOwner",
+        "inputs": [
+            {
+                "name": "owner",
+                "type": "address",
+                "internalType": "address"
+            }
+        ]
+    },
+    {
+        "type": "error",
+        "name": "OwnableUnauthorizedAccount",
+        "inputs": [
+            {
+                "name": "account",
+                "type": "address",
+                "internalType": "address"
+            }
+        ]
+    },
+    {
+        "type": "error",
+        "name": "PipelineRequiresMultipleStages",
+        "inputs": []
+    }
+]

@@ -38,7 +38,7 @@ import { wrap, realBalanceOf, nominalBalanceOf, decayRate } from '@backproto/sdk
 // Wrap 1000 tokens into demurrage form
 await wrap(wallet, addrs, 1000n * 10n ** 18n)
 
-// Check balances — nominal stays fixed, real decreases over time
+// Check balances. Nominal stays fixed, real decreases over time
 const nominal = await nominalBalanceOf(public_, addrs, account.address)
 const real = await realBalanceOf(public_, addrs, account.address)
 console.log('Nominal:', nominal, 'Real:', real)

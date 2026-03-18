@@ -21,4 +21,9 @@ export declare const abis: {
     readonly OpenClawCapacityAdapter: Abi;
     readonly OpenClawCompletionVerifier: Abi;
     readonly OpenClawReputationBridge: Abi;
+    readonly NestedPool: Abi;
+    readonly EconomyFactory: Abi;
+    readonly QualityOracle: Abi;
+    readonly VelocityToken: Abi;
+    readonly UrgencyToken: Abi;
 };

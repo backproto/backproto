@@ -367,7 +367,7 @@ These exist in the repo but are superseded by the Next.js site (`web/`):
 | site/ | `npm run build` in web/ |
 | scripts/build-site.sh | `npm run build` in web/ |
 
-They can be removed or moved to an `archive/` folder. The MkDocs site still uses "Spilt" branding.
+They can be removed or moved to an `archive/` folder.
 
 ---
 

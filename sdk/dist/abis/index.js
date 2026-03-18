@@ -19,6 +19,11 @@ import CrossProtocolRouterAbi from "./CrossProtocolRouter.json";
 import OpenClawCapacityAdapterAbi from "./OpenClawCapacityAdapter.json";
 import OpenClawCompletionVerifierAbi from "./OpenClawCompletionVerifier.json";
 import OpenClawReputationBridgeAbi from "./OpenClawReputationBridge.json";
+import NestedPoolAbi from "./NestedPool.json";
+import EconomyFactoryAbi from "./EconomyFactory.json";
+import QualityOracleAbi from "./QualityOracle.json";
+import VelocityTokenAbi from "./VelocityToken.json";
+import UrgencyTokenAbi from "./UrgencyToken.json";
 export const abis = {
     BackpressurePool: BackpressurePoolAbi,
     CapacityRegistry: CapacityRegistryAbi,
@@ -41,4 +46,9 @@ export const abis = {
     OpenClawCapacityAdapter: OpenClawCapacityAdapterAbi,
     OpenClawCompletionVerifier: OpenClawCompletionVerifierAbi,
     OpenClawReputationBridge: OpenClawReputationBridgeAbi,
+    NestedPool: NestedPoolAbi,
+    EconomyFactory: EconomyFactoryAbi,
+    QualityOracle: QualityOracleAbi,
+    VelocityToken: VelocityTokenAbi,
+    UrgencyToken: UrgencyTokenAbi,
 };

@@ -10,7 +10,7 @@ const domains = [
     title: "AI Agents",
     color: "#0d9488",
     description:
-      "Capacity-weighted streaming payment routing via Superfluid GDA. Payments flow proportionally to agents with verified spare capacity — overloaded agents automatically receive less.",
+      "Capacity-weighted streaming payment routing via Superfluid GDA. Payments flow proportionally to agents with verified spare capacity. Overloaded agents automatically receive less.",
     contracts: [
       "CapacityRegistry",
       "BackpressurePool",
@@ -28,7 +28,7 @@ const domains = [
     title: "Demurrage",
     color: "#d97706",
     description:
-      "Time-decaying Super Tokens that incentivize circulation over hoarding. Epoch-based velocity metrics enforce turnover — idle balances shrink, active participants thrive.",
+      "Time-decaying Super Tokens that incentivize circulation over hoarding. Epoch-based velocity metrics enforce turnover. Idle balances shrink, active participants thrive.",
     contracts: ["DemurrageToken", "VelocityMetrics"],
     docsHref: "/docs/contracts",
   },
@@ -50,7 +50,7 @@ const domains = [
     title: "Nostr Relays",
     color: "#6366f1",
     description:
-      "NIP-compliant relay capacity signaling with anti-spam pricing. BPE-weighted payment pools make relay operation sustainable — relays earn in proportion to the capacity they actually provide.",
+      "NIP-compliant relay capacity signaling with anti-spam pricing. BPE-weighted payment pools make relay operation sustainable. Relays earn in proportion to the capacity they actually provide.",
     contracts: ["RelayCapacityRegistry", "RelayPaymentPool"],
     docsHref: "/docs/contracts",
   },

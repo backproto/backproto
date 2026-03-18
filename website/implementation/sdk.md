@@ -1,11 +1,11 @@
 # TypeScript SDK
 
-The `@spilt/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
+The `@backproto/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
 
 ## Installation
 
 ```bash
-npm install @spilt/sdk
+npm install @backproto/sdk
 ```
 
 ## Features
@@ -18,7 +18,7 @@ npm install @spilt/sdk
 ## Usage
 
 ```typescript
-import { addresses, contracts } from '@spilt/sdk'
+import { addresses, contracts } from '@backproto/sdk'
 
 // Get contract addresses for Base Sepolia
 const { capacityRegistry, backpressurePool, stakeManager } = addresses.baseSepolia
@@ -42,4 +42,4 @@ const capacity = await client.readContract({
 
 ## Source
 
-SDK source code is in [`sdk/src/`](https://github.com/spiltdev/spilt/tree/main/sdk/src).
+SDK source code is in [`sdk/src/`](https://github.com/backproto/backproto/tree/main/sdk/src).

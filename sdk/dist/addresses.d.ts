@@ -26,6 +26,11 @@ export type ChainAddresses = {
     openClawCapacityAdapter: `0x${string}`;
     openClawCompletionVerifier: `0x${string}`;
     openClawReputationBridge: `0x${string}`;
+    nestedPool: `0x${string}`;
+    economyFactory: `0x${string}`;
+    qualityOracle: `0x${string}`;
+    velocityToken: `0x${string}`;
+    urgencyToken: `0x${string}`;
 };
 /**
  * Deployed contract addresses per chain.

@@ -1,8 +1,8 @@
-site_name: Spilt
+site_name: Backproto
 site_description: Capacity-Constrained Monetary Flow Control for Agent Economies
-site_url: https://spilt.dev/
-repo_url: https://github.com/spiltdev/spilt
-repo_name: spilt
+site_url: https://backproto.io/
+repo_url: https://github.com/backproto/backproto
+repo_name: backproto
 
 docs_dir: website
 
