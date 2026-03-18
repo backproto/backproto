@@ -287,10 +287,16 @@ export default function FlowDiagram() {
     function resize() {
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
+      const prev = stateRef.current;
       stateRef.current = buildState(rect.width, rect.height, dpr);
+      if (prev) {
+        stateRef.current.particles = prev.particles;
+        stateRef.current.tick = prev.tick;
+      }
     }
 
     resize();
@@ -307,9 +313,10 @@ export default function FlowDiagram() {
     function loop() {
       if (!running) return;
       frameRef.current = requestAnimationFrame(loop);
-      if (!ctx || !stateRef.current || !visibleRef.current) return;
-      if (!reducedMotion.current) updateSim(stateRef.current);
-      drawFrame(ctx, stateRef.current);
+      const st = stateRef.current;
+      if (!ctx || !st) return;
+      if (visibleRef.current && !reducedMotion.current) updateSim(st);
+      drawFrame(ctx, st);
     }
     if (stateRef.current && ctx) drawFrame(ctx, stateRef.current);
     loop();
