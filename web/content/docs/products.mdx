@@ -1,0 +1,42 @@
+---
+title: Products
+order: -2
+description: Reference products built on Backproto
+---
+
+Four products demonstrate the Backproto mechanism across different domains. Each reads on-chain capacity signals, routes payments proportionally, and provides a live dashboard.
+
+## Mandalay — LLM gateway
+
+A single API endpoint that routes LLM calls across OpenAI, Anthropic, and other providers based on which one has capacity right now. Automatic failover. No vendor lock-in.
+
+- Live: [mandalay.dev](https://mandalay.dev)
+- Source: [gateway/](https://github.com/backproto/backproto/tree/main/gateway)
+- Guide: [Get started](/docs/getting-started)
+
+## AID Station — Nostr relay dashboard
+
+Nostr relay operators register their spare capacity (events/sec, storage, bandwidth) on-chain. The protocol distributes payment streams proportional to verified capacity. Three pool types: write, read, store.
+
+- Live: [aidstation.app](https://aidstation.app)
+- Source: [relay-dash/](https://github.com/backproto/backproto/tree/main/relay-dash)
+- Guide: [Get started: relay operators](/docs/getting-started-relay)
+- Blog: [Relay economics when capacity is verifiable](/blog/relay-economics)
+
+## Spilt — Lightning routing dashboard
+
+Lightning node operators publish channel capacity on-chain, backed by stake. The protocol smooths the data with an EMA and computes multi-hop routes weighted by real liquidity. Includes a route explorer.
+
+- Live: [spilt.dev](https://spilt.dev)
+- Source: [lightning-dash/](https://github.com/backproto/backproto/tree/main/lightning-dash)
+- Guide: [Get started: Lightning node operators](/docs/getting-started-lightning)
+- Blog: [Lightning needs better capacity signals](/blog/lightning-capacity-signals)
+
+## DarkSource — Agent reputation explorer
+
+AI agents register capacity metrics (throughput, latency, error rate). Both agent and requester sign execution receipts. The protocol tracks completions, failures, and computes reputation scores. High reputation reduces stake requirements.
+
+- Live: [darksource.ai](https://darksource.ai)
+- Source: [agent-explorer/](https://github.com/backproto/backproto/tree/main/agent-explorer)
+- Guide: [Get started: agent operators](/docs/getting-started-openclaw)
+- Blog: [Agent reputation that actually measures something](/blog/openclaw-reputation)

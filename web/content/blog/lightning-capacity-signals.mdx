@@ -1,0 +1,44 @@
+---
+title: Lightning Needs Better Capacity Signals
+date: "2026-06-01"
+description: On-chain capacity oracles for Lightning routing, backed by stake
+---
+
+Lightning routing relies on gossip. Nodes broadcast channel capacity, routers probe for liquidity, and most payments fail on the first attempt because the gossip is stale. Probing is slow, unreliable, and reveals information about payment flows to intermediate nodes.
+
+The root problem: there is no cost to broadcasting wrong capacity. A node can claim 10 BTC of liquidity, have 0.01 BTC available, and the only consequence is a failed HTLC. The sender retries. The network absorbs the waste.
+
+## Stake-backed capacity signals
+
+Backproto's LightningCapacityOracle flips this. Node operators register their channel capacity on-chain, backed by a stake. The protocol applies exponential smoothing to filter out stale data. If a node's declared capacity is consistently wrong (detected through failed routes), the stake is at risk.
+
+```typescript
+import { lightning, getAddresses } from "@backproto/sdk";
+
+const addrs = getAddresses(84532);
+await lightning.registerNode(walletClient, addrs, nodePubkey, 5_000_000n);
+await lightning.joinRoutingPool(walletClient, addrs, nodePubkey);
+```
+
+The routing pool then uses these signals to compute multi-hop routes weighted by real liquidity:
+
+```typescript
+const route = await lightning.getOptimalRoute(
+  publicClient, addrs, 100_000n, 5n
+);
+// route.nodePubkeys: ordered hops
+// route.allocations: sats allocated per hop
+// route.fees: fee per hop
+```
+
+The algorithm splits payments across nodes proportional to smoothed capacity, the same Tassiulas-Ephremides backpressure approach used in the rest of the Backproto protocol.
+
+## Why this beats probing
+
+Probing is O(n) per attempt and leaks information. On-chain signals are O(1) to read and are public by design. The tradeoff: operators must stake capital and keep their signals accurate. This is a good tradeoff for high-volume routing nodes that want consistent fee income rather than random HTLC lottery tickets.
+
+## The live dashboard
+
+Spilt ([spilt.dev](https://spilt.dev)) shows registered nodes, capacity, fees, and includes a route explorer. Try routing 100k sats and see how the algorithm distributes the payment across available nodes.
+
+Source: [github.com/backproto/backproto/tree/main/lightning-dash](https://github.com/backproto/backproto/tree/main/lightning-dash).

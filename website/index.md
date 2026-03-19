@@ -80,3 +80,14 @@ BPE solves this by treating **receiver-side capacity constraints as first-class 
 - [**Paper**](paper/index.md) - Full academic paper with formal model, proofs, and evaluation
 - [**Plan**](plan/README.md) - Design decisions, protocol spec, contracts blueprint, and roadmap
 - [**Implementation**](implementation/contracts.md) - Smart contracts, SDK, and simulation code
+
+## Reference products
+
+Four products built on Backproto, each demonstrating the mechanism in a different domain.
+
+| Product | Domain | URL |
+|---------|--------|-----|
+| Mandalay | LLM gateway routing | [mandalay.dev](https://mandalay.dev) |
+| AID Station | Nostr relay capacity | [aidstation.app](https://aidstation.app) |
+| Spilt | Lightning routing | [spilt.dev](https://spilt.dev) |
+| DarkSource | Agent reputation | [darksource.ai](https://darksource.ai) |

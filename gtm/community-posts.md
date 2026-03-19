@@ -156,34 +156,30 @@ Looking for feedback from builders. Happy to walk anyone through the testnet.
 
 ---
 
-## Nostr community (deferred until AI agent traction is established)
+## Nostr community
 
 Subject: NIP-XX draft — backpressure economics for relay sustainability
 
-Note: Post this only after AI agent domain has at least one external pilot. The Nostr relay integration is a research module. Lead with the general mechanism, not Nostr-specific features.
-
-I wrote a NIP spec (NIP-XX) that applies backpressure routing to Nostr relay economics.
+I wrote a NIP spec (NIP-XX) that applies backpressure routing to Nostr relay economics. There is a live dashboard at aidstation.app showing registered relays and anti-spam minimums.
 
 Relays declare multi-dimensional capacity (events/sec, storage, bandwidth). Capacity is verified through signed attestations. Payments stream proportionally to verified capacity via Superfluid GDA pools. Anti-spam pricing scales with congestion.
 
-This is part of Backproto, a protocol I originally built for AI agent payment routing. The same mechanism applies anywhere there are capacity-constrained participants and continuous payment flows.
+Two Nostr-specific contracts are deployed on Base Sepolia: RelayCapacityRegistry and RelayPaymentPool. TypeScript SDK covers registration, pool management, and capacity reads.
 
-Two Nostr-specific contracts are deployed on Base Sepolia: RelayCapacityRegistry and RelayPaymentPool.
-
+Dashboard: https://aidstation.app
+Blog post on the economics: https://backproto.io/blog/relay-economics
 NIP-XX spec: github.com/backproto/backproto (docs/nips/)
-Docs: backproto.io
+SDK docs: https://backproto.io/docs/getting-started-relay
 
 Would relay operators integrate this? What is the minimum economic incentive that makes relay operation worth it?
 
 ---
 
-## Lightning community (deferred until AI agent traction is established)
-
-Note: Post only after AI agent domain has traction. Lightning integration is a research module.
+## Lightning community
 
 Subject: Backpressure routing for Lightning channel capacity signaling
 
-I have been applying backpressure routing (Tassiulas-Ephremides) to Lightning liquidity management.
+I have been applying backpressure routing (Tassiulas-Ephremides) to Lightning liquidity management. There is a live dashboard at spilt.dev with a route explorer.
 
 Payment routing in Lightning relies on stale gossip data. Senders probe routes until one works. There is no real-time capacity signal telling you which channels have liquidity.
 
@@ -191,8 +187,10 @@ Backproto adds an on-chain capacity oracle on Base (L2) where node operators sub
 
 This runs as a sidecar to Lightning. It does not modify the Lightning protocol itself.
 
-- GitHub: https://github.com/backproto/backproto
-- Paper: https://backproto.io/paper
+Dashboard: https://spilt.dev
+Blog post: https://backproto.io/blog/lightning-capacity-signals
+SDK docs: https://backproto.io/docs/getting-started-lightning
+GitHub: https://github.com/backproto/backproto
 
 ---
 
@@ -477,3 +475,72 @@ Open source, MIT licensed. Looking for feedback from anyone calling multiple LLM
 Website: https://mandalay.dev
 GitHub: https://github.com/backproto/backproto
 Paper: https://backproto.io/paper
+
+---
+
+## OpenClaw / AI agent reputation community
+
+Subject: On-chain agent reputation with dual-signed execution receipts
+
+I built a reputation system for AI agents where the score comes from verified work, not user ratings.
+
+When an agent completes a task, both the agent operator and the requester sign the execution receipt. Both signatures get submitted on-chain. The protocol counts verified completions, tracks failures, and computes a composite reputation score. High reputation reduces your stake requirements across the network.
+
+Three contracts on Base Sepolia: CapacityAdapter (agent registration and capacity tracking), CompletionVerifier (dual-signed receipt verification), and ReputationBridge (reputation scoring and stake discounts).
+
+There is a live explorer at darksource.ai that shows registered agents, their capacity metrics, and reputation scores.
+
+Dashboard: https://darksource.ai
+Blog post: https://backproto.io/blog/openclaw-reputation
+SDK docs: https://backproto.io/docs/getting-started-openclaw
+GitHub: https://github.com/backproto/backproto
+
+If you are building anything where agents need to prove they did the work: what would the minimum integration look like for your stack?
+
+---
+
+## Twitter / Bluesky / Nostr — product-specific posts (June 2026)
+
+Each block is one standalone post.
+
+---
+
+### 11. AID Station launch
+
+Nostr relay operators can now register their capacity on-chain and earn proportional to verified spare capacity.
+
+Three pool types: write, read, store. Anti-spam pricing floors set by relay governance.
+
+Live dashboard at aidstation.app. TypeScript SDK for registration and pool management.
+
+---
+
+### 12. Spilt launch
+
+Lightning routing using on-chain capacity signals instead of gossip.
+
+Node operators register channel capacity backed by stake. The protocol smooths the data and computes multi-hop routes weighted by real liquidity.
+
+Route explorer at spilt.dev. Try routing 100k sats.
+
+---
+
+### 13. DarkSource launch
+
+Agent reputation that tracks verified completions, not vibes.
+
+Both parties sign an execution receipt. The protocol counts completions, tracks failures, computes a composite score. High rep reduces your stake requirements.
+
+Browse agents at darksource.ai.
+
+---
+
+### 14. Three reference products
+
+Shipped three reference products on Backproto:
+
+AID Station (aidstation.app) — Nostr relay capacity dashboard
+Spilt (spilt.dev) — Lightning routing with on-chain capacity signals
+DarkSource (darksource.ai) — Agent reputation explorer
+
+Same protocol underneath. Each product shows the mechanism working in a different domain.

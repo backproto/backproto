@@ -1,0 +1,44 @@
+---
+title: Relay Economics When Capacity Is Verifiable
+date: "2026-06-01"
+description: How on-chain capacity signals change Nostr relay revenue distribution
+---
+
+Nostr relays run on donations and goodwill. A few charge NIP-11 access fees. Neither approach ties revenue to actual performance. A relay handling 10x the traffic of its neighbor gets paid the same flat rate, or nothing at all.
+
+Backproto changes the formula. Relay operators register three capacity dimensions on-chain: events per second, storage in GB, and bandwidth in Mbps. The protocol applies exponential smoothing to these numbers (the same EMA used in TCP congestion control), computes a composite score, and distributes payment pool revenue proportional to that score.
+
+## How it works in practice
+
+You register your relay with a Nostr pubkey and initial capacity declaration:
+
+```typescript
+import { relay, getAddresses } from "@backproto/sdk";
+
+const addrs = getAddresses(84532);
+await relay.registerRelay(walletClient, addrs, nostrPubkey, {
+  eventsPerSecond: 500n,
+  storageGB: 100n,
+  bandwidthMbps: 200n,
+});
+```
+
+Then you join one or more payment pools. There are three: RELAY_WRITE (0) for event submission, RELAY_READ (1) for subscriptions, and RELAY_STORE (2) for long-term storage.
+
+```typescript
+await relay.joinRelayPool(walletClient, addrs, 0, nostrPubkey); // write pool
+```
+
+Once joined, your relay starts receiving a share of the Superfluid payment stream flowing into that pool. The share is proportional to your smoothed composite capacity.
+
+## Anti-spam pricing
+
+Each pool type has a minimum payment floor. Clients opening a stream to a relay pool must meet this floor. The number is low enough for normal users but expensive enough to deter mass spam. Relay operators govern the floor through the `setAntiSpamMinimum` function.
+
+This replaces the NIP-42 auth approach for spam control. Instead of identity verification, the relay network uses economic signals. You don't need to know who someone is if they're paying enough to cover the resources they consume.
+
+## The live dashboard
+
+AID Station ([aidstation.app](https://aidstation.app)) shows registered relays, their composite capacity scores, and current anti-spam minimums. The source is at [github.com/backproto/backproto/tree/main/relay-dash](https://github.com/backproto/backproto/tree/main/relay-dash).
+
+If you operate a relay: register your capacity on Base Sepolia today, join a pool, and watch the revenue start flowing.

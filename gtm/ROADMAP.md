@@ -17,8 +17,12 @@ Current state and next steps. Updated March 2026.
 - Self-audit + Aderyn static analysis complete (0 exploitable findings)
 - GTM content: blog post, Twitter thread, LinkedIn posts, community posts, DM templates, feedback form, 3 grant applications
 - Design system extracted (tokens, components, agent prompt) for unified branding across Backproto, Buildlog, VR
+- Three reference products: AID Station (aidstation.app, Nostr relay dash), Spilt (spilt.dev, Lightning routing dash), DarkSource (darksource.ai, agent reputation explorer)
+- Three additional blog posts: relay economics, Lightning capacity signals, OpenClaw reputation
+- Getting-started guide for OpenClaw agent operators
+- Community posts and DM templates for Nostr, Lightning, and OpenClaw audiences
 
-Primary target: AI agent builders. Other domains (Lightning, Nostr, demurrage) are research modules, deferred until AI agent traction is established.
+Backproto now covers four domains: AI agent routing (Mandalay), Nostr relay economics (AID Station), Lightning routing (Spilt), and agent reputation (DarkSource). The Nostr and Lightning integrations are no longer deferred research modules.
 
 ---
 
@@ -109,7 +113,31 @@ Success signal: 1+ external testnet deploy and 1+ completed feedback form.
 | Submit Superfluid Ecosystem Grant | `gtm/grant-superfluid.md` |
 | Submit OpenClaw Grant | `gtm/grant-openclaw.md` |
 
-Lead every grant touchpoint with the live Mandalay demo and playground link.
+Lead every grant touchpoint with the live Mandalay demo and playground link. Reference the three new products as proof of cross-domain applicability.
+
+## Phase 5a: reference products (parallel with grants)
+
+Three reference products shipped, each demonstrating the Backproto mechanism in a different domain.
+
+| Product | Domain | URL | Folder |
+|---------|--------|-----|--------|
+| AID Station | Nostr relay capacity | aidstation.app | `relay-dash/` |
+| Spilt | Lightning routing | spilt.dev | `lightning-dash/` |
+| DarkSource | Agent reputation | darksource.ai | `agent-explorer/` |
+
+Each product has: Next.js dashboard, API route reading on-chain state, setup script for demo data, README.
+
+| Action | Status |
+|--------|--------|
+| relay-dash scaffold + dashboard + API | Done |
+| lightning-dash scaffold + dashboard + route explorer | Done |
+| agent-explorer scaffold + dashboard + API | Done |
+| Setup scripts for demo data seeding | Done |
+| Blog posts: relay-economics, lightning-capacity-signals, openclaw-reputation | Done |
+| getting-started-openclaw.mdx | Done |
+| Community posts: Nostr activated, Lightning activated, OpenClaw added | Done |
+| DM templates: relay operator, Lightning node operator, agent framework dev | Done |
+| Product-specific social posts (4 posts) | Done |
 
 ## Phase 6: HN retry + paper (days 14-28)
 
