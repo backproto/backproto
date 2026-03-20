@@ -21,6 +21,7 @@ interface IEconomyFactory {
         bytes32[] taskTypeIds; // Task types to create (1 for simple, N for pipeline/guild)
         uint256 minStake; // Minimum stake for all task types
         uint256 bufferMax; // Max buffer per task type (0 = unlimited)
+        uint256 verificationBudgetBps; // Verification budget in bps (0 = no budget set)
     }
 
     struct EconomyDeployment {

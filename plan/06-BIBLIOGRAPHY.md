@@ -52,6 +52,18 @@
 - **Role**: Economic formalization of timed currency decay.
 - **BPE usage**: Historical context. MV=PQ decomposition.
 
+## Verification Economics
+
+### Catalini, Gans, & Ma (2026)
+"Some Simple Economics of AGI" (arXiv:2602.20946v2)
+- **Role**: Formal economic model of AI verification costs. Introduces measurability parameter *m* that determines automation frontier, wage effects, and value capture. Argues verification cost, not production cost, drives task pricing.
+- **BPE usage**: External validation of Backproto's mechanism design. CompletionTracker = concrete V(m) for high-*m* tasks. Motivates `verificationBudgetBps` parameter for low-*m* tasks. Informs §2.7 (Verification Economics) and pricing mechanism (v0.2).
+
+### Dixon & Lazzarin (2026)
+a16z crypto podcast: "AI just gave you superpowers — now what?"
+- **Role**: Blockchain as "the financial API for autonomous software." Stablecoins reduce agent-to-agent transaction costs by ~10x. Programmable money enables payment-routing unification.
+- **BPE usage**: Confirms architectural choice (Superfluid + Base L2). Supports the argument that routing signal and payment must be one mechanism.
+
 ## AI Agent Payments (2024-2026)
 
 ### Google Agent-to-Agent Payment Protocol (AP2)

@@ -36,12 +36,14 @@ contract BackpressurePool is IBackpressurePool, Ownable {
     }
 
     mapping(bytes32 taskTypeId => PoolState) internal _pools;
+    mapping(bytes32 taskTypeId => uint256) internal _verificationBudgetBps;
 
     // ──────────────────── Errors ────────────────────
 
     error PoolAlreadyExists();
     error PoolDoesNotExist();
     error TaskTypeDoesNotExist();
+    error BudgetExceedsBps();
 
     // ──────────────────── Constructor ────────────────────
 
@@ -140,5 +142,22 @@ contract BackpressurePool is IBackpressurePool, Ownable {
         PoolState storage ps = _pools[taskTypeId];
         if (address(ps.pool) == address(0)) return 0;
         return ps.pool.getUnits(sink);
+    }
+
+    // ──────────────────── Verification Budget ────────────────────
+
+    /// @notice Set the verification budget for a task type pool.
+    /// @param taskTypeId The task type.
+    /// @param budgetBps The verification budget in basis points (0-10000).
+    function setVerificationBudget(bytes32 taskTypeId, uint256 budgetBps) external onlyOwner {
+        if (budgetBps > BPS) revert BudgetExceedsBps();
+        if (address(_pools[taskTypeId].pool) == address(0)) revert PoolDoesNotExist();
+        _verificationBudgetBps[taskTypeId] = budgetBps;
+        emit VerificationBudgetSet(taskTypeId, budgetBps);
+    }
+
+    /// @inheritdoc IBackpressurePool
+    function getVerificationBudget(bytes32 taskTypeId) external view returns (uint256) {
+        return _verificationBudgetBps[taskTypeId];
     }
 }

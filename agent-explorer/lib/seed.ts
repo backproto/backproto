@@ -14,6 +14,7 @@ interface AgentInfo {
     completions: string;
     slashCount: string;
   } | null;
+  measurabilityGap: string;
 }
 
 interface ExplorerState {
@@ -48,6 +49,7 @@ export function generateSeedState(): ExplorerState {
         completions: Math.floor(140 + hoursSinceEpoch * 1.2).toString(),
         slashCount: "0",
       },
+      measurabilityGap: wave(t, 500_000, 5, 18).toString(),
     },
     {
       id: "0x0000000000000000000000000000000000000000000000000000000000000002",
@@ -60,6 +62,7 @@ export function generateSeedState(): ExplorerState {
         completions: Math.floor(85 + hoursSinceEpoch * 0.8).toString(),
         slashCount: "1",
       },
+      measurabilityGap: wave(t, 400_000, 22, 48).toString(),
     },
     {
       id: "0x0000000000000000000000000000000000000000000000000000000000000003",
@@ -72,6 +75,7 @@ export function generateSeedState(): ExplorerState {
         completions: Math.floor(210 + hoursSinceEpoch * 1.5).toString(),
         slashCount: "0",
       },
+      measurabilityGap: wave(t, 450_000, 3, 12).toString(),
     },
   ];
 

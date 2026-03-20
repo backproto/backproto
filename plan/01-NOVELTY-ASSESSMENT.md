@@ -39,6 +39,24 @@ Stream 3: Token Engineering    Stream 4: Monetary Velocity
              Google AP2, x402, Stripe ACP
 ```
 
+## External Validation (March 2026)
+
+Catalini, Gans, & Ma ("Some Simple Economics of AGI", arXiv:2602.20946v2) published a formal economic model where a measurability parameter *m* determines the automation frontier. Their framework predicts that verification cost, not production cost, drives task pricing — and that on-chain verification mechanisms with stablecoin settlement will be the infrastructure for agent economies.
+
+Backproto convergences with Catalini's model:
+
+| Catalini concept | Backproto mechanism |
+|---|---|
+| Measurability *m* | CompletionTracker: dual-signed receipts, per-epoch rates, auto-slash |
+| Verification function V(m) | On-chain completion tracking + staked capacity declarations |
+| Automation frontier (m threshold) | Task type registry: high-*m* vs low-*m* task pools |
+| Stablecoin settlement | Superfluid GDA streaming on Base L2, sub-cent marginal cost |
+| Verification cost as price driver | New: verificationBudgetBps per pool (v0.1 informational, v0.2 enforced) |
+
+Dixon and Lazzarin (a16z, March 2026) independently described blockchain as "the financial API for autonomous software" — the same thesis that motivated building on Superfluid + Base rather than off-chain payment rails.
+
+This is convergent evidence from MIT economics and a16z crypto arriving at the same architectural conclusion Backproto implements.
+
 ## Feasibility
 
 | Domain | Feasibility | Capacity Signal | Verification |

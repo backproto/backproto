@@ -38,6 +38,7 @@ const txHash = await deployEconomy(wallet, addrs, {
   ],
   minStake: 100n * 10n ** 18n,     // 100 tokens minimum stake
   bufferMax: 1000n * 10n ** 18n,   // escrow buffer ceiling
+  verificationBudgetBps: 0n,       // verification budget (bps, 0 = none)
 })
 
 console.log('Economy deployed:', txHash)

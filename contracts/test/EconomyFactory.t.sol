@@ -47,7 +47,8 @@ contract EconomyFactoryTest is Test {
             template: IEconomyFactory.Template.MARKETPLACE,
             taskTypeIds: tasks,
             minStake: 100e18,
-            bufferMax: 1000e18
+            bufferMax: 1000e18,
+            verificationBudgetBps: 0
         });
 
         vm.prank(deployer);
@@ -72,7 +73,8 @@ contract EconomyFactoryTest is Test {
             template: IEconomyFactory.Template.PIPELINE,
             taskTypeIds: tasks,
             minStake: 100e18,
-            bufferMax: 0
+            bufferMax: 0,
+            verificationBudgetBps: 0
         });
 
         vm.prank(deployer);
@@ -88,7 +90,8 @@ contract EconomyFactoryTest is Test {
             template: IEconomyFactory.Template.MARKETPLACE,
             taskTypeIds: tasks,
             minStake: 100e18,
-            bufferMax: 0
+            bufferMax: 0,
+            verificationBudgetBps: 0
         });
 
         vm.prank(deployer);
@@ -104,7 +107,8 @@ contract EconomyFactoryTest is Test {
             template: IEconomyFactory.Template.PIPELINE,
             taskTypeIds: tasks,
             minStake: 100e18,
-            bufferMax: 0
+            bufferMax: 0,
+            verificationBudgetBps: 0
         });
 
         vm.prank(deployer);
@@ -122,7 +126,8 @@ contract EconomyFactoryTest is Test {
             template: IEconomyFactory.Template.COOPERATIVE,
             taskTypeIds: tasks,
             minStake: 50e18,
-            bufferMax: 0
+            bufferMax: 0,
+            verificationBudgetBps: 0
         });
 
         vm.prank(deployer);
@@ -141,7 +146,8 @@ contract EconomyFactoryTest is Test {
             template: IEconomyFactory.Template.MARKETPLACE,
             taskTypeIds: tasks,
             minStake: 100e18,
-            bufferMax: 0
+            bufferMax: 0,
+            verificationBudgetBps: 0
         });
 
         vm.prank(deployer);
@@ -163,7 +169,8 @@ contract EconomyFactoryTest is Test {
             template: IEconomyFactory.Template.GUILD,
             taskTypeIds: tasks,
             minStake: 100e18,
-            bufferMax: 0
+            bufferMax: 0,
+            verificationBudgetBps: 0
         });
 
         vm.prank(deployer);

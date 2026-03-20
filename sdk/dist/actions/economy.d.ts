@@ -12,6 +12,7 @@ export type EconomyConfig = {
     taskTypeIds: Hash[];
     minStake: bigint;
     bufferMax: bigint;
+    verificationBudgetBps: bigint;
 };
 export type EconomyDeployment = {
     economyId: Hash;

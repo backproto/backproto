@@ -10,6 +10,7 @@ interface IBackpressurePool {
 
     event PoolCreated(bytes32 indexed taskTypeId, address indexed pool);
     event Rebalanced(bytes32 indexed taskTypeId, uint256 sinkCount, uint256 totalCapacity);
+    event VerificationBudgetSet(bytes32 indexed taskTypeId, uint256 budgetBps);
 
     // ──────────────────── Pool Lifecycle ────────────────────
 
@@ -42,4 +43,9 @@ interface IBackpressurePool {
     /// @param sink The sink address.
     /// @return units The member's current pool units.
     function getMemberUnits(bytes32 taskTypeId, address sink) external view returns (uint128 units);
+
+    /// @notice Get the verification budget for a task type pool.
+    /// @param taskTypeId The task type.
+    /// @return budgetBps The verification budget in basis points (0-10000).
+    function getVerificationBudget(bytes32 taskTypeId) external view returns (uint256 budgetBps);
 }

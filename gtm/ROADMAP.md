@@ -47,6 +47,21 @@ Backproto now covers four domains: AI agent routing (Mandalay), Nostr relay econ
 | CHANGELOG.md created | Done |
 | Mandalay gateway shipped with animated flow diagram, FAQ, API key gen | Done |
 
+## Catalini / a16z window (days 1-14, urgent)
+
+Catalini et al. published "Some Simple Economics of AGI" (arXiv:2602.20946v2) in February 2026. a16z crypto podcast ("AI just gave you superpowers — now what?") aired March 18, 2026. Both converge on verification cost as the binding constraint for agent economies and blockchain/stablecoins as the settlement layer. Backproto's mechanism design directly implements what both describe.
+
+Content window is 2-4 weeks from March 21. Full ops plan in `gtm/swarm-catalini.md`.
+
+| Action | Asset | Status |
+|--------|-------|--------|
+| Publish verification-bottleneck blog post | `web/content/blog/verification-bottleneck.mdx` | |
+| LinkedIn post (Catalini mapping) | `gtm/swarm-catalini.md` | |
+| Twitter thread (7 tweets) | `gtm/swarm-catalini.md` | |
+| LinkedIn connection request to Catalini | `gtm/swarm-catalini.md` | |
+| Reply to Catalini-related threads | `gtm/swarm-catalini.md` | |
+| Update grant narratives with Catalini framing | `gtm/swarm-catalini.md` | |
+
 ## Phase 1: LinkedIn + content (days 1-7)
 
 LinkedIn is the primary distribution channel (~3000 followers). All other channels are secondary.

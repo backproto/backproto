@@ -33,4 +33,8 @@ contract MockBackpressurePool is IBackpressurePool {
     function getMemberUnits(bytes32, address) external pure returns (uint128) {
         return 0;
     }
+
+    function getVerificationBudget(bytes32) external pure returns (uint256) {
+        return 0;
+    }
 }

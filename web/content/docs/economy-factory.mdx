@@ -28,6 +28,7 @@ await deployEconomy(wallet, addrs, {
   taskTypeIds: [taskTypeId],
   minStake: 100n * 10n ** 18n,
   bufferMax: 1000n * 10n ** 18n,
+  verificationBudgetBps: 0n,
 })
 ```
 
@@ -45,6 +46,7 @@ await deployEconomy(wallet, addrs, {
   taskTypeIds: [taskTypeId],
   minStake: 25n * 10n ** 18n,     // lower barrier
   bufferMax: 5000n * 10n ** 18n,  // larger shared buffer
+  verificationBudgetBps: 0n,
 })
 ```
 
@@ -62,6 +64,7 @@ await deployEconomy(wallet, addrs, {
   taskTypeIds: [stage1, stage2, stage3],  // one task type per pipeline stage
   minStake: 100n * 10n ** 18n,
   bufferMax: 2000n * 10n ** 18n,
+  verificationBudgetBps: 0n,
 })
 ```
 
@@ -79,6 +82,7 @@ await deployEconomy(wallet, addrs, {
   taskTypeIds: [taskTypeId],
   minStake: 500n * 10n ** 18n,    // higher barrier
   bufferMax: 500n * 10n ** 18n,
+  verificationBudgetBps: 0n,
 })
 ```
 

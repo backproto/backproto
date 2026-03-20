@@ -39,6 +39,14 @@
 - Google AP2, Coinbase x402, OpenAI-Stripe ACP, Visa TAP (2024-2026)
 - Gap: all handle authorization/trust, none handle flow control
 
+### 2.7 Verification Economics
+- Catalini, Gans, & Ma (2026): measurability parameter *m* determines automation frontier
+- Key result: verification cost, not production cost, is the binding constraint on task pricing
+- V(m) = verification function; BPE's CompletionTracker is a concrete V(m) for high-*m* tasks
+- Low-*m* tasks require verification budget allocation (motivates `verificationBudgetBps`)
+- Stablecoin settlement thesis (Catalini) + "financial API for agents" (a16z) = architectural confirmation
+- Position: BPE implements the measurability-aware routing that Catalini's model predicts will emerge
+
 ## Section 3: Model (4 pages)
 ### 3.1 Network Graph
 ```
