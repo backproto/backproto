@@ -1,0 +1,12 @@
+# relay.gold — primary relay
+relay.gold {
+	reverse_proxy localhost:7777
+}
+
+# Wildcard — tenant subdomains (Phase 3: multi-tenant hosting)
+*.relay.gold {
+	tls {
+		dns hetzner {env.HETZNER_DNS_TOKEN}
+	}
+	reverse_proxy localhost:7777
+}

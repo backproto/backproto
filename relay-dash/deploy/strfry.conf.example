@@ -1,0 +1,29 @@
+##
+## strfry configuration — relay.gold
+## Copy to /etc/strfry/strfry.conf and adjust as needed.
+##
+
+db {
+    path = "/var/lib/strfry/data"
+}
+
+relay {
+    bind = "127.0.0.1"
+    port = 7777
+
+    nofiles = 4096
+    maxWebsocketPayloadBytes = 131072
+
+    info {
+        name = "Relay.Gold"
+        description = "Nostr relay with on-chain capacity verification — powered by Backproto"
+        pubkey = ""   # set to your hex Nostr pubkey
+        contact = ""  # admin email or Nostr npub
+    }
+
+    realIpHeader = "X-Forwarded-For"
+
+    writePolicy {
+        plugin = ""  # path to write-policy script for multi-tenant (Phase 3)
+    }
+}

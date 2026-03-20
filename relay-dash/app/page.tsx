@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import styles from "./page.module.css";
+import { generateSeedState } from "@/lib/seed";
 
 interface RelayInfo {
   pubkey: string;
@@ -15,6 +16,7 @@ interface RelayState {
   antiSpamMinimums: { write: string; read: string; store: string };
   totalRelays: number;
   chainId: number;
+  seed?: boolean;
 }
 
 export default function Home() {
@@ -24,12 +26,19 @@ export default function Home() {
   const fetchState = useCallback(async () => {
     try {
       const res = await fetch("/api/state");
-      if (res.ok) setState(await res.json());
+      if (res.ok) {
+        const data = await res.json();
+        if (data.relays && data.relays.length > 0) {
+          setState(data);
+          setLoading(false);
+          return;
+        }
+      }
     } catch {
       // skip
-    } finally {
-      setLoading(false);
     }
+    setState((prev) => prev?.seed ? prev : generateSeedState());
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -92,6 +101,12 @@ export default function Home() {
           Backproto
         </a>
       </p>
+
+      {state?.seed && (
+        <div className={styles.seedBanner}>
+          ◈ Simulated data · Connect providers for live metrics
+        </div>
+      )}
 
       {state && (
         <div className={styles.stats}>

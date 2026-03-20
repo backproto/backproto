@@ -64,6 +64,18 @@
   text-decoration: underline;
 }
 
+.seedBanner {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--accent);
+  background: rgba(255, 200, 50, 0.08);
+  border: 1px solid rgba(255, 200, 50, 0.2);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  margin: 0 auto 1rem;
+  max-width: 360px;
+}
+
 /* Hero — replaced by FlowDiagram component */
 
 /* Key generation */

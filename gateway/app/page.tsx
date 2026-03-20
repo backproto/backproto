@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, type FormEvent } from "react";
 import FlowDiagram from "./components/FlowDiagram";
 import styles from "./page.module.css";
+import { generateSeedState } from "@/lib/seed";
 
 interface SinkState {
   name: string;
@@ -21,6 +22,7 @@ interface GatewayState {
   baseFee: string;
   chainId: number;
   keys: { total: number; totalRequests: number; withWallet: number };
+  seed?: boolean;
 }
 
 export default function Home() {
@@ -33,12 +35,20 @@ export default function Home() {
   const fetchState = useCallback(async () => {
     try {
       const res = await fetch("/api/state");
-      if (res.ok) setState(await res.json());
+      if (res.ok) {
+        const data = await res.json();
+        const hasData = data.sinks?.some((s: SinkState) => s.configured && s.completions !== "0");
+        if (hasData) {
+          setState(data);
+          setLoading(false);
+          return;
+        }
+      }
     } catch {
       // skip
-    } finally {
-      setLoading(false);
     }
+    setState((prev) => prev?.seed ? prev : generateSeedState());
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -124,6 +134,12 @@ export default function Home() {
           Backproto
         </a>
       </p>
+
+      {state?.seed && (
+        <div className={styles.seedBanner}>
+          ◈ Simulated data · Connect providers for live metrics
+        </div>
+      )}
 
       <FlowDiagram />
 
