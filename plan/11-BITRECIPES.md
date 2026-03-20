@@ -242,7 +242,7 @@ bit.recipes/
 
 **Global Navigation**: Logo (bit.recipes) | Recipes | Patterns | Spec | CLI | About | GitHub link | backproto.io link
 
-**Footer**: MIT License · Backproto Contributors 2026 | Links to backproto.io, GitHub, Telegram, Basescan
+**Footer**: MIT License · Backproto Contributors 2026 | Links to backproto.io, GitHub, Basescan
 
 ---
 

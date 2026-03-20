@@ -20,14 +20,6 @@ export function Footer() {
           >
             GitHub
           </a>
-          <a
-            href="https://t.me/backproto"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[var(--color-text)] transition-colors"
-          >
-            Telegram
-          </a>
         </div>
       </div>
     </footer>

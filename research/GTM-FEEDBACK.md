@@ -208,7 +208,7 @@ The singular goal of this GTM is to acquire **5 active design partners** who dep
     *   *Where:* Superfluid Discord (`#builders` channel), Base Discord, Farcaster (`/base` and `/ai` channels).
 4.  **AI Devtool Founders:** People building agent orchestration platforms who need a monetization/routing layer.
 
-#### The Cold DM Scripts (Twitter/Discord/Telegram):
+#### The Cold DM Scripts (Twitter/Discord):
 
 **Script 1: The "Framework" Angle (For LangGraph/CrewAI devs)**
 > *"Hey [Name] - saw your repo/post on [Project]. Really elegant use of LangGraph. Quick question: how are you handling flow control when one of your downstream agents hits a rate limit or gets stuck? I'm building an open-source routing layer (Backproto) that automatically reroutes or buffers agent-to-agent payment streams when capacity maxes out. Would love to give you white-glove access to the testnet infra if you're open to breaking it. Got 2 mins for a Loom video?"*
@@ -568,8 +568,7 @@ Questions? We're here in this channel.
 4. **Lightning Community Slack** (if you can find invite link):
    - Search in slack: "rebalancing", "routing", "channel"
    - Identify: 10–20 most active contributors
-
-5. **Telegram**: Lightning Nodes, LN Dev channels
+   - Lightning Nodes, LN Dev channels
    - Search: "capacity", "routing", "rebalance"
    - Identify: 5–10 channel admins/core contributors
 

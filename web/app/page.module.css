@@ -440,16 +440,15 @@
   color: var(--text-muted);
 }
 
-/* ─── 10. The Stack ────────────────────────────────────────────── */
+/* ─── 10. Reference products ───────────────────────────────────── */
 
-.stackGrid {
+.refGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
 }
 
-.stackCard {
+.refCard {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -458,41 +457,35 @@
   border-radius: 8px;
 }
 
-.stackCurrent {
-  border-color: var(--accent);
-  background: var(--accent-dim);
-}
-
-.stackName {
+.refName {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   font-weight: 600;
   color: #fff;
 }
 
-.stackDesc {
+.refDesc {
   font-size: 0.78rem;
   color: var(--text-muted);
   line-height: 1.5;
+  flex: 1;
 }
 
-.stackLink {
+.refLinks {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.refLink {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--accent);
-  margin-top: 0.25rem;
   text-decoration: none;
 }
 
-.stackLink:hover {
+.refLink:hover {
   color: var(--accent-hover);
-}
-
-.stackSummary {
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  line-height: 1.6;
-  max-width: 600px;
 }
 
 /* ─── 10. Bottom CTA ──────────────────────────────────────────── */
@@ -563,7 +556,7 @@
     padding: 1.5rem 1.5rem 2rem;
   }
 
-  .stackGrid {
+  .refGrid {
     grid-template-columns: 1fr;
   }
 }

@@ -312,52 +312,81 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 10. The Stack ────────────────────────────────── */}
+      {/* ─── 10. Reference products ──────────────────────── */}
       <section className={styles.section}>
-        <div className={styles.label}>The Stack</div>
-        <div className={styles.stackGrid}>
-          <div className={styles.stackCard}>
-            <span className={styles.stackName}>Buildlog</span>
-            <span className={styles.stackDesc}>
-              Captures agent workflows and execution trails. What ran, what changed, what was the outcome.
+        <div className={styles.label}>Reference products</div>
+        <div className={styles.refGrid}>
+          <div className={styles.refCard}>
+            <span className={styles.refName}>Mandalay</span>
+            <span className={styles.refDesc}>
+              Capacity-routed LLM API gateway powered by Backproto on Base.
             </span>
-            <a
-              href="https://buildlog.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.stackLink}
-            >
-              buildlog.ai &rarr;
-            </a>
+            <div className={styles.refLinks}>
+              <a href="https://mandalay.dev" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                mandalay.dev &rarr;
+              </a>
+              <a href="https://github.com/backproto/backproto/tree/main/gateway" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                GitHub &rarr;
+              </a>
+            </div>
           </div>
-          <div className={styles.stackCard}>
-            <span className={styles.stackName}>Verifiable Rewards</span>
-            <span className={styles.stackDesc}>
-              Verifies that agent-claimed outcomes reflect actual system state changes.
+          <div className={styles.refCard}>
+            <span className={styles.refName}>Relay.Gold</span>
+            <span className={styles.refDesc}>
+              Nostr relay capacity dashboard tracking real-time operator headroom.
             </span>
-            <a
-              href="https://vr.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.stackLink}
-            >
-              Verifiable Rewards &rarr;
-            </a>
+            <div className={styles.refLinks}>
+              <a href="https://relay.gold" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                relay.gold &rarr;
+              </a>
+              <a href="https://github.com/backproto/backproto/tree/main/relay-dash" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                GitHub &rarr;
+              </a>
+            </div>
           </div>
-          <div className={`${styles.stackCard} ${styles.stackCurrent}`}>
-            <span className={styles.stackName}>Backproto</span>
-            <span className={styles.stackDesc}>
-              Routes payments to agents with verified spare capacity. You are here.
+          <div className={styles.refCard}>
+            <span className={styles.refName}>Lightning.Gold</span>
+            <span className={styles.refDesc}>
+              Lightning routing dashboard with capacity-weighted routes backed by on-chain stake.
             </span>
-            <Link href="/explainer" className={styles.stackLink}>
-              How it works &rarr;
-            </Link>
+            <div className={styles.refLinks}>
+              <a href="https://lightning.gold" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                lightning.gold &rarr;
+              </a>
+              <a href="https://github.com/backproto/backproto/tree/main/lightning-dash" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                GitHub &rarr;
+              </a>
+            </div>
+          </div>
+          <div className={styles.refCard}>
+            <span className={styles.refName}>DarkSource</span>
+            <span className={styles.refDesc}>
+              Agent reputation explorer for the OpenClaw protocol.
+            </span>
+            <div className={styles.refLinks}>
+              <a href="https://darksource.ai" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                darksource.ai &rarr;
+              </a>
+              <a href="https://github.com/backproto/backproto/tree/main/agent-explorer" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                GitHub &rarr;
+              </a>
+            </div>
+          </div>
+          <div className={styles.refCard}>
+            <span className={styles.refName}>bit.recipes</span>
+            <span className={styles.refDesc}>
+              Visual pipeline builder and recipe cookbook for Backproto.
+            </span>
+            <div className={styles.refLinks}>
+              <a href="https://bit.recipes" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                bit.recipes &rarr;
+              </a>
+              <a href="https://github.com/backproto/backproto/tree/main/bitrecipes" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                GitHub &rarr;
+              </a>
+            </div>
           </div>
         </div>
-        <p className={styles.stackSummary}>
-          Buildlog captures. VR verifies. Backproto pays. Each project works
-          independently. Together they close the loop.
-        </p>
       </section>
 
       {/* ─── 11. Bottom CTA ────────────────────────────────── */}
