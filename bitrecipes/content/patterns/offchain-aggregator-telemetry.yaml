@@ -1,0 +1,4 @@
+name: "OffchainAggregator telemetry loop"
+description: "Collect runtime metrics off-chain, aggregate them, and push updated capacity attestations on-chain. Aggregation logic and attestation refresh cycle."
+contract: OffchainAggregator
+difficulty: advanced

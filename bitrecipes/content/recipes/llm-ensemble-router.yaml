@@ -1,0 +1,69 @@
+name: "LLM Ensemble (capacity-weighted)"
+description: "Route completions across multiple model runners; weights follow spare capacity and price."
+domain: ai
+difficulty: intermediate
+contracts_used:
+  - CapacityRegistry
+  - BackpressurePool
+  - PricingCurve
+  - EscrowBuffer
+  - CompletionTracker
+  - StakeManager
+
+funding:
+  escrowBuffer: "0x8d2f5b40315cccf9b7aa10869c035f9c7a0a3160"
+  superfluid:
+    enabled: true
+
+steps:
+  - id: prompt-to-tokens
+    kind: openai-compatible
+    providers:
+      - name: vLLM-A
+        endpoint: "https://provider-a.example/run"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "500 USDC"
+        pricingCurve:
+          base: 0.0008
+          k: 0.15
+          alpha: 2.0
+      - name: vLLM-B
+        endpoint: "https://provider-b.example/run"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "500 USDC"
+        pricingCurve:
+          base: 0.0007
+          k: 0.20
+          alpha: 1.8
+      - name: CloudAPI-C
+        endpoint: "https://cloud-api-c.example/run"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "500 USDC"
+        pricingCurve:
+          base: 0.0012
+          k: 0.10
+          alpha: 2.5
+
+routing:
+  policy: capacity_weighted
+  fairness: lyapunov_optimal
+  minProviders: 2
+  maxSharePerProvider: 0.7
+
+settlement:
+  backpressurePool: "0x8e999a246afea241cf3c1d400dd7786cf591fa88"
+  completionTracker: "0xff3dab79a53ffd11bae041e094ed0b6217acfc3c"
+  penalties:
+    slo:
+      p95_latency_ms: 1500
+      timeout_ms: 8000
+    misreportingMultiplier: 3.0
+
+observability:
+  export: ["opentelemetry", "json"]

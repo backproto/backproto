@@ -1,0 +1,4 @@
+name: "Superfluid GDA streaming"
+description: "Initialize a streaming payment via Superfluid General Distribution Agreement. Setup, flow rate calculation, and pool connection."
+contract: EscrowBuffer
+difficulty: intermediate

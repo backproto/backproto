@@ -1,0 +1,4 @@
+name: "CapacityRegistry attestation"
+description: "EIP-712 signing flow for declaring spare capacity. Covers the typed data structure, signing code, and on-chain registration call."
+contract: CapacityRegistry
+difficulty: beginner

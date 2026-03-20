@@ -1,0 +1,4 @@
+name: "CompletionTracker SLO verification"
+description: "Define SLOs (latency, completion rate), track completions, and trigger penalties on violation. Verification flow end-to-end."
+contract: CompletionTracker
+difficulty: advanced

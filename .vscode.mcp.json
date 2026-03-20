@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "slopwash": {
+      "type": "http",
+      "url": "https://slopwash.com/api/mcp"
+    }
+  }
+}
