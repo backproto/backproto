@@ -90,6 +90,9 @@ contract EconomyFactory is IEconomyFactory, Ownable {
             if (config.bufferMax > 0) {
                 eb.setBufferMax(config.taskTypeIds[i], config.bufferMax);
             }
+            if (config.verificationBudgetBps > 0) {
+                bp.setVerificationBudget(config.taskTypeIds[i], config.verificationBudgetBps);
+            }
         }
 
         // Deploy pipeline if PIPELINE template

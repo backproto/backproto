@@ -15,6 +15,7 @@ interface AgentInfo {
     completions: string;
     slashCount: string;
   } | null;
+  measurabilityGap?: string;
 }
 
 interface ExplorerState {
@@ -170,6 +171,21 @@ export default function Home() {
                     <dd>{agent.reputation.completions}</dd>
                     <dt>Slashes</dt>
                     <dd>{agent.reputation.slashCount}</dd>
+                  </>
+                )}
+                {agent.measurabilityGap && (
+                  <>
+                    <dt>Δm</dt>
+                    <dd style={{
+                      color: Number(agent.measurabilityGap) < 20
+                        ? "#22c55e"
+                        : Number(agent.measurabilityGap) <= 50
+                        ? "#eab308"
+                        : "#ef4444",
+                      fontWeight: 600,
+                    }}>
+                      {agent.measurabilityGap}%
+                    </dd>
                   </>
                 )}
               </dl>

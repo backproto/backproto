@@ -110,6 +110,11 @@
             "name": "bufferMax",
             "type": "uint256",
             "internalType": "uint256"
+          },
+          {
+            "name": "verificationBudgetBps",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       }
