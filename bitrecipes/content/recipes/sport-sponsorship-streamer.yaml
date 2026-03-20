@@ -1,0 +1,62 @@
+name: "Sport Sponsorship Streamer"
+description: "Fan and brand micropayments stream to athletes. Overfunded recipients auto-reroute new sponsorships to underfunded participants."
+domain: general
+difficulty: beginner
+contracts_used:
+  - CapacityRegistry
+  - BackpressurePool
+  - PricingCurve
+  - EscrowBuffer
+
+funding:
+  escrowBuffer: "0x8d2f5b40315cccf9b7aa10869c035f9c7a0a3160"
+  superfluid:
+    enabled: true
+
+steps:
+  - id: sponsorship-ingest
+    kind: payment-stream
+    providers:
+      - name: Athlete-1
+        endpoint: "https://athlete-1.example/engagement"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "100 USDC"
+        pricingCurve:
+          base: 0.0
+          k: 0.10
+          alpha: 1.5
+      - name: Athlete-2
+        endpoint: "https://athlete-2.example/engagement"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "100 USDC"
+        pricingCurve:
+          base: 0.0
+          k: 0.15
+          alpha: 1.2
+
+  - id: engagement-verify
+    kind: attestation
+    providers:
+      - name: Engagement-Oracle
+        endpoint: "https://oracle.example/verify"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "200 USDC"
+        pricingCurve:
+          base: 0.001
+          k: 0.05
+          alpha: 2.0
+
+routing:
+  policy: capacity_weighted
+  fairness: lyapunov_optimal
+  minProviders: 1
+  maxSharePerProvider: 0.7
+
+observability:
+  export: ["json", "webhook"]

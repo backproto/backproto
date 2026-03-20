@@ -1,0 +1,4 @@
+name: "StakeManager bond/slash lifecycle"
+description: "Full lifecycle: bonding tokens, operating, getting slashed (3x penalty), and withdrawing. Contract calls and state transitions."
+contract: StakeManager
+difficulty: intermediate

@@ -1,0 +1,79 @@
+name: "Nostr Relay Fanout with Congestion Pricing"
+description: "Publish/subscribe event distribution across Nostr relays. Overloaded relays shed subscriptions to relays with spare capacity."
+domain: nostr
+difficulty: intermediate
+contracts_used:
+  - CapacityRegistry
+  - BackpressurePool
+  - PricingCurve
+  - CompletionTracker
+
+funding:
+  escrowBuffer: "0x8d2f5b40315cccf9b7aa10869c035f9c7a0a3160"
+
+steps:
+  - id: event-ingest
+    kind: nostr-relay
+    providers:
+      - name: Relay-Alpha
+        endpoint: "wss://relay-alpha.example"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "200 USDC"
+        pricingCurve:
+          base: 0.0002
+          k: 0.25
+          alpha: 1.5
+      - name: Relay-Beta
+        endpoint: "wss://relay-beta.example"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "200 USDC"
+        pricingCurve:
+          base: 0.0003
+          k: 0.20
+          alpha: 1.8
+
+  - id: relay-fanout
+    kind: nostr-relay
+    providers:
+      - name: Fanout-1
+        endpoint: "wss://fanout-1.example"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "100 USDC"
+        pricingCurve:
+          base: 0.0001
+          k: 0.30
+          alpha: 1.2
+      - name: Fanout-2
+        endpoint: "wss://fanout-2.example"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "100 USDC"
+        pricingCurve:
+          base: 0.0001
+          k: 0.25
+          alpha: 1.4
+
+routing:
+  policy: capacity_weighted
+  fairness: lyapunov_optimal
+  minProviders: 1
+  maxSharePerProvider: 0.8
+
+settlement:
+  backpressurePool: "0x8e999a246afea241cf3c1d400dd7786cf591fa88"
+  completionTracker: "0xff3dab79a53ffd11bae041e094ed0b6217acfc3c"
+  penalties:
+    slo:
+      p95_latency_ms: 500
+      timeout_ms: 3000
+    misreportingMultiplier: 3.0
+
+observability:
+  export: ["opentelemetry"]

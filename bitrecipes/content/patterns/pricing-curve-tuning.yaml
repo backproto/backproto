@@ -1,0 +1,4 @@
+name: "PricingCurve tuning"
+description: "Interactive visualization of pricing curve parameters. Adjust base price, k, and alpha to see the resulting price curve as utilization goes from 0 to 100%."
+contract: PricingCurve
+difficulty: intermediate

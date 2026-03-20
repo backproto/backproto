@@ -1,0 +1,57 @@
+name: "Open Source Revenue Splitter"
+description: "Stream incoming payments to contributors based on declared availability. Away maintainers auto-reroute their share to active contributors."
+domain: general
+difficulty: beginner
+contracts_used:
+  - CapacityRegistry
+  - BackpressurePool
+  - EscrowBuffer
+
+funding:
+  escrowBuffer: "0x8d2f5b40315cccf9b7aa10869c035f9c7a0a3160"
+  superfluid:
+    enabled: true
+
+steps:
+  - id: payment-ingest
+    kind: payment-stream
+    providers:
+      - name: Maintainer-Alice
+        endpoint: "https://alice.example/capacity"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "50 USDC"
+        pricingCurve:
+          base: 0.0
+          k: 0.0
+          alpha: 1.0
+      - name: Maintainer-Bob
+        endpoint: "https://bob.example/capacity"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "50 USDC"
+        pricingCurve:
+          base: 0.0
+          k: 0.0
+          alpha: 1.0
+      - name: Maintainer-Carol
+        endpoint: "https://carol.example/capacity"
+        capacityAttestor: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948"
+        stake:
+          manager: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3"
+          min: "50 USDC"
+        pricingCurve:
+          base: 0.0
+          k: 0.0
+          alpha: 1.0
+
+routing:
+  policy: capacity_weighted
+  fairness: lyapunov_optimal
+  minProviders: 1
+  maxSharePerProvider: 0.6
+
+observability:
+  export: ["json"]
