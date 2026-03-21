@@ -88,6 +88,6 @@ Four products built on Backproto, each demonstrating the mechanism in a differen
 | Product | Domain | URL |
 |---------|--------|-----|
 | Mandalay | LLM gateway routing | [mandalay.dev](https://mandalay.dev) |
-| AID Station | Nostr relay capacity | [aidstation.app](https://aidstation.app) |
-| Spilt | Lightning routing | [spilt.dev](https://spilt.dev) |
+| Relay.Gold | Nostr relay capacity | [relay.gold](https://relay.gold) |
+| Lightning.Gold | Lightning routing | [lightning.gold](https://lightning.gold) |
 | DarkSource | Agent reputation | [darksource.ai](https://darksource.ai) |

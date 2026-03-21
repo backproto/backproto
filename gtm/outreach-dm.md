@@ -111,11 +111,11 @@ Hey, I saw your relay [specific relay name/pubkey]. I built a protocol that turn
 
 You register events/sec, storage, and bandwidth on-chain. An exponential moving average smooths the data. A Superfluid payment pool distributes revenue proportional to your verified capacity score. Three pool types: write, read, and store.
 
-There is a live dashboard at aidstation.app showing registered relays and anti-spam minimums. TypeScript SDK handles registration.
+There is a live dashboard at relay.gold showing registered relays and anti-spam minimums. TypeScript SDK handles registration.
 
 Would 15 minutes work to walk through it? I can run the setup script on testnet while we talk.
 
-aidstation.app
+relay.gold
 
 ---
 
@@ -127,11 +127,11 @@ Hey, I noticed your node [specific node pubkey/alias]. I built a system where Li
 
 The tradeoff vs gossip: you commit capital, but you get consistent routing fee income instead of random HTLC lottery tickets.
 
-Live dashboard with a route explorer at spilt.dev.
+Live dashboard with a route explorer at lightning.gold.
 
 Would you try it on testnet? Takes about 5 minutes to register a node.
 
-spilt.dev
+lightning.gold
 
 ---
 

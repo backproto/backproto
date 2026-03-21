@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Spilt — Lightning Routing Dashboard",
+  title: "Lightning.Gold — Lightning Routing Dashboard",
   description:
     "Capacity-weighted Lightning routing with on-chain signals. Powered by Backproto on Base.",
 };

@@ -1,8 +1,8 @@
-# AID Station — Nostr relay capacity dashboard
+# Relay.Gold — Nostr relay capacity dashboard
 
-Live at [aidstation.app](https://aidstation.app).
+Live at [relay.gold](https://relay.gold).
 
-AID Station reads relay capacity from Backproto's on-chain registry and displays it in real time. Relay operators register their spare capacity (events/sec, storage, bandwidth), and the protocol distributes payment streams proportional to verified headroom.
+Relay.Gold reads relay capacity from Backproto's on-chain registry and displays it in real time. Relay operators register their spare capacity (events/sec, storage, bandwidth), and the protocol distributes payment streams proportional to verified headroom.
 
 ## Run locally
 

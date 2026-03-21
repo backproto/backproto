@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AID Station — Nostr Relay Capacity Dashboard",
+  title: "Relay.Gold — Nostr Relay Capacity Dashboard",
   description:
     "Monitor and manage Nostr relay capacity with on-chain routing. Powered by Backproto on Base.",
 };

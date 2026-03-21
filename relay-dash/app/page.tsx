@@ -56,7 +56,7 @@ export default function Home() {
     <main className={styles.main}>
       <header className={styles.header}>
         <h1 className={styles.title}>
-          <span className={styles.logo}>◈</span> AID Station
+          <span className={styles.logo}>◈</span> Relay.Gold
         </h1>
         <nav className={styles.headerNav}>
           <a
@@ -166,7 +166,7 @@ await relay.joinRelayPool(walletClient, addrs, 0, nostrPubkey);`}</pre>
         <h3 className={styles.faqTitle}>Common questions</h3>
 
         <div className={styles.faqItem}>
-          <h4 className={styles.faqQ}>What is AID Station?</h4>
+          <h4 className={styles.faqQ}>What is Relay.Gold?</h4>
           <p className={styles.faqA}>
             A dashboard for Nostr relay operators who register their spare
             capacity on-chain. The Backproto protocol reads that capacity,
@@ -216,7 +216,7 @@ await relay.joinRelayPool(walletClient, addrs, 0, nostrPubkey);`}</pre>
 
       <footer className={styles.footer}>
         <p>
-          AID Station · Powered by{" "}
+          Relay.Gold · Powered by{" "}
           <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
             Backproto
           </a>
