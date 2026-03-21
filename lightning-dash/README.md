@@ -1,8 +1,8 @@
-# Spilt — Lightning routing dashboard
+# Lightning.Gold — Lightning routing dashboard
 
-Live at [spilt.dev](https://spilt.dev).
+Live at [lightning.gold](https://lightning.gold).
 
-Spilt reads Lightning node capacity from Backproto's on-chain oracle and lets you explore capacity-weighted routes. Node operators register their channel liquidity on-chain, backed by stake. The protocol applies exponential smoothing and computes multi-hop routes weighted by real capacity rather than gossip.
+Lightning.Gold reads Lightning node capacity from Backproto's on-chain oracle and lets you explore capacity-weighted routes. Node operators register their channel liquidity on-chain, backed by stake. The protocol applies exponential smoothing and computes multi-hop routes weighted by real capacity rather than gossip.
 
 ## Run locally
 

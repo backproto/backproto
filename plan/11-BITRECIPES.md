@@ -6,7 +6,7 @@ bit.recipes is the official Backproto cookbook: a visual, executable pipeline bu
 
 It serves two audiences simultaneously: developers who want composable, copy-paste patterns to build on Backproto, and newcomers who need to *see* backpressure economics working in 15 seconds via the visual simulator.
 
-Every reference product in the Backproto ecosystem (bitbolt.ai, spilt.dev, sponsors.fund, logd.ai, airadio.org, etc.) decomposes into its constituent recipe(s) on bit.recipes.
+Every reference product in the Backproto ecosystem (bitbolt.ai, lightning.gold, sponsors.fund, logd.ai, airadio.org, etc.) decomposes into its constituent recipe(s) on bit.recipes.
 
 ---
 
@@ -175,7 +175,7 @@ Publish/subscribe event distribution across multiple Nostr relays. When a relay 
 **Contracts used**: CapacityRegistry, BackpressurePool, PricingCurve, CompletionTracker
 
 ### Recipe 3: Open Source Revenue Splitter
-**Domain**: General | **Difficulty**: Beginner | **Related Product**: spilt.dev
+**Domain**: General | **Difficulty**: Beginner | **Related Product**: lightning.gold
 
 Incoming payments (grants, sponsorships, bounties) stream through a BackpressurePool and distribute to contributors based on their declared availability/capacity. When a maintainer is at capacity (on vacation, maxed on PRs), their share automatically reroutes to active contributors.
 
@@ -292,7 +292,7 @@ bit.recipes/
 
 9. **Build the `bake` CLI.** Implement all commands: `init`, `validate`, `test`, `sim --chaos`, `deploy`, `fork`, `serve`, `publish`. The `test` and `sim` commands use the same simulation engine as the web UI (shared TypeScript library). The `deploy` command interacts with the Base Sepolia contracts using ethers.js or viem. Publish to npm as `@backproto/bake`.
 
-10. **Write the business guides.** For each of the five seed recipes, write the "How to Turn This Into a Business" guide: what business this enables, who the customers are, how to set pricing, what to customize, and which domain in the Backproto portfolio it maps to (bitbolt.ai, spilt.dev, sponsors.fund, logd.ai, airadio.org).
+10. **Write the business guides.** For each of the five seed recipes, write the "How to Turn This Into a Business" guide: what business this enables, who the customers are, how to set pricing, what to customize, and which domain in the Backproto portfolio it maps to (bitbolt.ai, lightning.gold, sponsors.fund, logd.ai, airadio.org).
 
 11. **Write the CLI documentation page** (`/cli`). Installation instructions, command reference with examples, and a quickstart walkthrough that goes from `npm install -g @backproto/bake` to `bake fork llm-ensemble-router && bake sim --chaos && bake deploy`.
 

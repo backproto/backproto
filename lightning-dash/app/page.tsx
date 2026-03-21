@@ -83,7 +83,7 @@ export default function Home() {
     <main className={styles.main}>
       <header className={styles.header}>
         <h1 className={styles.title}>
-          <span className={styles.logo}>⚡</span> Spilt
+          <span className={styles.logo}>⚡</span> Lightning.Gold
         </h1>
         <nav className={styles.headerNav}>
           <a
@@ -236,7 +236,7 @@ await lightning.joinRoutingPool(walletClient, addrs, nodePubkey);`}</pre>
         <h3 className={styles.faqTitle}>Common questions</h3>
 
         <div className={styles.faqItem}>
-          <h4 className={styles.faqQ}>What is Spilt?</h4>
+          <h4 className={styles.faqQ}>What is Lightning.Gold?</h4>
           <p className={styles.faqA}>
             A dashboard for Lightning node operators who publish their channel
             capacity on-chain. Backproto reads that capacity, applies
@@ -285,7 +285,7 @@ await lightning.joinRoutingPool(walletClient, addrs, nodePubkey);`}</pre>
 
       <footer className={styles.footer}>
         <p>
-          Spilt · Powered by{" "}
+          Lightning.Gold · Powered by{" "}
           <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
             Backproto
           </a>

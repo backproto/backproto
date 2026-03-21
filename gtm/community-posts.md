@@ -160,13 +160,13 @@ Looking for feedback from builders. Happy to walk anyone through the testnet.
 
 Subject: NIP-XX draft — backpressure economics for relay sustainability
 
-I wrote a NIP spec (NIP-XX) that applies backpressure routing to Nostr relay economics. There is a live dashboard at aidstation.app showing registered relays and anti-spam minimums.
+I wrote a NIP spec (NIP-XX) that applies backpressure routing to Nostr relay economics. There is a live dashboard at relay.gold showing registered relays and anti-spam minimums.
 
 Relays declare multi-dimensional capacity (events/sec, storage, bandwidth). Capacity is verified through signed attestations. Payments stream proportionally to verified capacity via Superfluid GDA pools. Anti-spam pricing scales with congestion.
 
 Two Nostr-specific contracts are deployed on Base Sepolia: RelayCapacityRegistry and RelayPaymentPool. TypeScript SDK covers registration, pool management, and capacity reads.
 
-Dashboard: https://aidstation.app
+Dashboard: https://relay.gold
 Blog post on the economics: https://backproto.io/blog/relay-economics
 NIP-XX spec: github.com/backproto/backproto (docs/nips/)
 SDK docs: https://backproto.io/docs/getting-started-relay
@@ -179,7 +179,7 @@ Would relay operators integrate this? What is the minimum economic incentive tha
 
 Subject: Backpressure routing for Lightning channel capacity signaling
 
-I have been applying backpressure routing (Tassiulas-Ephremides) to Lightning liquidity management. There is a live dashboard at spilt.dev with a route explorer.
+I have been applying backpressure routing (Tassiulas-Ephremides) to Lightning liquidity management. There is a live dashboard at lightning.gold with a route explorer.
 
 Payment routing in Lightning relies on stale gossip data. Senders probe routes until one works. There is no real-time capacity signal telling you which channels have liquidity.
 
@@ -187,7 +187,7 @@ Backproto adds an on-chain capacity oracle on Base (L2) where node operators sub
 
 This runs as a sidecar to Lightning. It does not modify the Lightning protocol itself.
 
-Dashboard: https://spilt.dev
+Dashboard: https://lightning.gold
 Blog post: https://backproto.io/blog/lightning-capacity-signals
 SDK docs: https://backproto.io/docs/getting-started-lightning
 GitHub: https://github.com/backproto/backproto
@@ -505,23 +505,23 @@ Each block is one standalone post.
 
 ---
 
-### 11. AID Station launch
+### 11. Relay.Gold launch
 
 Nostr relay operators can now register their capacity on-chain and earn proportional to verified spare capacity.
 
 Three pool types: write, read, store. Anti-spam pricing floors set by relay governance.
 
-Live dashboard at aidstation.app. TypeScript SDK for registration and pool management.
+Live dashboard at relay.gold. TypeScript SDK for registration and pool management.
 
 ---
 
-### 12. Spilt launch
+### 12. Lightning.Gold launch
 
 Lightning routing using on-chain capacity signals instead of gossip.
 
 Node operators register channel capacity backed by stake. The protocol smooths the data and computes multi-hop routes weighted by real liquidity.
 
-Route explorer at spilt.dev. Try routing 100k sats.
+Route explorer at lightning.gold. Try routing 100k sats.
 
 ---
 
@@ -539,8 +539,8 @@ Browse agents at darksource.ai.
 
 Shipped three reference products on Backproto:
 
-AID Station (aidstation.app) — Nostr relay capacity dashboard
-Spilt (spilt.dev) — Lightning routing with on-chain capacity signals
+Relay.Gold (relay.gold) — Nostr relay capacity dashboard
+Lightning.Gold (lightning.gold) — Lightning routing with on-chain capacity signals
 DarkSource (darksource.ai) — Agent reputation explorer
 
 Same protocol underneath. Each product shows the mechanism working in a different domain.

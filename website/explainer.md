@@ -655,6 +655,6 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 **Live Products:**
 
 - **[Mandalay](https://mandalay.dev)**: LLM gateway with capacity-aware routing
-- **[AID Station](https://aidstation.app)**: Nostr relay capacity dashboard
-- **[Spilt](https://spilt.dev)**: Lightning routing dashboard with route explorer
+- **[Relay.Gold](https://relay.gold)**: Nostr relay capacity dashboard
+- **[Lightning.Gold](https://lightning.gold)**: Lightning routing dashboard with route explorer
 - **[DarkSource](https://darksource.ai)**: Agent reputation explorer with verified completions
