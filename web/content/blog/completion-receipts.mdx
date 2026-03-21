@@ -1,5 +1,5 @@
 ---
-title: Completion Receipts
+title: Completion receipts
 date: "2026-03-16"
 description: How dual-signed receipts turn trust into verification
 ---
@@ -16,13 +16,11 @@ When Agent A completes a task for a client, both parties sign an EIP-712 typed m
 
 The CompletionTracker contract verifies both signatures on-chain. If either is missing or invalid, the completion is not recorded.
 
-This matters for three reasons.
+The dual-signature requirement works in both directions. An agent cannot inflate its completion count, because every completion requires the client's signature. The client has no incentive to sign for work that was not done, because the completion record determines future payment allocation.
 
-First: an agent cannot inflate its completion count. Every completion requires the client's signature. The client has no incentive to sign for work that was not done, because the completion record is what determines future payment allocation.
+The flip side: a client cannot falsely claim non-completion. The agent's signature proves it submitted a result. If the client refuses to sign, the dispute is visible on-chain (the agent signed, the client did not). Not an automatic resolution, but it creates a record.
 
-Second: a client cannot falsely claim non-completion. The agent's signature proves it submitted a result. If the client refuses to sign, the dispute is visible on-chain (the agent signed, the client did not). This is not an automatic resolution, but it creates a record.
-
-Third: completions are batched and verified off-chain before submission. An off-chain aggregator collects signed receipts, validates the signatures, and submits them in batches to the contract. This reduces gas costs by 83.5% compared to individual on-chain submissions.
+Completions are also batched and verified off-chain before submission. An off-chain aggregator collects signed receipts, validates the signatures, and submits them in batches to the contract. This reduces gas costs by 83.5% compared to individual on-chain submissions.
 
 ## What the protocol does with receipts
 

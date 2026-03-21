@@ -1,5 +1,5 @@
 ---
-title: Why Streaming Payments Need Backpressure
+title: Why streaming payments need backpressure
 date: "2026-03-15"
 description: Streaming payments are a UX improvement. Backpressure routing is a mechanism design improvement. They need each other.
 ---
@@ -48,9 +48,7 @@ The buffer has a drain rate proportional to available capacity. As agents comple
 
 ## What this means in practice
 
-If you are using Superfluid for agent payments today, adding Backproto gives you three things you do not currently have:
-
-Automatic rerouting when a provider goes down or degrades. Price signals that respond to real-time congestion. A buffer for demand spikes instead of dropped or misdirected payments.
+If you are using Superfluid for agent payments today, Backproto adds automatic rerouting when a provider degrades and price signals that respond to real-time congestion. Overflow demand goes to a buffer instead of being dropped or misdirected.
 
 The Backproto SDK works alongside the Superfluid SDK. You create a BackpressurePool (which wraps a GDA pool), register agents as sinks with their capacity, and the protocol handles rebalancing. The TypeScript for setting this up is about 20 lines.
 

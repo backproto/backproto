@@ -1,5 +1,5 @@
 ---
-title: Capacity Is the Bottleneck
+title: Capacity is the bottleneck
 date: "2026-03-16"
 description: AI agent economics focuses on pricing. The harder problem is capacity.
 ---
@@ -30,7 +30,7 @@ Agents declare capacity. They can handle N tasks per time period, backed by a st
 
 When an agent fills up, two things happen. Its share of the payment stream drops. And its price rises, following a curve inspired by EIP-1559 gas pricing. Demand naturally shifts to agents with room.
 
-This is not load balancing bolted onto a payment layer. The payment routing IS the load balancing. When you pay an agent, you are signaling demand. The protocol makes sure your demand reaches an agent that can serve it.
+The payment routing is the load balancing. When you pay an agent, you are signaling demand. The protocol makes sure your demand reaches an agent that can serve it.
 
 ## What happens at the edges
 
@@ -49,8 +49,6 @@ Backproto handles routing. Two other projects handle the adjacent problems.
 Buildlog (buildlog.ai) records what agents actually do. Execution trails, MCP integration, workflow captures. The raw data.
 
 [Verifiable Rewards](https://vr.dev) verifies that agent outputs actually changed system state. It checks whether the claimed outcome matches what happened on-chain.
-
-Together: Buildlog records it, Verifiable Rewards verifies it, Backproto routes payments accordingly.
 
 ## Try it
 

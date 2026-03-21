@@ -1,5 +1,5 @@
 ---
-title: Sybil Resistance Without Identity
+title: Sybil resistance without identity
 date: "2026-03-17"
 description: How a concave square root function makes fake identities unprofitable
 ---
@@ -24,11 +24,7 @@ Four agents, 25 tokens each: cap per agent = sqrt(25) = 5. Total = 4 x 5 = 20.
 
 The square root alone is not enough. Which is exactly why Backproto adds a minimum stake requirement per agent. If the minimum stake is 50 tokens and you have 100, you can register at most two agents. Two agents at 50 tokens each: cap per agent = sqrt(50) = 7.07. Total = 14.14. Still more than 10.
 
-The real defense comes from combining three things:
-
-1. The concave cap means splitting gives diminishing per-identity returns
-2. The minimum stake floor limits how many identities you can afford
-3. Each identity bears full slashing risk independently. If one gets slashed, you lose stake on that identity regardless of your others
+The real defense stacks two more mechanisms on top. A minimum stake floor limits how many identities you can afford. And each identity bears full slashing risk independently: if one gets slashed, you lose that stake regardless of your others.
 
 ## Running the numbers on an actual attack
 
