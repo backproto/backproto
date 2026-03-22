@@ -1,20 +1,18 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import styles from "./Nav.module.css";
 
 const SECTIONS = [
-  { href: "/relays", label: "Relays" },
-  { href: "/lightning", label: "Lightning" },
-  { href: "/agents", label: "Agents" },
-  { href: "/gateway", label: "Gateway" },
-  { href: "/deploy", label: "Deploy" },
+  { href: "/#relays", label: "relays", color: "var(--color-relays)" },
+  { href: "/#lightning", label: "lightning", color: "var(--color-lightning)" },
+  { href: "/#agents", label: "agents", color: "var(--color-agents)" },
+  { href: "/#gateway", label: "gateway", color: "var(--color-gateway)" },
+  { href: "/#sim", label: "sim", color: "var(--color-sim)" },
+  { href: "/deploy", label: "deploy", color: "var(--color-deploy)" },
 ] as const;
 
 export function Nav() {
-  const pathname = usePathname();
-
   return (
     <nav className={styles.nav}>
       <Link href="/" className={styles.brand}>
@@ -22,13 +20,14 @@ export function Nav() {
       </Link>
       <div className={styles.links}>
         {SECTIONS.map((s) => (
-          <Link
+          <a
             key={s.href}
             href={s.href}
-            className={`${styles.link} ${pathname.startsWith(s.href) ? styles.linkActive : ""}`}
+            className={styles.link}
+            style={{ "--link-color": s.color } as React.CSSProperties}
           >
             {s.label}
-          </Link>
+          </a>
         ))}
         <a
           href="https://backproto.io"
@@ -36,7 +35,7 @@ export function Nav() {
           rel="noopener noreferrer"
           className={styles.external}
         >
-          Protocol ↗
+          protocol ↗
         </a>
       </div>
     </nav>

@@ -1,30 +1,38 @@
 :root {
-  --bg: #09090b;
-  --bg-elevated: #111113;
-  --bg-surface: #18181b;
-  --bg-hover: #222222;
-  --border: #27272a;
-  --border-bright: #3f3f46;
+  --bg: #0a0a0c;
+  --bg-elevated: #111114;
+  --bg-surface: #17171a;
+  --bg-hover: #1e1e22;
+  --border: #222228;
+  --border-bright: #333340;
 
-  --text: #e4e4e7;
-  --text-muted: #a1a1aa;
-  --text-dim: #71717a;
+  --text: #e0e0e6;
+  --text-muted: #9090a0;
+  --text-dim: #606070;
 
   --accent: #8b5cf6;
   --accent-hover: #a78bfa;
-  --accent-dim: rgba(139, 92, 246, 0.15);
+  --accent-dim: rgba(139, 92, 246, 0.12);
 
-  --green: #22c55e;
+  --green: #4ade80;
   --blue: #3b82f6;
-  --red: #ef4444;
-  --yellow: #eab308;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --orange: #f97316;
+  --cyan: #22d3ee;
 
-  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
-  --font-mono: "Geist Mono", "JetBrains Mono", "Fira Code", monospace;
+  /* section palette */
+  --color-relays: #a78bfa;
+  --color-lightning: #fbbf24;
+  --color-agents: #22d3ee;
+  --color-gateway: #f97316;
+  --color-sim: #f87171;
+  --color-deploy: #4ade80;
 
-  --radius-sm: 4px;
-  --radius-md: 5px;
-  --radius-lg: 8px;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  --radius: 1px;
 }
 
 * {
@@ -41,7 +49,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -62,19 +70,13 @@ code, pre {
 pre {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 1rem;
   overflow-x: auto;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
 }
 
-/* Grain overlay */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.025;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+::selection {
+  background: var(--accent-dim);
+  color: var(--text);
 }

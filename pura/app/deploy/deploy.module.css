@@ -1,107 +1,196 @@
+/* Deploy page – terminal aesthetic */
+
+.main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+
+.rule {
+  flex: 1;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.title {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-bottom: 1.5rem;
+}
+
+/* ── plans ── */
+
 .plans {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .planCard {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
+  border-radius: var(--radius);
+  padding: 1rem;
 }
 
 .planName {
-  font-size: 0.95rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
 }
 
 .planPrice {
-  font-size: 1.3rem;
+  font-family: var(--font-mono);
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 0.75rem;
+  color: var(--color-deploy);
+  margin-bottom: 0.6rem;
 }
 
 .planFeatures {
   list-style: none;
   padding: 0;
   margin: 0;
-  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
   color: var(--text-muted);
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.2rem;
 }
 
 .planFeatures li::before {
-  content: "- ";
+  content: "· ";
   color: var(--text-dim);
 }
 
-.authSection {
+/* ── auth ── */
+
+.authBlock {
   text-align: center;
-  padding: 1.5rem 0;
+  padding: 1rem 0;
+}
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--color-deploy);
+  background: transparent;
+  border: 1px solid var(--color-deploy);
+  border-radius: var(--radius);
+  padding: 0.35rem 1rem;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(74, 222, 128, 0.08);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .error {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   color: var(--red);
-  font-size: 0.78rem;
   margin-top: 0.5rem;
 }
 
-.dashboard {
-  margin-bottom: 2rem;
-}
+/* ── post-auth dashboard ── */
 
-.infoGrid {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1rem 1.25rem;
-}
-
-.infoRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.kvGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border);
 }
 
-.infoRow:last-child {
-  border-bottom: none;
-}
-
-.infoLabel {
-  font-size: 0.72rem;
+.kvLabel {
   color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
 }
 
-.infoValue {
+.kvValue {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── provisioning ── */
+
+.provisionBlock {
+  margin-top: 0.5rem;
+}
+
+.subdomainRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.input {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--text);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.6rem;
+  outline: none;
+  width: 160px;
 }
 
-.provisionSection {
-  margin-bottom: 2rem;
+.input:focus {
+  border-color: var(--border-bright);
 }
 
-.domainSuffix {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
+.input::placeholder {
   color: var(--text-dim);
-  display: flex;
-  align-items: center;
 }
 
-@media (max-width: 768px) {
+.suffix {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+
+@media (max-width: 640px) {
   .plans {
     grid-template-columns: 1fr;
+  }
+
+  .subdomainRow {
+    flex-wrap: wrap;
   }
 }

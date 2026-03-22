@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import styles from "../page.module.css";
-import deployStyles from "./deploy.module.css";
+import s from "./deploy.module.css";
 
 type AuthState =
   | { status: "unauthenticated" }
@@ -72,21 +71,26 @@ export default function DeployPage() {
     setError("");
 
     try {
-      const nostr = (window as unknown as { nostr?: { getPublicKey(): Promise<string>; signEvent(e: unknown): Promise<unknown> } }).nostr;
+      const nostr = (
+        window as unknown as {
+          nostr?: {
+            getPublicKey(): Promise<string>;
+            signEvent(e: unknown): Promise<unknown>;
+          };
+        }
+      ).nostr;
       if (!nostr) {
-        setError("No Nostr extension found. Install nos2x, Alby, or another NIP-07 extension.");
+        setError(
+          "No Nostr extension found. Install nos2x, Alby, or another NIP-07 extension.",
+        );
         setAuth({ status: "unauthenticated" });
         return;
       }
 
-      // Get challenge
       const challengeRes = await fetch("/api/deploy/auth");
       const { id: challengeId, challenge } = await challengeRes.json();
-
-      // Get public key
       const pubkey = await nostr.getPublicKey();
 
-      // Sign challenge event
       const event = await nostr.signEvent({
         kind: 22242,
         created_at: Math.floor(Date.now() / 1000),
@@ -95,7 +99,6 @@ export default function DeployPage() {
         pubkey,
       });
 
-      // Verify
       const verifyRes = await fetch("/api/deploy/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,7 +120,6 @@ export default function DeployPage() {
     }
   }, []);
 
-  // Fetch relay status after auth
   useEffect(() => {
     if (auth.status !== "authenticated") return;
     fetch(`/api/deploy/status?pubkey=${auth.pubkey}`)
@@ -144,8 +146,9 @@ export default function DeployPage() {
         setError(data.error || "Provisioning failed");
         return;
       }
-      // Refresh status
-      const statusRes = await fetch(`/api/deploy/status?pubkey=${auth.pubkey}`);
+      const statusRes = await fetch(
+        `/api/deploy/status?pubkey=${auth.pubkey}`,
+      );
       if (statusRes.ok) setRelay(await statusRes.json());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Provisioning failed");
@@ -154,21 +157,27 @@ export default function DeployPage() {
     }
   }, [auth, subdomain]);
 
-  // Pre-auth: marketing page
+  // Pre-auth view
   if (auth.status !== "authenticated") {
     return (
-      <main className={styles.main}>
-        <h1 className={styles.title}>Deploy your Nostr relay</h1>
-        <p className={styles.subtitle}>
-          Your personal relay in 60 seconds. No email, no password. Sign in with Nostr.
+      <main className={s.main}>
+        <div className={s.head}>
+          <span style={{ color: "var(--color-deploy)" }}>── DEPLOY</span>
+          <hr className={s.rule} />
+        </div>
+
+        <h1 className={s.title}>Deploy your Nostr relay</h1>
+        <p className={s.subtitle}>
+          Your personal relay in 60 seconds. No email, no password. Sign in
+          with Nostr.
         </p>
 
-        <div className={deployStyles.plans}>
+        <div className={s.plans}>
           {PLANS.map((plan) => (
-            <div key={plan.id} className={deployStyles.planCard}>
-              <h3 className={deployStyles.planName}>{plan.name}</h3>
-              <div className={deployStyles.planPrice}>{plan.price}</div>
-              <ul className={deployStyles.planFeatures}>
+            <div key={plan.id} className={s.planCard}>
+              <div className={s.planName}>{plan.name}</div>
+              <div className={s.planPrice}>{plan.price}</div>
+              <ul className={s.planFeatures}>
                 {plan.features.map((f) => (
                   <li key={f}>{f}</li>
                 ))}
@@ -177,97 +186,92 @@ export default function DeployPage() {
           ))}
         </div>
 
-        <div className={deployStyles.authSection}>
+        <div className={s.authBlock}>
           <button
-            className={styles.button}
+            className={s.btn}
             onClick={signIn}
             disabled={auth.status === "authenticating"}
           >
             {auth.status === "authenticating"
-              ? "Signing in..."
-              : "Sign in with Nostr"}
+              ? "signing in..."
+              : "sign in with nostr →"}
           </button>
-          {error && <p className={deployStyles.error}>{error}</p>}
+          {error && <p className={s.error}>{error}</p>}
         </div>
       </main>
     );
   }
 
-  // Post-auth: dashboard or provisioning
+  // Post-auth view
   return (
-    <main className={styles.main}>
-      <h1 className={styles.title}>Your relay</h1>
-      <p className={styles.subtitle}>
-        Signed in as {auth.pubkey.slice(0, 8)}...{auth.pubkey.slice(-4)}
+    <main className={s.main}>
+      <div className={s.head}>
+        <span style={{ color: "var(--color-deploy)" }}>── DEPLOY</span>
+        <hr className={s.rule} />
+      </div>
+
+      <h1 className={s.title}>Your relay</h1>
+      <p className={s.subtitle}>
+        signed in as {auth.pubkey.slice(0, 8)}…{auth.pubkey.slice(-4)}
       </p>
 
       {relay ? (
-        <div className={deployStyles.dashboard}>
-          <div className={styles.stats}>
-            <div className={styles.stat}>
-              <div className={styles.statLabel}>Status</div>
-              <div className={styles.statValue}>Online</div>
-            </div>
-            <div className={styles.stat}>
-              <div className={styles.statLabel}>Events</div>
-              <div className={styles.statValue}>{relay.eventCount.toLocaleString()}</div>
-            </div>
-            <div className={styles.stat}>
-              <div className={styles.statLabel}>Storage</div>
-              <div className={styles.statValue}>
-                {(relay.storageUsedBytes / 1024 / 1024).toFixed(1)} MB
-              </div>
-            </div>
-          </div>
-
-          <div className={deployStyles.infoGrid}>
-            <div className={deployStyles.infoRow}>
-              <span className={deployStyles.infoLabel}>URL</span>
-              <code className={deployStyles.infoValue}>{relay.relay_url}</code>
-            </div>
-            <div className={deployStyles.infoRow}>
-              <span className={deployStyles.infoLabel}>Plan</span>
-              <span className={deployStyles.infoValue}>{relay.plan}</span>
-            </div>
-            <div className={deployStyles.infoRow}>
-              <span className={deployStyles.infoLabel}>Name</span>
-              <span className={deployStyles.infoValue}>{relay.relayName}</span>
-            </div>
+        <>
+          <div className={s.kvGrid}>
+            <span className={s.kvLabel}>status</span>
+            <span className={s.kvValue}>
+              <span style={{ color: "var(--green)" }}>● online</span>
+            </span>
+            <span className={s.kvLabel}>events</span>
+            <span className={s.kvValue}>
+              {relay.eventCount.toLocaleString()}
+            </span>
+            <span className={s.kvLabel}>storage</span>
+            <span className={s.kvValue}>
+              {(relay.storageUsedBytes / 1024 / 1024).toFixed(1)} MB
+            </span>
+            <span className={s.kvLabel}>url</span>
+            <span className={s.kvValue}>{relay.relay_url}</span>
+            <span className={s.kvLabel}>plan</span>
+            <span className={s.kvValue}>{relay.plan}</span>
+            <span className={s.kvLabel}>name</span>
+            <span className={s.kvValue}>{relay.relayName}</span>
             {relay.customDomain && (
-              <div className={deployStyles.infoRow}>
-                <span className={deployStyles.infoLabel}>Domain</span>
-                <span className={deployStyles.infoValue}>{relay.customDomain}</span>
-              </div>
+              <>
+                <span className={s.kvLabel}>domain</span>
+                <span className={s.kvValue}>{relay.customDomain}</span>
+              </>
             )}
-            <div className={deployStyles.infoRow}>
-              <span className={deployStyles.infoLabel}>Created</span>
-              <span className={deployStyles.infoValue}>
-                {new Date(relay.createdAt).toLocaleDateString()}
-              </span>
-            </div>
+            <span className={s.kvLabel}>created</span>
+            <span className={s.kvValue}>
+              {new Date(relay.createdAt).toLocaleDateString()}
+            </span>
           </div>
-        </div>
+        </>
       ) : (
-        <div className={deployStyles.provisionSection}>
-          <h2 className={styles.sectionTitle}>Choose your subdomain</h2>
-          <div className={styles.routeInputs}>
+        <div className={s.provisionBlock}>
+          <div className={s.subdomainRow}>
             <input
               type="text"
-              className={styles.input}
+              className={s.input}
               placeholder="yourname"
               value={subdomain}
-              onChange={(e) => setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+              onChange={(e) =>
+                setSubdomain(
+                  e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
+                )
+              }
             />
-            <span className={deployStyles.domainSuffix}>.pura.xyz</span>
+            <span className={s.suffix}>.pura.xyz</span>
             <button
-              className={styles.button}
+              className={s.btn}
               onClick={provision}
               disabled={provisioning || subdomain.length < 3}
             >
-              {provisioning ? "Creating..." : "Create relay"}
+              {provisioning ? "creating..." : "create relay →"}
             </button>
           </div>
-          {error && <p className={deployStyles.error}>{error}</p>}
+          {error && <p className={s.error}>{error}</p>}
         </div>
       )}
     </main>

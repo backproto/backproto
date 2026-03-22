@@ -5,21 +5,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
-  padding: 0 1.5rem;
-  background: rgba(9, 9, 11, 0.85);
-  backdrop-filter: blur(12px);
+  height: 40px;
+  padding: 0 1.25rem;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text);
   text-decoration: none;
+  letter-spacing: -0.01em;
 }
 
 .brandIcon {
@@ -28,35 +29,31 @@
 
 .links {
   display: flex;
-  gap: 0.25rem;
+  gap: 0.15rem;
   align-items: center;
 }
 
 .link {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-family: var(--font-mono);
-  color: var(--text-muted);
+  color: var(--text-dim);
   text-decoration: none;
-  padding: 0.35rem 0.65rem;
-  border-radius: var(--radius-md);
-  transition: color 0.15s, background 0.15s;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  transition: color 0.12s;
 }
 
 .link:hover {
-  color: var(--text);
-  background: var(--bg-hover);
-}
-
-.linkActive {
-  color: var(--accent);
-  background: var(--accent-dim);
+  color: var(--link-color, var(--text));
 }
 
 .external {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
   color: var(--text-dim);
   text-decoration: none;
-  padding: 0.35rem 0.5rem;
+  padding: 0.25rem 0.4rem;
+  margin-left: 0.25rem;
 }
 
 .external:hover {
@@ -65,7 +62,7 @@
 
 @media (max-width: 768px) {
   .nav {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
 
   .links {
@@ -73,7 +70,11 @@
   }
 
   .link {
-    font-size: 0.72rem;
-    padding: 0.3rem 0.45rem;
+    font-size: 0.66rem;
+    padding: 0.2rem 0.3rem;
+  }
+
+  .external {
+    display: none;
   }
 }
