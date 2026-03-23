@@ -36,3 +36,6 @@ export * as systemState from "./actions/systemState.js";
 
 // Signing helpers
 export * from "./signing.js";
+
+// Standard protocol object schemas
+export * from "./schemas.js";

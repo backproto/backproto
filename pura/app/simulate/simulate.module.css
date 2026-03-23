@@ -1,0 +1,60 @@
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--foreground, #e0e0e0);
+}
+
+.head { margin-bottom: 1.5rem; }
+.head span {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.rule {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 0.4rem 0 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid #222;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+
+.card:hover {
+  border-color: var(--amber, #d97706);
+}
+
+.cardTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.cardDesc {
+  font-size: 0.72rem;
+  color: #888;
+  line-height: 1.5;
+  margin: 0 0 0.75rem;
+}
+
+.cardLink {
+  font-size: 0.7rem;
+  color: var(--amber, #d97706);
+}
+
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+}

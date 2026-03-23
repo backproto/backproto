@@ -1,0 +1,133 @@
+---
+title: "Shadow mode"
+order: 15
+description: Install the @pura/shadow sidecar to measure what BPE would do for your service — before committing to on-chain registration.
+---
+
+Shadow mode lets you instrument any existing DVM, relay, LLM endpoint, or agent service with capacity metrics. You get a BPE comparison report showing how many requests would be rerouted, what congestion pricing would look like, and the revenue delta — without touching the blockchain.
+
+## Install
+
+```bash
+npm install @pura/shadow
+```
+
+Zero external dependencies for the core metrics engine.
+
+## Quick start
+
+```typescript
+import { createShadow } from "@pura/shadow";
+
+const shadow = createShadow({ windowMs: 60_000 });
+
+// Record events as they happen
+shadow.record({
+  type: "request",
+  timestamp: Date.now(),
+  sink: "my-dvm",
+});
+
+shadow.record({
+  type: "completion",
+  timestamp: Date.now(),
+  latencyMs: 245,
+  sink: "my-dvm",
+});
+
+// Get aggregated metrics
+const metrics = shadow.getMetrics();
+console.log(metrics.completionRate); // 0.95
+console.log(metrics.throughput);     // 14.2/s
+
+// Run BPE shadow comparison
+const comparison = shadow.simulate();
+console.log(comparison.shadowReroutedCount);     // 12
+console.log(comparison.shadowRevenueDeltaMsat);   // +8400
+console.log(comparison.shadowPriceSignalCount);   // 2
+```
+
+## Express/Hono middleware
+
+If your service runs on Express or Hono, the middleware mode records events automatically:
+
+```typescript
+import express from "express";
+import { createShadow } from "@pura/shadow";
+
+const app = express();
+const shadow = createShadow();
+
+app.use(shadow.middleware());
+
+// Your existing routes stay exactly the same
+app.post("/api/translate", (req, res) => {
+  // ...handle NIP-90 job
+  res.json({ result: "..." });
+});
+```
+
+The middleware records a `request` event on entry and a `completion`/`failure`/`timeout` event on response, with latency automatically measured.
+
+Set the `X-Sink-Id` header on incoming requests to break metrics out per sink.
+
+## Metrics HTTP server
+
+For remote monitoring, start the built-in metrics server:
+
+```typescript
+import { createShadow, startServer } from "@pura/shadow";
+
+const shadow = createShadow();
+startServer(shadow, { port: 3099, host: "127.0.0.1" });
+```
+
+Endpoints:
+
+| Route | Description |
+|-------|-------------|
+| GET /metrics | Current window ShadowMetrics as JSON |
+| GET /simulate | BPE comparison SimulationResult as JSON |
+| GET /health | `{ "status": "ok" }` |
+
+The Pura monitor dashboard at `/monitor` connects to this endpoint automatically. Set `SHADOW_URL` in your Pura app environment to point at your sidecar.
+
+## BPE comparison engine
+
+The shadow simulator ports the BPE allocation logic from the on-chain contracts:
+
+- Boltzmann soft-max routing: $P(i) = \exp(c_i / \tau) / \sum_j \exp(c_j / \tau)$
+- EWMA capacity smoothing: $s_{t+1} = \alpha \cdot r_t + (1 - \alpha) \cdot s_t$ with $\alpha = 0.3$
+- Congestion pricing: $\text{price} = \text{baseFee} \times (1 + \gamma \times \text{queueLoad} / \text{capacity})$
+
+The comparison shows what would change if BPE were active: which requests get rerouted, which sinks trigger congestion pricing, and the revenue implications.
+
+## Configuration
+
+```typescript
+const shadow = createShadow({
+  windowMs: 60_000,   // Sliding window size (default: 60s)
+  bufferSize: 10_000, // Circular buffer capacity (default: 10k events)
+  simulator: {
+    baseFee: 1000,     // msat (default: 1000)
+    gamma: 0.5,        // Congestion multiplier (default: 0.5)
+    temperature: 1.0,  // Boltzmann τ (default: 1.0)
+    alpha: 0.3,        // EWMA smoothing (default: 0.3)
+  },
+});
+```
+
+## From shadow to production
+
+When the numbers make sense, upgrading from shadow mode to full on-chain registration takes one SDK call:
+
+```typescript
+import { registerSink } from "@pura/sdk/actions/capacity";
+
+await registerSink(walletClient, {
+  taskTypeId: keccak256(toBytes("nip90:5000")),
+  initialCapacity: 100n,
+});
+```
+
+Your service then participates in the protocol's payment pool, receiving revenue proportional to verified throughput.

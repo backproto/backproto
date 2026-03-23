@@ -1,0 +1,210 @@
+/* Animated routing visualization — 4 nodes with capacity bars + payment streams */
+
+.wrap {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  height: 120px;
+  margin: 0.6rem 0 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  overflow: hidden;
+}
+
+/* ── nodes ── */
+
+.nodes {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 2;
+}
+
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 80px;
+}
+
+.nodeLabel {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.58rem;
+}
+
+.nodeBox {
+  width: 64px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.62rem;
+  background: var(--bg-elevated);
+  position: relative;
+}
+
+.nodeBox::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.nodeRelay .nodeBox::after { background: var(--color-relays); }
+.nodeDvm .nodeBox::after { background: var(--amber); }
+.nodeLlm .nodeBox::after { background: var(--color-gateway); }
+.nodeAgent .nodeBox::after { background: var(--color-agents); }
+
+/* ── capacity bar under each node ── */
+
+.capBar {
+  width: 56px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.15rem;
+}
+
+.capFill {
+  height: 100%;
+  border-radius: 2px;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.nodeRelay .capFill { background: var(--color-relays); width: 72%; animation-delay: 0s; }
+.nodeDvm .capFill { background: var(--amber); width: 45%; animation-delay: 0.8s; }
+.nodeLlm .capFill { background: var(--color-gateway); width: 88%; animation-delay: 1.6s; }
+.nodeAgent .capFill { background: var(--color-agents); width: 35%; animation-delay: 2.4s; }
+
+.capLabel {
+  font-size: 0.52rem;
+  color: var(--text-dim);
+  margin-top: 0.1rem;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* ── payment streams (animated lines between nodes) ── */
+
+.streams {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  z-index: 1;
+}
+
+.stream {
+  position: absolute;
+  height: 1px;
+  top: 16px;
+  opacity: 0.4;
+}
+
+.stream::before {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 3px;
+  border-radius: 1.5px;
+  top: -1px;
+  animation: flowRight 2s linear infinite;
+}
+
+.stream1 {
+  left: 72px;
+  right: calc(100% - 72px * 2 - 80px);
+  width: calc(25% - 20px);
+  left: 12.5%;
+  background: var(--color-relays);
+}
+.stream1::before { background: var(--color-relays); animation-delay: 0s; }
+
+.stream2 {
+  width: calc(25% - 20px);
+  left: 37.5%;
+  background: var(--amber);
+}
+.stream2::before { background: var(--amber); animation-delay: 0.7s; }
+
+.stream3 {
+  width: calc(25% - 20px);
+  left: 62.5%;
+  background: var(--color-gateway);
+}
+.stream3::before { background: var(--color-gateway); animation-delay: 1.4s; }
+
+@keyframes flowRight {
+  0% { left: -12px; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: calc(100% + 12px); opacity: 0; }
+}
+
+/* ── reroute arrow (shows BPE routing around congested node) ── */
+
+.reroute {
+  position: absolute;
+  top: 52px;
+  left: 25%;
+  width: 50%;
+  height: 24px;
+  z-index: 1;
+}
+
+.reroutePath {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border: 1px dashed var(--amber);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  opacity: 0;
+  animation: rerouteFlash 6s ease-in-out infinite;
+}
+
+.rerouteLabel {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  color: var(--amber);
+  white-space: nowrap;
+  opacity: 0;
+  animation: rerouteFlash 6s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+
+@keyframes rerouteFlash {
+  0%, 60%, 100% { opacity: 0; }
+  70%, 90% { opacity: 0.6; }
+}
+
+/* ── responsive ── */
+
+@media (max-width: 640px) {
+  .wrap { height: 100px; }
+  .nodeBox { width: 48px; height: 26px; font-size: 0.54rem; }
+  .node { min-width: 56px; }
+  .capBar { width: 40px; }
+  .nodeLabel { font-size: 0.5rem; }
+}

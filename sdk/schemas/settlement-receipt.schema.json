@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pura.xyz/schemas/settlement-receipt.json",
+  "title": "SettlementReceipt",
+  "description": "A record of a completed payment settlement. Created after funds have been transferred via one of the settlement rails (Superfluid, Lightning, Direct).",
+  "type": "object",
+  "required": ["jobId", "provider", "amount", "rail", "timestamp"],
+  "properties": {
+    "jobId": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{64}$",
+      "description": "Unique job identifier (bytes32 hex)"
+    },
+    "provider": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$",
+      "description": "Ethereum address of the provider who received payment"
+    },
+    "amount": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Settlement amount in token base units (uint256 as string)"
+    },
+    "rail": {
+      "type": "string",
+      "enum": ["SUPERFLUID", "LIGHTNING", "DIRECT"],
+      "description": "Settlement rail used"
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unix timestamp when settlement occurred"
+    },
+    "txHash": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{64}$",
+      "description": "On-chain transaction hash of the settlement"
+    },
+    "streamId": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{64}$",
+      "description": "Stream ID for Superfluid settlements"
+    },
+    "preimage": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]+$",
+      "description": "HTLC preimage for Lightning settlements"
+    },
+    "chainId": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Chain ID where settlement occurred"
+    }
+  },
+  "additionalProperties": false
+}

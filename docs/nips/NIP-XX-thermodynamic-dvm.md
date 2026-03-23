@@ -98,6 +98,33 @@ The following tags are added to DVM result events (kind 6xxx):
 
 If a pipeline stage enters Shock or Collapse phase (tracked in the Pipeline contract), the corresponding task type is temporarily suspended. Clients receiving a `StageCollapse` event from the SystemStateEmitter should route to alternative task types or queue the request.
 
+### Kind 1090: congestion feedback
+
+A new ephemeral event kind for broadcasting congestion price signals to clients.
+
+```json
+{
+  "kind": 1090,
+  "content": "",
+  "tags": [
+    ["task_type", "<taskTypeId hex>"],
+    ["sink", "<DVM pubkey>"],
+    ["price", "<msat>"],
+    ["base_fee", "<msat>"],
+    ["utilization_bps", "<0-10000>"],
+    ["congestion_multiplier", "<float>"],
+    ["temperature", "<τ>"],
+    ["epoch", "<epoch number>"]
+  ]
+}
+```
+
+Publishers: any relay or aggregator that reads on-chain PricingCurve state. Clients subscribe to kind 1090 filtered by task_type to receive real-time congestion updates.
+
+The price field is computed as: `baseFee × (1 + γ × queueLoad / capacity)` where γ defaults to 0.5. When utilization exceeds 50% (5000 bps), the congestion multiplier rises above 1.0 and clients should consider alternative sinks.
+
+Events are ephemeral (not stored by relays). Recommended publish rate: once per epoch or on congestion state change.
+
 ## Security considerations
 
 - Boltzmann routing is computed off-chain; a malicious client could ignore it. Economic incentives (payment pools only pay registered DVMs) make defection unprofitable.
@@ -106,6 +133,8 @@ If a pipeline stage enters Shock or Collapse phase (tracked in the Pipeline cont
 
 ## Reference implementation
 
-- Contracts: `TemperatureOracle.sol`, `VirialMonitor.sol`, `SystemStateEmitter.sol`
-- SDK: `@pura/sdk` — `temperature`, `virial`, `systemState` action modules
+- Contracts: `TemperatureOracle.sol`, `VirialMonitor.sol`, `SystemStateEmitter.sol`, `DVMCapacityAdapter.sol`, `DVMCompletionVerifier.sol`, `DVMPricingCurve.sol`
+- Settlement adapters: `SuperfluidSettlementAdapter.sol`, `LightningSettlementAdapter.sol`, `DirectSettlementAdapter.sol`
+- SDK: `@pura/sdk` — `temperature`, `virial`, `systemState` action modules, schema types (`JobIntent`, `PriceSignal`, `SettlementReceipt`)
+- Shadow sidecar: `@pura/shadow` — zero-config metrics collection, BPE comparison engine
 - Simulation: `simulation/bpe_sim.py` experiment E6 (Boltzmann temperature sweep)

@@ -1,0 +1,126 @@
+---
+title: "Four planes"
+order: 17
+description: Capacity, Verification, Pricing, and Settlement — the four planes that make up the Pura protocol stack.
+---
+
+Pura's on-chain logic is organized into four planes. Each plane owns one concern, has its own contracts and adapters, and communicates with adjacent planes through the five standard objects.
+
+```
+┌─────────────────────────────────────┐
+│  Settlement plane                   │  ← pays
+├─────────────────────────────────────┤
+│  Pricing plane                      │  ← prices
+├─────────────────────────────────────┤
+│  Verification plane                 │  ← proves
+├─────────────────────────────────────┤
+│  Capacity plane                     │  ← measures
+└─────────────────────────────────────┘
+```
+
+Data flows upward: capacity measurements feed verification, verified completions feed pricing, and pricing feeds settlement.
+
+## Capacity plane
+
+The capacity plane answers one question: how much throughput does each sink have right now?
+
+Contracts:
+
+| Contract | Role |
+|----------|------|
+| CapacityRegistry | Register sinks, store raw and EWMA-smoothed capacity per task type |
+| CapacityStaking | Stake tokens to back capacity claims; √stake cap prevents whale dominance |
+| DVMCapacityAdapter | Reads NIP-90 kind capacity (kinds 5000–5999), applies EWMA |
+
+The EWMA smoothing prevents gaming. A sink can't flash-report high capacity for one epoch and then disappear. The smoothing formula ($\alpha = 0.3$):
+
+$$s_{t+1} = 0.3 \cdot r_t + 0.7 \cdot s_t$$
+
+This means it takes roughly 7 epochs for a new sink's smoothed capacity to reach 90% of its raw capacity. Quick upward jumps get dampened; sustained performance gets rewarded.
+
+The capacity plane emits CapacityAttestation objects. These flow into the verification plane (to check that completed work matches claimed capacity) and into the pricing plane (as a denominator in the congestion formula).
+
+## Verification plane
+
+The verification plane answers: did this sink actually complete the work?
+
+Contracts:
+
+| Contract | Role |
+|----------|------|
+| CompletionTracker | Record verified completions per sink per epoch |
+| DVMCompletionVerifier | Validate dual-signed DVM results, forward to CompletionTracker |
+
+Every completion requires two EIP-712 signatures:
+
+1. The sink signs the result hash after producing it
+2. An independent verification oracle checks the result and countersigns
+
+Both signatures must recover to the expected addresses on-chain. If either is missing or invalid, the completion is rejected. This prevents sinks from self-certifying work they didn't do.
+
+The verifier emits VerificationReceipt objects. Verified completions per epoch feed into the pricing plane (as the numerator measuring actual load) and into the settlement plane (as the trigger for payment).
+
+## Pricing plane
+
+The pricing plane answers: what should this job cost right now?
+
+Contracts:
+
+| Contract | Role |
+|----------|------|
+| PricingCurve | Base fee + congestion multiplier per task type |
+| DVMPricingCurve | Kind-specific weight overlays for NIP-90 task types |
+| TemperatureOracle | System-wide Boltzmann temperature τ for allocation |
+
+The congestion pricing formula:
+
+$$\text{price} = \text{baseFee} \times \left(1 + \gamma \cdot \frac{\text{completions}_\text{epoch}}{\text{capacity}_\text{smoothed}}\right)$$
+
+When completions per epoch approach smoothed capacity, the congestion multiplier rises. This creates a feedback signal: sources see prices rise on congested sinks and shift to cheaper alternatives. The Boltzmann allocation mechanism uses these prices to distribute jobs:
+
+$$P(\text{sink}_i) = \frac{\exp(c_i / \tau)}{\sum_j \exp(c_j / \tau)}$$
+
+Higher temperature τ means more exploration (spreading load across sinks). Lower temperature means more exploitation (concentrating on the highest-capacity sinks). The TemperatureOracle adjusts τ based on system-wide utilization.
+
+The pricing plane emits PriceSignal objects. These are broadcast as Kind 1090 Nostr events so every relay and client in the network sees current pricing.
+
+## Settlement plane
+
+The settlement plane answers: how does the money move?
+
+Contracts:
+
+| Contract | Role |
+|----------|------|
+| PaymentPool | Epoch-based pool that distributes revenue proportional to verified completions |
+| ISettlementAdapter | Abstract interface for settlement rails |
+| SuperfluidSettlementAdapter | GDA streaming payments (linear accrual per second) |
+| LightningSettlementAdapter | HTLC-based Lightning payments (sha256 preimage, 86400s timeout) |
+| DirectSettlementAdapter | ERC-20 transfers from escrow |
+
+Three settlement rails, chosen per sink preference:
+
+**Lightning** — for sinks that want instant settlement in sats. The adapter creates an HTLC with a 24-hour timeout. The sink reveals the preimage to claim payment. If the preimage isn't revealed in time, the escrow returns to the pool.
+
+**Superfluid streaming** — for sinks that want continuous cash flow. The adapter opens a GDA (General Distribution Agreement) stream. Revenue accrues linearly every second, withdrawable at any time.
+
+**Direct ERC-20** — for sinks that want simple token transfers. The adapter locks tokens in escrow on job acceptance and releases them on verified completion.
+
+The settlement plane emits SettlementReceipt objects, closing the loop.
+
+## How the planes connect
+
+A request moves through all four planes:
+
+1. Source publishes a **JobIntent**
+2. Capacity plane reads smoothed capacity → emits **CapacityAttestation**
+3. Boltzmann allocation routes the job to a sink
+4. Sink produces a result, dual-signed → verification plane emits **VerificationReceipt**
+5. Pricing plane computes congestion-adjusted fee → emits **PriceSignal**
+6. Settlement plane pays the sink via the chosen rail → emits **SettlementReceipt**
+
+The circuit breaker (in EpochController) monitors this flow. If a sink's completion rate drops below 50% for three consecutive epochs, it's automatically deregistered. The SystemStateEmitter broadcasts a Kind 1090 event so the network responds immediately.
+
+## Contract inventory
+
+32 contracts in total across the four planes, with 319+ passing tests. See the [contracts README](/docs/contracts) for the full list and deployment addresses.

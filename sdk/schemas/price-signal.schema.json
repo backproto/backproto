@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pura.xyz/schemas/price-signal.json",
+  "title": "PriceSignal",
+  "description": "A congestion-driven price signal emitted by the PricingCurve. Contains the current price for a specific sink and task type, plus the underlying pricing components.",
+  "type": "object",
+  "required": ["taskTypeId", "sink", "price", "baseFee", "timestamp"],
+  "properties": {
+    "taskTypeId": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{64}$",
+      "description": "BPE task type identifier (bytes32 hex)"
+    },
+    "sink": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$",
+      "description": "Ethereum address of the provider"
+    },
+    "price": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Current price per capacity unit (uint256 as string)"
+    },
+    "baseFee": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Current epoch base fee (uint256 as string)"
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unix timestamp when signal was read"
+    },
+    "queueLoad": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Current queue load for this sink"
+    },
+    "capacity": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Current smoothed capacity for this sink"
+    },
+    "utilizationBps": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Utilization ratio in basis points (10000 = 100%)"
+    },
+    "escrowPressure": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Escrow buffer pressure (1e18 scaled)"
+    },
+    "kindWeight": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "DVM kind weight in BPS (10000 = 1.0x)"
+    }
+  },
+  "additionalProperties": false
+}

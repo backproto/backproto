@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pura.xyz/schemas/job-intent.json",
+  "title": "JobIntent",
+  "description": "A job request from a source to a DVM or agent. Contains the input parameters, budget, and routing preferences.",
+  "type": "object",
+  "required": ["id", "source", "kind", "input", "maxBudget", "timestamp"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{64}$",
+      "description": "Unique job identifier (bytes32 hex)"
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$",
+      "description": "Ethereum address of the requester"
+    },
+    "kind": {
+      "type": "integer",
+      "minimum": 5000,
+      "maximum": 5999,
+      "description": "NIP-90 kind number"
+    },
+    "input": {
+      "type": "string",
+      "description": "Job input payload (content of the NIP-90 request event)"
+    },
+    "maxBudget": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Maximum payment in token base units (uint256 as string)"
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unix timestamp in seconds"
+    },
+    "preferredSinks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^0x[0-9a-fA-F]{40}$"
+      },
+      "description": "Optional preferred provider addresses"
+    },
+    "settlementRail": {
+      "type": "string",
+      "enum": ["SUPERFLUID", "LIGHTNING", "DIRECT"],
+      "description": "Preferred settlement mechanism"
+    },
+    "nostrEventId": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$",
+      "description": "Nostr event ID of the NIP-90 request (hex, no 0x prefix)"
+    }
+  },
+  "additionalProperties": false
+}

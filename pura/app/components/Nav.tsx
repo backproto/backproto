@@ -23,6 +23,12 @@ export function Nav() {
         <Link href="/deploy" className={styles.tab}>
           5:deploy<span className={styles.inactive}>-</span>
         </Link>
+        <Link href="/monitor" className={styles.tab}>
+          6:monitor<span className={styles.inactive}>-</span>
+        </Link>
+        <Link href="/simulate" className={styles.tab}>
+          7:sim<span className={styles.inactive}>-</span>
+        </Link>
       </div>
       <div className={styles.right}>
         <span className={styles.net}>

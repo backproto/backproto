@@ -1,0 +1,156 @@
+---
+title: "Five standard objects"
+order: 16
+description: JobIntent, CapacityAttestation, VerificationReceipt, PriceSignal, and SettlementReceipt — the five JSON objects that every Pura message passes through.
+---
+
+Every request that enters the Pura protocol goes through five standard objects. Each one has a JSON Schema in the SDK (`sdk/schemas/`) and a TypeScript type in `@pura/sdk`.
+
+```
+JobIntent → CapacityAttestation → VerificationReceipt → PriceSignal → SettlementReceipt
+```
+
+## 1. JobIntent
+
+A source publishes a JobIntent to request work from the network. This maps to a NIP-90 DVM request event (kinds 5000–5999).
+
+```json
+{
+  "id": "abc123",
+  "sourceId": "npub1...",
+  "taskTypeId": "0xabc...",
+  "payload": { "prompt": "translate this" },
+  "maxFeeMsat": 5000,
+  "createdAt": 1700000000
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | string | Unique job identifier |
+| sourceId | string | Nostr pubkey of the requesting source |
+| taskTypeId | string | keccak256 hash of the NIP-90 kind (e.g. `nip90:5000`) |
+| payload | object | Arbitrary request data for the DVM |
+| maxFeeMsat | integer | Maximum fee the source is willing to pay, in millisatoshis |
+| createdAt | integer | Unix timestamp |
+
+The SDK type:
+
+```typescript
+import type { JobIntent } from "@pura/sdk";
+```
+
+## 2. CapacityAttestation
+
+After the CapacityRegistry registers a sink's capacity, the system emits a CapacityAttestation. This is the signed proof that a sink has available throughput.
+
+```json
+{
+  "sinkId": "0xdef...",
+  "taskTypeId": "0xabc...",
+  "rawCapacity": 100,
+  "ewmaSmoothed": 84.3,
+  "utilization": 0.72,
+  "epoch": 42,
+  "signature": "0x..."
+}
+```
+
+The EWMA smoothing formula ($\alpha = 0.3$ on-chain default):
+
+$$s_{t+1} = \alpha \cdot r_t + (1 - \alpha) \cdot s_t$$
+
+Where $r_t$ is the raw capacity reading and $s_t$ is the previous smoothed value. This dampens flash capacity spikes and prevents gaming.
+
+```typescript
+import type { CapacityAttestationWithMetrics } from "@pura/sdk";
+```
+
+## 3. VerificationReceipt
+
+When a sink completes a job and the result is dual-signed (by both the sink and a verification oracle), the DVMCompletionVerifier emits a VerificationReceipt.
+
+```json
+{
+  "jobId": "abc123",
+  "sinkId": "0xdef...",
+  "taskTypeId": "0xabc...",
+  "resultHash": "0x789...",
+  "sinkSignature": "0x...",
+  "oracleSignature": "0x...",
+  "latencyMs": 245,
+  "verifiedAt": 1700000300
+}
+```
+
+Dual signatures prevent unilateral claims. The sink signs the result, then an independent oracle validates and countersigns. Both EIP-712 typed data signatures must verify on-chain before the CompletionTracker records the completion.
+
+```typescript
+import type { VerificationReceipt } from "@pura/sdk";
+```
+
+## 4. PriceSignal
+
+The PricingCurve contract emits a PriceSignal whenever congestion pricing adjusts fees. This is broadcast as a Kind 1090 Nostr event for network-wide visibility.
+
+```json
+{
+  "taskTypeId": "0xabc...",
+  "baseFee": 1000,
+  "congestionMultiplier": 1.35,
+  "effectivePrice": 1350,
+  "epoch": 42,
+  "publishedAt": 1700000200
+}
+```
+
+The congestion pricing formula:
+
+$$\text{effectivePrice} = \text{baseFee} \times \left(1 + \gamma \cdot \frac{\text{queueLoad}}{\text{capacity}}\right)$$
+
+Where $\gamma$ is the congestion sensitivity parameter. When load exceeds capacity, prices rise smoothly. When load drops, prices fall back toward the base fee.
+
+```typescript
+import type { PriceSignal } from "@pura/sdk";
+```
+
+## 5. SettlementReceipt
+
+After a verified completion, settlement happens through one of three rails. The SettlementReceipt records the payment.
+
+```json
+{
+  "jobId": "abc123",
+  "sinkId": "0xdef...",
+  "amountMsat": 1350,
+  "rail": "lightning",
+  "proof": "preimage:abc...",
+  "settledAt": 1700000400
+}
+```
+
+Three settlement rails:
+
+| Rail | Adapter | Mechanism |
+|------|---------|-----------|
+| lightning | LightningSettlementAdapter | HTLC with sha256 preimage, 86400s timeout |
+| superfluid | SuperfluidSettlementAdapter | GDA stream, linear accrual per second |
+| direct | DirectSettlementAdapter | ERC-20 transfer from escrow |
+
+```typescript
+import type { SettlementReceipt, SettlementRail } from "@pura/sdk";
+```
+
+## JSON Schema validation
+
+All five schemas are available as JSON Schema draft-07 files for runtime validation:
+
+```typescript
+import jobSchema from "@pura/sdk/schemas/job-intent.json";
+import capacitySchema from "@pura/sdk/schemas/capacity-attestation.json";
+import verificationSchema from "@pura/sdk/schemas/verification-receipt.json";
+import priceSchema from "@pura/sdk/schemas/price-signal.json";
+import settlementSchema from "@pura/sdk/schemas/settlement-receipt.json";
+```
+
+Use with any JSON Schema validator (Ajv, Zod schema adapters, etc.) to validate messages at service boundaries.

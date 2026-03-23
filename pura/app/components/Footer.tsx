@@ -21,6 +21,15 @@ export function Footer() {
         <Link href="/deploy" className={styles.win}>
           5:deploy<span className={styles.inactive}>-</span>
         </Link>
+        <Link href="/monitor" className={styles.win}>
+          6:monitor<span className={styles.inactive}>-</span>
+        </Link>
+        <Link href="/simulate" className={styles.win}>
+          7:sim<span className={styles.inactive}>-</span>
+        </Link>
+        <Link href="/pricing" className={styles.win}>
+          8:pricing<span className={styles.inactive}>-</span>
+        </Link>
       </div>
       <div className={styles.right}>
         <a

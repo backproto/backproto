@@ -1,0 +1,154 @@
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--foreground, #e0e0e0);
+}
+
+.head {
+  margin-bottom: 1.5rem;
+}
+
+.head span {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rule {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 0.4rem 0 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.75rem;
+}
+
+.tab {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #333;
+  color: #888;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.tab:hover {
+  border-color: #666;
+  color: #ccc;
+}
+
+.tabActive {
+  composes: tab;
+  border-color: var(--amber, #d97706);
+  color: var(--amber, #d97706);
+}
+
+.statsRow {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.stat {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.75rem;
+  border: 1px solid #222;
+  background: #0d0d0d;
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.3rem;
+}
+
+.statValue {
+  font-size: 1.3rem;
+  color: #e0e0e0;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionHead {
+  font-size: 0.7rem;
+  color: #888;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.tbl th {
+  text-align: left;
+  font-weight: 500;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid #333;
+  color: #888;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tbl td {
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.good { color: #22c55e; }
+.warn { color: #eab308; }
+.bad { color: #ef4444; }
+
+.barOuter {
+  width: 100%;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.barInner {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.empty {
+  color: #555;
+  font-style: italic;
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.shadow {
+  margin-top: 2rem;
+  padding: 0.75rem;
+  border: 1px dashed #333;
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.shadow code {
+  color: var(--amber, #d97706);
+}
+
+@media (max-width: 640px) {
+  .statsRow { gap: 0.75rem; }
+  .stat { min-width: 100%; }
+}

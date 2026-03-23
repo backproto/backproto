@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { AsciiBar } from "./components/AsciiBar";
 import { StatusDot } from "./components/StatusDot";
+import { RoutingViz } from "./components/RoutingViz";
 import {
   generateRelaySeedState,
   generateLightningSeedState,
@@ -80,6 +81,75 @@ function SectionHead({
   );
 }
 
+const PROBLEMS = [
+  {
+    label: "overload without signal",
+    body: "The best relays and DVMs get all the traffic. They overload silently. Mediocre services sit idle. No signal telling callers who has room.",
+  },
+  {
+    label: "payments without proof",
+    body: "Streaming payments keep flowing to saturated providers. Money goes in. Completed work doesn't come out. Nobody verifies actual output.",
+  },
+  {
+    label: "reputation without portability",
+    body: "A reliable relay operator gets no credit when they also run a DVM. Track records are siloed. Good actors can't prove history across services.",
+  },
+];
+
+const SERVICES = [
+  {
+    label: "nostr relays",
+    color: "var(--color-relays)",
+    body: "Deploy a relay on yourname.pura.xyz. Register capacity on-chain. Earn from the relay payment pool proportional to verified throughput.",
+    href: "/deploy",
+  },
+  {
+    label: "nip-90 dvms",
+    color: "var(--amber)",
+    body: "Run a Data Vending Machine for on-demand computation. Register capacity. Get routed jobs when you have headroom. Earn from verified work.",
+    href: "/deploy/dvm",
+  },
+  {
+    label: "llm endpoints",
+    color: "var(--color-gateway)",
+    body: "Multi-provider inference endpoint that routes requests based on real-time capacity. OpenAI-compatible API. Saturated provider? Requests go to whoever has room.",
+    href: "/deploy",
+  },
+  {
+    label: "agent services",
+    color: "var(--color-agents)",
+    body: "Register AI agent skills with throughput, latency, and error rate. Dual-signed completions build portable reputation across service types.",
+    href: "/deploy",
+  },
+];
+
+const PIPELINE = [
+  { step: "declare", desc: "operators sign capacity attestations" },
+  { step: "verify", desc: "dual-signed completions, on-chain proof" },
+  { step: "price", desc: "congestion-driven dynamic pricing" },
+  { step: "route", desc: "Boltzmann allocation to spare capacity" },
+  { step: "buffer", desc: "escrow absorbs overflow, demurrage decays idle funds" },
+];
+
+const COMPARE_ROWS = [
+  {
+    metric: "Capacity awareness",
+    vals: ["None", "None", "Server-side only", "On-chain, signed"],
+  },
+  {
+    metric: "Completion verification",
+    vals: ["None", "None", "None", "Dual-signed + vr.dev"],
+  },
+  {
+    metric: "Economic incentives",
+    vals: ["None", "None", "None", "Streaming payments"],
+  },
+  {
+    metric: "Cross-service reputation",
+    vals: ["None", "None", "None", "Portable, weighted"],
+  },
+];
+
 export default function Dashboard() {
   const [relays, setRelays] = useState<RelayState | null>(null);
   const [lightning, setLightning] = useState<LightningState | null>(null);
@@ -124,25 +194,148 @@ export default function Dashboard() {
 
   return (
     <main className={styles.main}>
+      {/* ═══════════ HERO ═══════════ */}
       <header className={styles.hero}>
-        <h1 className={styles.title}>Pura protocol</h1>
+        <h1 className={styles.title}>
+          The operator platform for verified machine services.
+        </h1>
         <p className={styles.subtitle}>
-          Capacity-routed streaming payments with thermodynamic equilibrium.
-          Relays, Lightning, AI agents, and LLMs on Base Sepolia.
+          Deploy Nostr relays, NIP-90 DVMs, LLM endpoints, and AI agents.
+          Monitor real-time capacity. Verify completions. Earn proportional
+          to verified throughput. Built on Base, settled via Lightning or
+          Superfluid.
         </p>
+        <div className={styles.heroCtas}>
+          <a href="/deploy" className={styles.ctaPrimary}>deploy a service →</a>
+          <a href="/monitor" className={styles.ctaSecondary}>try shadow mode →</a>
+        </div>
+        <RoutingViz />
       </header>
+
+      {/* ═══════════ LIVE STATS BAR ═══════════ */}
+      <div className={styles.statsBar}>
+        <span>base-sepolia testnet</span>
+        <span className={styles.statsBarSep}>│</span>
+        <span>25 contracts</span>
+        <span className={styles.statsBarSep}>│</span>
+        <span>249 tests passing</span>
+        {thermo && (
+          <>
+            <span className={styles.statsBarSep}>│</span>
+            <span>τ = {thermo.temperature}</span>
+            <span className={styles.statsBarSep}>│</span>
+            <span>phase: {thermo.phase}</span>
+          </>
+        )}
+      </div>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ PROBLEM ═══════════ */}
+      <section className={styles.problemSection}>
+        <SectionHead label="the problem" color="var(--red)" />
+        <div className={styles.problemGrid}>
+          {PROBLEMS.map((p) => (
+            <div key={p.label} className={styles.problemCard}>
+              <span className={styles.problemLabel}>
+                {"── "}{p.label.toUpperCase()}
+              </span>
+              <p className={styles.problemBody}>{p.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ SOLUTION PIPELINE ═══════════ */}
+      <section className={styles.section}>
+        <SectionHead label="the solution" color="var(--green)" />
+        <p className={styles.solutionHeadline}>
+          Pura makes capacity observable, completions verifiable, and payments
+          proportional.
+        </p>
+        <div className={styles.pipeline}>
+          {PIPELINE.map((p, i) => (
+            <div key={p.step} className={styles.pipelineStep}>
+              <span className={styles.pipelineNum}>{i + 1}</span>
+              <span className={styles.pipelineName}>{p.step}</span>
+              <span className={styles.pipelineDesc}>{p.desc}</span>
+              {i < PIPELINE.length - 1 && (
+                <span className={styles.pipelineArrow}>→</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ SERVICE TYPES ═══════════ */}
+      <section className={styles.section}>
+        <SectionHead label="what you can deploy" color="var(--amber)" />
+        <div className={styles.serviceGrid}>
+          {SERVICES.map((s) => (
+            <div key={s.label} className={styles.serviceCard}>
+              <span className={styles.serviceLabel} style={{ color: s.color }}>
+                {"── "}{s.label.toUpperCase()}
+              </span>
+              <p className={styles.serviceBody}>{s.body}</p>
+              <a href={s.href} className={styles.docLink}>
+                deploy →
+              </a>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ COMPARISON TABLE ═══════════ */}
+      <section className={styles.section}>
+        <SectionHead label="how it compares" color="var(--text-dim)" />
+        <table className={styles.tbl}>
+          <thead>
+            <tr>
+              <th>metric</th>
+              <th>no coordination</th>
+              <th>round-robin</th>
+              <th>load balancer</th>
+              <th className={styles.highlightCol}>pura</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARE_ROWS.map((r) => (
+              <tr key={r.metric}>
+                <td>{r.metric}</td>
+                {r.vals.map((v, i) => (
+                  <td
+                    key={i}
+                    className={i === 3 ? styles.highlightCol : undefined}
+                  >
+                    {v}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ LIVE PROTOCOL STATE ═══════════ */}
+      <SectionHead label="live protocol state" color="var(--amber)" />
 
       {/* ── SYSTEM STATE — thermodynamic overview ── */}
       <section className={styles.section} id="thermo">
         <SectionHead label="system state" color="var(--amber)" />
         <p className={styles.desc}>
-          The protocol tracks three thermodynamic signals on-chain. Temperature
-          (τ) is derived from attestation variance &mdash; high disagreement means
-          high temperature and more exploratory routing. The virial ratio V
-          measures whether staked collateral and escrowed payments are in
-          equilibrium with throughput (V=1 at balance). Escrow pressure P tracks
-          buffer fill level. Together these drive adaptive pricing, demurrage,
-          and circuit breakers.
+          Three thermodynamic signals on-chain. Temperature (τ) from
+          attestation variance drives exploratory routing. Virial ratio V
+          measures stake-throughput equilibrium (V=1 at balance). Escrow
+          pressure P tracks buffer fill. Together they drive adaptive pricing,
+          demurrage, and circuit breakers.
         </p>
         {thermo ? (
           <>
@@ -187,10 +380,7 @@ export default function Dashboard() {
         ) : (
           <p className={styles.wait}>connecting...</p>
         )}
-        <a
-          href="/docs/contracts"
-          className={styles.docLink}
-        >
+        <a href="/docs/contracts" className={styles.docLink}>
           thermodynamic plan →
         </a>
       </section>
@@ -199,11 +389,11 @@ export default function Dashboard() {
 
       {/* ── DEPLOY — primary conversion ── */}
       <section className={styles.deployBlock} id="deploy">
-        <SectionHead label="deploy a relay" color="var(--color-deploy)" />
+        <SectionHead label="deploy a service" color="var(--color-deploy)" />
         <p className={styles.desc}>
           Get a Nostr relay running on yourname.pura.xyz in under a minute.
           Sign in with any NIP-07 extension (Alby, nos2x), pick a plan, done.
-          No servers to manage, no config files.
+          Or deploy a NIP-90 DVM and start earning from verified completions.
         </p>
         <div className={styles.deployTiers}>
           <div className={styles.tier}>
@@ -219,15 +409,19 @@ export default function Dashboard() {
               registration, payment pool revenue
             </span>
           </div>
+          <div className={styles.tier}>
+            <span className={styles.tierName}>operator</span>
+            <span className={styles.tierPrice}>$29/mo</span>
+            <span className={styles.tierDetail}>
+              50 GB storage, multi-relay configs, advanced analytics,
+              priority support
+            </span>
+          </div>
         </div>
-        <p className={styles.desc}>
-          Pro relays register capacity on-chain through Pura. They earn a
-          share of the relay payment pool proportional to their verified
-          throughput. You run a relay and get paid for it.
-        </p>
-        <a href="/deploy" className={styles.deployCta}>
-          deploy relay →
-        </a>
+        <div className={styles.heroCtas}>
+          <a href="/deploy" className={styles.deployCta}>deploy relay →</a>
+          <a href="/deploy/dvm" className={styles.deployCta}>deploy dvm →</a>
+        </div>
       </section>
 
       <hr className={styles.divider} />
@@ -241,9 +435,7 @@ export default function Dashboard() {
             <p className={styles.desc}>
               On-chain registry of Nostr relay capacity. Operators register
               events/sec, storage, and bandwidth and stake against those numbers.
-              The protocol distributes payment streams proportional to verified
-              capacity, so relays that do more work get paid more. Anti-spam
-              pricing floors prevent free-rider abuse.
+              Payment streams distribute proportional to verified capacity.
             </p>
             {relays ? (
               <>
@@ -291,10 +483,7 @@ export default function Dashboard() {
             ) : (
               <p className={styles.wait}>connecting...</p>
             )}
-            <a
-              href="/docs/contracts"
-              className={styles.docLink}
-            >
+            <a href="/docs/contracts" className={styles.docLink}>
               protocol spec →
             </a>
           </section>
@@ -304,11 +493,9 @@ export default function Dashboard() {
             <SectionHead label="lightning routing" color="var(--color-lightning)" />
             <p className={styles.desc}>
               Capacity-weighted route finding for Lightning. Nodes register
-              channel liquidity on-chain backed by stake. The protocol smooths
-              reported capacity with EWMA to prevent gaming, then computes
-              multi-hop routes based on actual headroom instead of gossip.
-              Operators earn routing fees proportional to their registered
-              capacity.
+              channel liquidity on-chain backed by stake. EWMA smoothing
+              prevents gaming. Operators earn routing fees proportional to
+              registered capacity.
             </p>
             {lightning ? (
               <>
@@ -347,10 +534,7 @@ export default function Dashboard() {
             ) : (
               <p className={styles.wait}>connecting...</p>
             )}
-            <a
-              href="/docs/contracts"
-              className={styles.docLink}
-            >
+            <a href="/docs/contracts" className={styles.docLink}>
               protocol spec →
             </a>
           </section>
@@ -359,11 +543,9 @@ export default function Dashboard() {
           <section className={styles.section} id="agents">
             <SectionHead label="agent reputation" color="var(--color-agents)" />
             <p className={styles.desc}>
-              AI agent registry on the OpenClaw protocol. Agents publish
-              throughput, latency, and error rate. Each completion is
-              dual-signed and recorded on-chain, producing a composite
-              reputation score. If you&#39;re building agentic systems and need to
-              find or verify agents by skill type, this is the index.
+              AI agent registry on OpenClaw. Agents publish throughput, latency,
+              and error rate. Each completion is dual-signed and on-chain,
+              producing a composite reputation score.
             </p>
             {agents ? (
               <>
@@ -432,10 +614,7 @@ export default function Dashboard() {
             ) : (
               <p className={styles.wait}>connecting...</p>
             )}
-            <a
-              href="/docs/contracts"
-              className={styles.docLink}
-            >
+            <a href="/docs/contracts" className={styles.docLink}>
               openclaw spec →
             </a>
           </section>
@@ -448,11 +627,9 @@ export default function Dashboard() {
             <SectionHead label="llm gateway" color="var(--color-gateway)" />
             <p className={styles.desc}>
               Multi-provider LLM API that routes requests across OpenAI and
-              Anthropic based on real-time on-chain capacity weights. The
-              endpoint is OpenAI-compatible, so existing code works without
-              changes. If one provider is saturated, requests go to the one
-              with headroom. Every completion is recorded on-chain. Free tier
-              gives you 100 requests; after that, pay via Superfluid stream.
+              Anthropic based on real-time on-chain capacity weights.
+              OpenAI-compatible. Saturated provider? Requests go to whoever
+              has headroom. Every completion recorded on-chain.
             </p>
             {gateway ? (
               <>
@@ -506,10 +683,7 @@ export default function Dashboard() {
             ) : (
               <p className={styles.wait}>connecting...</p>
             )}
-            <a
-              href="/docs/contracts"
-              className={styles.docLink}
-            >
+            <a href="/docs/contracts" className={styles.docLink}>
               gateway docs →
             </a>
           </section>
@@ -518,11 +692,10 @@ export default function Dashboard() {
           <section className={styles.section} id="sim">
             <SectionHead label="simulator" color="var(--color-sim)" />
             <p className={styles.desc}>
-              Live agent-based simulation of the Pura protocol. Multiple
-              agents with different strategies compete for capacity allocation
-              across market phases (bull, bear, shock, recovery). Validates that
-              the mechanism is throughput-optimal and that truthful capacity
-              reporting is the dominant strategy.
+              Live agent-based simulation. Multiple agents with different
+              strategies compete for capacity allocation across market phases
+              (bull, bear, shock, recovery). Truthful reporting is the
+              dominant strategy.
             </p>
             {sim ? (
               <>
@@ -573,15 +746,32 @@ export default function Dashboard() {
                 sim offline — requires agent wallets
               </p>
             )}
-            <a
-              href="/docs/simulation"
-              className={styles.docLink}
-            >
+            <a href="/docs/simulation" className={styles.docLink}>
               simulation design →
             </a>
           </section>
         </div>
       </div>
+
+      <hr className={styles.divider} />
+
+      {/* ═══════════ ECOSYSTEM ═══════════ */}
+      <footer className={styles.ecosystem}>
+        <span>Built on Backproto (MIT)</span>
+        <span className={styles.ecosystemSep}>·</span>
+        <span>Verified by vr.dev</span>
+        <span className={styles.ecosystemSep}>·</span>
+        <span>Settled via Superfluid + Lightning</span>
+        <span className={styles.ecosystemSep}>·</span>
+        <a
+          href="https://github.com/pura-xyz"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.ecosystemLink}
+        >
+          GitHub
+        </a>
+      </footer>
     </main>
   );
 }

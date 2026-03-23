@@ -1,5 +1,66 @@
 # Changelog
 
+## 0.3.0 — June 2026
+
+DVM adapters, settlement rails, shadow mode sidecar, monitor dashboard, benchmark UI, and protocol documentation.
+
+### DVM adapter contracts
+
+- ISettlementAdapter: abstract interface for pluggable settlement rails
+- DVMCapacityAdapter: NIP-90 kind capacity (kinds 5000–5999) with EWMA smoothing
+- DVMCompletionVerifier: dual-signed EIP-712 result verification → CompletionTracker
+- DVMPricingCurve: kind-specific weight overlays on the base PricingCurve
+- SuperfluidSettlementAdapter: GDA streaming payments with linear accrual
+- LightningSettlementAdapter: HTLC sha256 preimage escrow, 86400s timeout
+- DirectSettlementAdapter: ERC-20 transfers from per-job escrow mapping
+- 70 new tests across 7 adapter test suites (319 total, was 249)
+
+### SDK standard objects
+
+- 5 JSON Schema files (draft-07): job-intent, capacity-attestation, verification-receipt, price-signal, settlement-receipt
+- TypeScript types: JobIntent, CapacityAttestationWithMetrics, VerificationReceipt, PriceSignal, SettlementReceipt, SettlementRail
+- 13 schema tests (6 JSON validation + 7 type assignability)
+
+### Shadow mode sidecar (@pura/shadow)
+
+- Collector: circular buffer with sliding window per-sink metrics
+- Simulator: Boltzmann soft-max allocation, EWMA smoothing, congestion pricing engine (port of bpe_sim.py)
+- createShadow() factory: middleware mode (Express/Hono) and manual record mode
+- HTTP metrics server on port 3099 (/metrics, /simulate, /health)
+- 19 tests, tsup build (8.46KB dist)
+
+### Monitor dashboard
+
+- /monitor: overview hub with top-line stats, per-sink table, BPE shadow comparison
+- /monitor/capacity: EWMA-smoothed capacity per sink with utilization bars
+- /monitor/congestion: congestion pricing formula, multiplier, price signals
+- /monitor/audit: protocol event log with color-coded events
+- 2 API proxy routes for shadow sidecar connection
+
+### Benchmark UI
+
+- pura/lib/benchmark.ts: full TypeScript port of bpe_sim.py with seeded PRNG (xoshiro128**), 4 strategies (random, roundRobin, centralizedLB, bpe)
+- /simulate/benchmark: interactive benchmark with Canvas charts, 6 configurable sliders, 4 time-series metrics, summary table
+
+### New pages
+
+- /deploy/dvm: DVM deployment flow with 6 NIP-90 kind buttons, endpoint config
+- /pricing: 3 tiers (Shadow/Free, Operator/$29, Protocol/Custom), payment pool mechanics
+- /about: protocol stats table and links
+- Homepage rewritten for conversion (RoutingViz animation, stats bar, comparison table)
+- Nav and footer updated with monitor, simulate, pricing links
+
+### NIP spec
+
+- Kind 1090 congestion feedback section added to NIP-XX-thermodynamic-dvm.md
+- Reference implementation section expanded with all new contracts, adapters, SDK schemas, @pura/shadow
+
+### Documentation
+
+- pura/content/docs/shadow-mode.mdx: integration guide for @pura/shadow
+- pura/content/docs/five-objects.mdx: standard object lifecycle walkthrough
+- pura/content/docs/four-planes.mdx: capacity, verification, pricing, settlement architecture
+
 ## 0.2.0 — June 2026
 
 Rebrand to Pura protocol, thermodynamic layer, content migration.

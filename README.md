@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.26-363636.svg)](https://soliditylang.org/)
 [![Base Sepolia](https://img.shields.io/badge/Network-Base%20Sepolia-0052FF.svg)](https://sepolia.basescan.org/)
-[![Tests](https://img.shields.io/badge/Tests-249%20passing-brightgreen.svg)](#)
+[![Tests](https://img.shields.io/badge/Tests-319%20passing-brightgreen.svg)](#)
 
 ---
 
@@ -21,6 +21,8 @@ The core protocol handles capacity-weighted payment routing for AI agents. Addit
 | **Lightning** | EWMA-smoothed channel capacity oracles, cross-protocol routing |
 | **V2 Composition** | Factory-deployed nested economies, quality scoring, urgency and velocity tokens |
 | **Thermodynamic** | Temperature oracle, virial ratio monitor, system state emitter for adaptive routing |
+| **DVM Adapters** | NIP-90 capacity, dual-signed completion verification, kind-weighted pricing curves |
+| **Settlement** | Three settlement rails: Superfluid streaming, Lightning HTLC, direct ERC-20 escrow |
 
 Plus a **platform layer** (universal capacity adapter, cross-domain reputation ledger, and protocol router) that composes these domains into one system.
 
@@ -65,11 +67,13 @@ Plus a **platform layer** (universal capacity adapter, cross-domain reputation l
 
 ```
 contracts/              Solidity smart contracts (Foundry)
-  src/                  25 contracts (8 core + 5 v2 + 3 thermodynamic + 9 research)
+  src/                  32 contracts (8 core + 5 v2 + 3 thermodynamic + 6 adapters + 10 research)
+    adapters/           SuperfluidSettlement, LightningSettlement, DirectSettlement,
+                        DVMCapacity, DVMCompletionVerifier, DVMPricingCurve
     lightning/          LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter
     nostr/              RelayCapacityRegistry, RelayPaymentPool
-    interfaces/         14 interfaces
-  test/                 249 passing tests
+    interfaces/         15 interfaces (+ ISettlementAdapter)
+  test/                 319 passing tests
   script/               Full-stack deployment script
   deployments/          Deployed addresses (Base Sepolia)
 
@@ -78,10 +82,21 @@ sdk/                    TypeScript SDK (@pura/sdk)
                         pricing, completion, aggregator, demurrage, relay,
                         lightning, platform, openclaw, economy, nestedPool,
                         quality, urgencyToken, velocityToken)
+  src/schemas.ts        5 standard object types + signing helpers
+  schemas/              JSON Schema (draft-07) for all 5 protocol objects
   src/examples/         Full-flow demo + testnet validation
 
+shadow/                 Shadow mode sidecar (@pura/shadow)
+  src/collector.ts      Circular buffer, sliding window per-sink metrics
+  src/simulator.ts      Boltzmann allocation, EWMA, congestion pricing engine
+  src/shadow.ts         createShadow() factory, middleware + manual modes
+  src/server.ts         HTTP metrics server (port 3099)
+
 pura/                   Operator dashboard (pura.xyz) — Next.js
-  app/api/              9 API routes reading live on-chain state
+  app/api/              11 API routes (on-chain state + shadow sidecar proxy)
+  app/monitor/          Shadow mode monitor (4 pages: overview, capacity, congestion, audit)
+  app/simulate/         Interactive BPE benchmark (Canvas charts, 4 strategies)
+  app/deploy/dvm/       DVM deployment flow (6 NIP-90 kinds)
   scripts/              Setup scripts for on-chain registration
 
 bitrecipes/             Visual pipeline builder (bit.recipes) — Next.js
@@ -110,7 +125,7 @@ gtm/                    Go-to-market material
 cd contracts
 forge install
 forge build
-forge test            # 249 tests passing
+forge test            # 319 tests passing
 ```
 
 ### SDK
@@ -137,7 +152,7 @@ pip install numpy matplotlib
 python simulation/bpe_sim.py
 ```
 
-## Contracts: 25 Deployed on Base Sepolia
+## Contracts: 32 on Base Sepolia
 
 ### Core BPE
 
@@ -170,6 +185,12 @@ python simulation/bpe_sim.py
 | TemperatureOracle | Thermodynamic | Not yet deployed |
 | VirialMonitor | Thermodynamic | Not yet deployed |
 | SystemStateEmitter | Thermodynamic | Not yet deployed |
+| DVMCapacityAdapter | DVM Adapter | Not yet deployed |
+| DVMCompletionVerifier | DVM Adapter | Not yet deployed |
+| DVMPricingCurve | DVM Adapter | Not yet deployed |
+| SuperfluidSettlementAdapter | Settlement | Not yet deployed |
+| LightningSettlementAdapter | Settlement | Not yet deployed |
+| DirectSettlementAdapter | Settlement | Not yet deployed |
 
 ## Paper
 
