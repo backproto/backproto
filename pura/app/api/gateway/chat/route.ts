@@ -109,7 +109,7 @@ export async function POST(request: Request) {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
-        "X-Backproto-Provider": provider,
+        "X-Pura-Provider": provider,
       },
     });
   }

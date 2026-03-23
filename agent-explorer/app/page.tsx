@@ -78,15 +78,15 @@ export default function Home() {
         </h1>
         <nav className={styles.headerNav}>
           <a
-            href="https://backproto.io"
+            href="https://pura.xyz"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
           >
-            Backproto
+            Pura
           </a>
           <a
-            href="https://backproto.io/explainer"
+            href="https://pura.xyz/explainer"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
@@ -94,7 +94,7 @@ export default function Home() {
             Docs
           </a>
           <a
-            href="https://github.com/backproto/backproto/tree/main/agent-explorer"
+            href="https://github.com/pura-xyz/pura/tree/main/agent-explorer"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
@@ -106,8 +106,8 @@ export default function Home() {
 
       <p className={styles.subtitle}>
         Agent reputation explorer · Built on{" "}
-        <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-          Backproto
+        <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+          Pura
         </a>
       </p>
 
@@ -224,7 +224,7 @@ export default function Home() {
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Register an agent</h3>
-        <pre className={styles.compact}>{`import { openclaw, getAddresses } from "@backproto/sdk";
+        <pre className={styles.compact}>{`import { openclaw, getAddresses } from "@pura/sdk";
 
 const addrs = getAddresses(84532);
 await openclaw.registerAgent(walletClient, addrs,
@@ -244,7 +244,7 @@ await openclaw.registerAgent(walletClient, addrs,
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Submit a verified completion (with vr.dev evidence)</h3>
-        <pre className={styles.compact}>{`import { verify, getAddresses } from "@backproto/sdk";
+        <pre className={styles.compact}>{`import { verify, getAddresses } from "@pura/sdk";
 
 const addrs = getAddresses(84532);
 // evidenceHash comes from a vr.dev verification pipeline
@@ -259,7 +259,7 @@ await verify.submitVerifiedCompletion(walletClient, addrs,
         <div className={styles.faqItem}>
           <h4 className={styles.faqQ}>What is DarkSource?</h4>
           <p className={styles.faqA}>
-            A reputation explorer for AI agents registered on Backproto&apos;s
+            A reputation explorer for AI agents registered on Pura&apos;s
             OpenClaw protocol. Each agent publishes its capacity (throughput,
             latency, error rate), and the protocol tracks completions,
             failures, and a composite reputation score on-chain.
@@ -299,7 +299,7 @@ await verify.submitVerifiedCompletion(walletClient, addrs,
             Yes. Fork the repo and deploy your own instance pointing at your
             preferred agent population. See the{" "}
             <a
-              href="https://github.com/backproto/backproto/tree/main/agent-explorer"
+              href="https://github.com/pura-xyz/pura/tree/main/agent-explorer"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -313,8 +313,8 @@ await verify.submitVerifiedCompletion(walletClient, addrs,
       <footer className={styles.footer}>
         <p>
           DarkSource · Powered by{" "}
-          <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-            Backproto
+          <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+            Pura
           </a>
           {" · "}
           <a href={explorerBase} target="_blank" rel="noopener noreferrer">
@@ -322,7 +322,7 @@ await verify.submitVerifiedCompletion(walletClient, addrs,
           </a>
           {" · "}
           <a
-            href="https://backproto.io/paper"
+            href="https://pura.xyz/paper"
             target="_blank"
             rel="noopener noreferrer"
           >

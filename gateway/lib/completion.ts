@@ -1,4 +1,4 @@
-import { getAddresses, completion } from "@backproto/sdk";
+import { getAddresses, completion } from "@pura/sdk";
 import { chainId, operatorWallet } from "./chain";
 import { GATEWAY_TASK_TYPE } from "./routing";
 import type { Provider } from "./providers";

@@ -37,7 +37,7 @@ export default function ConceptsPage() {
       </header>
 
       <p className={styles.subtitle}>
-        The technical concepts behind Backproto, explained at three levels of
+        The technical concepts behind Pura, explained at three levels of
         depth
       </p>
 
@@ -61,8 +61,8 @@ export default function ConceptsPage() {
       <footer className={styles.footer}>
         <p>
           Command Deck · Private briefing tool ·{" "}
-          <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-            backproto.io
+          <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+            pura.xyz
           </a>
         </p>
       </footer>

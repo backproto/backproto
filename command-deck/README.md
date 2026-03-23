@@ -1,6 +1,6 @@
 # Command Deck
 
-Private CEO-level briefing dashboard for the Backproto protocol. Curated cards organized by audience and scenario, concept explainers at three depth levels, an objection bank, and live chain metrics.
+Private CEO-level briefing dashboard for the Pura protocol. Curated cards organized by audience and scenario, concept explainers at three depth levels, an objection bank, and live chain metrics.
 
 ## Quick start
 

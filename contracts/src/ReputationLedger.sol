@@ -6,7 +6,7 @@ import { IReputationLedger } from "./interfaces/IReputationLedger.sol";
 
 /// @title ReputationLedger
 /// @notice Cross-domain portable reputation system. Tracks performance across all
-///         backproto domains (AI compute, Nostr relay, Lightning routing, DePIN).
+///         Pura domains (AI compute, Nostr relay, Lightning routing, DePIN).
 ///         Higher aggregate reputation → lower minimum stake in new domains (up to 50% off).
 ///         Only authorized domain contracts can record events.
 contract ReputationLedger is IReputationLedger, Ownable {

@@ -1,11 +1,11 @@
 # TypeScript SDK
 
-The `@backproto/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
+The `@pura/sdk` package provides a TypeScript client for interacting with BPE smart contracts.
 
 ## Installation
 
 ```bash
-npm install @backproto/sdk
+npm install @pura/sdk
 ```
 
 ## Features
@@ -18,7 +18,7 @@ npm install @backproto/sdk
 ## Usage
 
 ```typescript
-import { addresses, contracts } from '@backproto/sdk'
+import { addresses, contracts } from '@pura/sdk'
 
 // Get contract addresses for Base Sepolia
 const { capacityRegistry, backpressurePool, stakeManager } = addresses.baseSepolia
@@ -42,4 +42,4 @@ const capacity = await client.readContract({
 
 ## Source
 
-SDK source code is in [`sdk/src/`](https://github.com/backproto/backproto/tree/main/sdk/src).
+SDK source code is in [`sdk/src/`](https://github.com/pura-xyz/pura/tree/main/sdk/src).

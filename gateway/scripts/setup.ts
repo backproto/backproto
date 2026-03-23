@@ -7,7 +7,7 @@
 import { createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import { getAddresses, sink, pool } from "@backproto/sdk";
+import { getAddresses, sink, pool } from "@pura/sdk";
 
 const rpcUrl = process.env.RPC_URL ?? "https://sepolia.base.org";
 const chainId = Number(process.env.CHAIN_ID ?? 84532);

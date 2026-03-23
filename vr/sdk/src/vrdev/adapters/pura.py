@@ -1,14 +1,14 @@
-"""Backproto adapter — submit vr.dev verification results on-chain.
+"""Pura adapter — submit vr.dev verification results on-chain.
 
-Bridges the Python verification pipeline to Backproto's EVM contracts
+Bridges the Python verification pipeline to Pura's EVM contracts
 via JSON-RPC.  Requires an Ethereum JSON-RPC endpoint and a funded
 account (private key) on Base / Base Sepolia.
 
 Typical usage::
 
-    from vrdev.adapters.backproto import BackprotoAdapter
+    from vrdev.adapters.pura import PuraAdapter
 
-    adapter = BackprotoAdapter(
+    adapter = PuraAdapter(
         rpc_url="https://sepolia.base.org",
         private_key="0x...",
         chain_id=84532,
@@ -50,8 +50,8 @@ def _to_bytes32(evidence_hash: str) -> str:
 
 
 @dataclass
-class BackprotoAdapter:
-    """Submit verified outcomes to Backproto contracts via JSON-RPC.
+class PuraAdapter:
+    """Submit verified outcomes to Pura contracts via JSON-RPC.
 
     This adapter deliberately does *not* embed private-key signing logic.
     Instead it constructs unsigned transaction payloads and sends them via

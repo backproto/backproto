@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@backproto/sdk"],
+  serverExternalPackages: ["@pura/sdk"],
 };
 
 export default nextConfig;

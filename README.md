@@ -1,15 +1,15 @@
-# Backproto: Backpressure Economics for Decentralized Networks
+# Pura: Backpressure Economics for Decentralized Networks
 
 **Universal capacity-constrained flow control across AI agents, Nostr relays, Lightning routing, and streaming payments**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.26-363636.svg)](https://soliditylang.org/)
 [![Base Sepolia](https://img.shields.io/badge/Network-Base%20Sepolia-0052FF.svg)](https://sepolia.basescan.org/)
-[![Tests](https://img.shields.io/badge/Tests-213%20passing-brightgreen.svg)](#)
+[![Tests](https://img.shields.io/badge/Tests-249%20passing-brightgreen.svg)](#)
 
 ---
 
-Backproto adapts the [Tassiulas–Ephremides backpressure routing algorithm](https://doi.org/10.1109/9.182479) from communication networks to monetary and data flows in decentralized systems. When downstream participants reach capacity, payments and messages must reroute, buffer, or throttle. Backproto makes receiver-side capacity constraints a first-class protocol primitive.
+Pura adapts the [Tassiulas–Ephremides backpressure routing algorithm](https://doi.org/10.1109/9.182479) from communication networks to monetary and data flows in decentralized systems. When downstream participants reach capacity, payments and messages must reroute, buffer, or throttle. Pura makes receiver-side capacity constraints a first-class protocol primitive.
 
 The core protocol handles capacity-weighted payment routing for AI agents. Additional research modules extend to other domains:
 
@@ -20,6 +20,7 @@ The core protocol handles capacity-weighted payment routing for AI agents. Addit
 | **Nostr Relays** | Relay capacity signaling, anti-spam pricing, BPE-weighted payment pools |
 | **Lightning** | EWMA-smoothed channel capacity oracles, cross-protocol routing |
 | **V2 Composition** | Factory-deployed nested economies, quality scoring, urgency and velocity tokens |
+| **Thermodynamic** | Temperature oracle, virial ratio monitor, system state emitter for adaptive routing |
 
 Plus a **platform layer** (universal capacity adapter, cross-domain reputation ledger, and protocol router) that composes these domains into one system.
 
@@ -43,9 +44,12 @@ Plus a **platform layer** (universal capacity adapter, cross-domain reputation l
   │  EscrowBuffer     │ │   Metrics    │ │   Pool           │ │   ingPool      │
   │  Pipeline         │ └──────────────┘ └──────────────────┘ └────────────────┘
   │  PricingCurve     │
-  │  CompletionTracker│
-  │  OffchainAggr.    │
-  └───────────────────┘
+  │  CompletionTracker│       ┌──────────────────────────────┐
+  │  OffchainAggr.    │──────▶│   Thermodynamic Layer        │
+  └───────────────────┘       │  TemperatureOracle (τ)       │
+                              │  VirialMonitor (V)           │
+                              │  SystemStateEmitter          │
+                              └──────────────────────────────┘
 ```
 
 ## Results
@@ -61,15 +65,15 @@ Plus a **platform layer** (universal capacity adapter, cross-domain reputation l
 
 ```
 contracts/              Solidity smart contracts (Foundry)
-  src/                  22 contracts (core + research modules)
+  src/                  25 contracts (8 core + 5 v2 + 3 thermodynamic + 9 research)
     lightning/          LightningCapacityOracle, LightningRoutingPool, CrossProtocolRouter
     nostr/              RelayCapacityRegistry, RelayPaymentPool
     interfaces/         14 interfaces
-  test/                 213 passing tests
+  test/                 249 passing tests
   script/               Full-stack deployment script
   deployments/          Deployed addresses (Base Sepolia)
 
-sdk/                    TypeScript SDK (@backproto/sdk)
+sdk/                    TypeScript SDK (@pura/sdk)
   src/actions/          18 action modules (sink, source, pool, stake, buffer,
                         pricing, completion, aggregator, demurrage, relay,
                         lightning, platform, openclaw, economy, nestedPool,
@@ -83,12 +87,12 @@ pura/                   Operator dashboard (pura.xyz) — Next.js
 bitrecipes/             Visual pipeline builder (bit.recipes) — Next.js
 
 docs/
-  paper/                Research paper (LaTeX, 14 sections)
+  paper/                Research paper (LaTeX, 16 sections)
   nips/                 NIP-XX: Backpressure Relay Economics spec
 
 simulation/             Python simulation (5 experiments, figure generation)
 plan/                   Design documents 00–08 (historical) + protocol spec
-web/                    Next.js website (backproto.io)
+web/                    Next.js website (pura.xyz)
 gtm/                    Go-to-market material
 ```
 
@@ -106,7 +110,7 @@ gtm/                    Go-to-market material
 cd contracts
 forge install
 forge build
-forge test            # 213 tests passing
+forge test            # 249 tests passing
 ```
 
 ### SDK
@@ -133,7 +137,7 @@ pip install numpy matplotlib
 python simulation/bpe_sim.py
 ```
 
-## Contracts: 22 Deployed on Base Sepolia
+## Contracts: 25 Deployed on Base Sepolia
 
 ### Core BPE
 
@@ -163,6 +167,9 @@ python simulation/bpe_sim.py
 | CrossProtocolRouter | Lightning | [`0x89df6EF70ef288f61003E392D3E5ddC8D9bD6e2d`](https://sepolia.basescan.org/address/0x89df6EF70ef288f61003E392D3E5ddC8D9bD6e2d) |
 | UniversalCapacityAdapter | Platform | [`0x66368dbFdf4de036efB4D37bC73B490903062421`](https://sepolia.basescan.org/address/0x66368dbFdf4de036efB4D37bC73B490903062421) |
 | ReputationLedger | Platform | [`0xdbCD358acEe7671D1ce7311CF9aC2a5B1C266B55`](https://sepolia.basescan.org/address/0xdbCD358acEe7671D1ce7311CF9aC2a5B1C266B55) |
+| TemperatureOracle | Thermodynamic | Not yet deployed |
+| VirialMonitor | Thermodynamic | Not yet deployed |
+| SystemStateEmitter | Thermodynamic | Not yet deployed |
 
 ## Paper
 
@@ -181,13 +188,13 @@ cd docs/paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
 
 ## Community
 
-Backproto is early infrastructure looking for feedback from builders across AI agents, Nostr, Lightning, and DeFi.
+Pura is early infrastructure looking for feedback from builders across AI agents, Nostr, Lightning, and DeFi.
 
-- **Website**: [backproto.io](https://backproto.io)
-- **GitHub**: [github.com/backproto/backproto](https://github.com/backproto/backproto)
+- **Website**: [pura.xyz](https://pura.xyz)
+- **GitHub**: [github.com/pura-xyz/pura](https://github.com/pura-xyz/pura)
 - **Twitter/X**: Follow for updates (link TBD)
 
-If you're building decentralized systems that need capacity-aware economic coordination, [open an issue](https://github.com/backproto/backproto/issues) or reach out directly.
+If you're building decentralized systems that need capacity-aware economic coordination, [open an issue](https://github.com/pura-xyz/pura/issues) or reach out directly.
 
 ## License
 

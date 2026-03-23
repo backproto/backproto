@@ -67,4 +67,4 @@ All 40 unit tests pass. The test suite covers:
 
 ## Source
 
-Contract source code is in [`contracts/src/`](https://github.com/backproto/backproto/tree/main/contracts/src).
+Contract source code is in [`contracts/src/`](https://github.com/pura-xyz/pura/tree/main/contracts/src).

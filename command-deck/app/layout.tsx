@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Command Deck — Backproto Briefing Dashboard",
+  title: "Command Deck — Pura Briefing Dashboard",
   description:
-    "CEO-level briefing cards, concept explainers, and live metrics for the Backproto protocol.",
+    "CEO-level briefing cards, concept explainers, and live metrics for the Pura protocol.",
 };
 
 export default function RootLayout({

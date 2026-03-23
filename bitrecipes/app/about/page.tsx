@@ -10,7 +10,7 @@ export default function AboutPage() {
 
         <div className="space-y-6 text-[var(--color-text-muted)]">
           <p>
-            bit.recipes is the Backproto cookbook: a visual, executable pipeline
+            bit.recipes is the Pura cookbook: a visual, executable pipeline
             builder where each recipe is a declarative YAML spec that wires
             together providers, capacity signals, pricing curves, and streaming
             payments into a working pipeline.
@@ -23,10 +23,10 @@ export default function AboutPage() {
           </p>
 
           <h2 className="text-xl font-bold text-[var(--color-text)] mt-10 mb-3">
-            How it connects to Backproto
+            How it connects to Pura
           </h2>
           <p>
-            Backproto is an on-chain protocol for backpressure-driven capacity
+            Pura is an on-chain protocol for backpressure-driven capacity
             markets. Providers declare spare capacity via EIP-712 attestations.
             Consumers pay streaming payments proportional to utilized capacity.
             Pricing curves make overloaded providers expensive, and routing

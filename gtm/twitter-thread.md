@@ -26,7 +26,7 @@ Payment networks for AI agents have no equivalent.
 
 3/
 
-Backproto adapts backpressure routing (Tassiulas-Ephremides, 1992) to monetary flows.
+Pura adapts backpressure routing (Tassiulas-Ephremides, 1992) to monetary flows.
 
 The rule: route payments to agents with the most spare capacity.
 
@@ -36,29 +36,33 @@ Saturated agents get less. Available agents get more. Automatically. No coordina
 
 4/
 
-Five operations:
+Then I added a thermodynamic layer.
 
-Agents declare capacity, backed by stake.
-The protocol tracks completions and slashes liars.
-Busy agents get expensive (EIP-1559-style).
-A smart contract pool routes payments proportional to verified capacity.
-Overflow sits in escrow until capacity frees up.
+The system computes a temperature from capacity variance. High disagreement = high temperature = more exploratory routing. Low disagreement = deterministic routing to the best provider.
+
+Boltzmann-weighted probabilities. Same math as statistical mechanics.
 
 ---
 
 5/
 
-Backproto is one layer in a stack of three:
+A virial ratio tracks whether staked capital matches throughput.
 
-Buildlog (buildlog.ai) records what agents do.
-VR (vr.dev) verifies outcomes actually changed system state.
-Backproto routes payments based on verified spare capacity.
+V = 2T / (S + E). T is throughput, S is staked, E is escrowed.
 
-Together: agents that do the work get paid. Agents that fake it get slashed.
+At V=1, the system is in equilibrium. Below 1, idle capital is taxed via adaptive demurrage (1-10%/year) to push tokens back into productive use.
 
 ---
 
 6/
+
+Circuit breakers per pipeline stage.
+
+If throughput drops below 5% of declared capacity, or escrow pressure hits 95%, the stage decouples. A bottleneck in stage 3 stops cascading to stages 1 and 2. Recovery is automatic once throughput returns.
+
+---
+
+7/
 
 The math works.
 
@@ -69,18 +73,18 @@ Formal throughput optimality proof via Lyapunov drift analysis.
 
 ---
 
-7/
+8/
 
-Live on Base Sepolia. 22 contracts. 213 passing tests. TypeScript SDK with 18 modules. Research paper with formal proofs. MIT licensed.
+Live on Base Sepolia. 25 contracts. 249 passing tests. TypeScript SDK with 18 modules. Research paper with formal proofs. MIT licensed.
 
-Research modules extend to Lightning routing, Nostr relay economics, and demurrage tokens.
+Three new thermodynamic contracts: TemperatureOracle, VirialMonitor, SystemStateEmitter.
 
-backproto.io
-github.com/backproto/backproto
+pura.xyz
+github.com/pura-xyz/pura
 
 ---
 
-8/
+9/
 
 Looking for feedback from AI agent builders.
 
@@ -88,7 +92,7 @@ If your agents pay each other and you want flow control for those payments, try 
 
 If it breaks, tell me how. If something is missing, tell me what.
 
-backproto.io/explainer
+pura.xyz/explainer
 
 ---
 
@@ -115,9 +119,9 @@ If three agents all pay the same LLM and it is at capacity, what happens? Today:
 
 ---
 
-Backpressure routing was invented in 1992 for data networks. The core idea: send traffic to the node with the most spare capacity. It took 34 years for someone to apply it to money. I built that.
+Backpressure routing was invented in 1992 for data networks. The core idea: send traffic to the node with the most spare capacity. It took 33 years for someone to apply it to money. I built that.
 
-backproto.io
+pura.xyz
 
 ---
 
@@ -125,7 +129,7 @@ I keep seeing agent frameworks add "payment" as a feature and "load balancing" a
 
 ---
 
-22 contracts. 213 tests. 18 SDK modules. One idea: route payments to whoever has room to do the work. backproto.io
+25 contracts. 249 tests. 18 SDK modules. Boltzmann routing. Virial equilibrium. Circuit breakers. One idea: route payments to whoever has room to do the work. pura.xyz
 
 ---
 
@@ -133,15 +137,11 @@ Agents that fake capacity get slashed. Agents that do the work get more payment 
 
 ---
 
-I built three things that are actually one thing:
-
-Record what agents do (buildlog.ai).
-Verify it happened (vr.dev).
-Route payments accordingly (backproto.io).
+The system tracks a temperature derived from capacity variance. When providers disagree, temperature rises and routing spreads. When they agree, it locks in on the best one. Same math used in statistical mechanics and simulated annealing.
 
 ---
 
-EIP-1559 solved gas pricing by making fees respond to congestion. Backproto does the same thing for agent payments. Busy agent = higher price = demand shifts to the agent with room.
+EIP-1559 solved gas pricing by making fees respond to congestion. Pura does the same thing for agent payments. Busy agent = higher price = demand shifts to the agent with room.
 
 ---
 
@@ -155,7 +155,7 @@ Streaming payments are a UX improvement. Backpressure routing is a mechanism des
 
 Every agent framework will eventually need flow control for payments. The question is whether each one invents it independently or whether there is a shared protocol. I am building the shared protocol.
 
-backproto.io
+pura.xyz
 
 ---
 

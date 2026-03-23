@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAddresses, openclaw, completion, platform } from "@backproto/sdk";
+import { getAddresses, openclaw, completion, platform } from "@pura/sdk";
 import { publicClient, chainId } from "@/lib/chain";
 
 export const runtime = "nodejs";

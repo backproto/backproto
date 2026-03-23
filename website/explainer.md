@@ -60,7 +60,7 @@ Fair question. If you're coming from the AI/ML world, you might wonder why any o
 
 BPE is deployed on **[Base](https://base.org)**, an Ethereum [Layer 2](https://en.wikipedia.org/wiki/Blockchain_layer_2) network built by Coinbase. Base inherits Ethereum's security guarantees while offering transaction fees under $0.01 and confirmation times around 2 seconds. This makes it practical for the frequent capacity updates, rebalancing, and attestation submissions that BPE requires.
 
-You don't need to understand Ethereum's internals to use BPE. The [TypeScript SDK](https://github.com/backproto/backproto/tree/main/sdk) abstracts the blockchain interaction into straightforward function calls like `registerSink()`, `getPrice()`, and `rebalance()`.
+You don't need to understand Ethereum's internals to use BPE. The [TypeScript SDK](https://github.com/pura-xyz/pura/tree/main/sdk) abstracts the blockchain interaction into straightforward function calls like `registerSink()`, `getPrice()`, and `rebalance()`.
 
 ---
 
@@ -303,7 +303,7 @@ BPE matters because AI agents are starting to transact with each other autonomou
 
 ## Beyond AI Agents: Five Domains
 
-The core BPE mechanism (declare, verify, price, route, buffer) is domain-agnostic. Anywhere there's a capacity-constrained service and a continuous payment flow, backpressure routing can improve allocation. Backproto extends BPE to five domains:
+The core BPE mechanism (declare, verify, price, route, buffer) is domain-agnostic. Anywhere there's a capacity-constrained service and a continuous payment flow, backpressure routing can improve allocation. Pura extends BPE to five domains:
 
 ```mermaid
 graph TB
@@ -334,7 +334,7 @@ graph TB
 
 The [Lightning Network](https://en.wikipedia.org/wiki/Lightning_Network) enables instant Bitcoin payments through a network of [payment channels](https://en.wikipedia.org/wiki/Payment_channel). But routing payments through Lightning is unreliable: senders rely on stale gossip data about channel liquidity and have to probe routes by trial and error until one works.
 
-Backproto adds a **real-time capacity signaling layer** for Lightning, without modifying the Lightning protocol itself:
+Pura adds a **real-time capacity signaling layer** for Lightning, without modifying the Lightning protocol itself:
 
 **LightningCapacityOracle.** Node operators submit signed attestations of their aggregate outbound liquidity. These reports are smoothed using [EWMA](https://en.wikipedia.org/wiki/Exponential_smoothing) (the same technique) so a single bad report doesn't swing the data. Operators only report aggregate capacity, not individual channel balances, preserving privacy.
 
@@ -383,7 +383,7 @@ This runs on Base (L2) as a **sidecar** to Lightning. It doesn't change how Ligh
 
 [Nostr](https://nostr.com/) is a decentralized social protocol. Messages are distributed through relays, servers operated by volunteers. Most relays run at a loss or depend on donations. Users have no way to discover which relays have capacity, and relays have no way to price their services based on actual load.
 
-Backproto adds an economic layer for Nostr relays using the same BPE primitives:
+Pura adds an economic layer for Nostr relays using the same BPE primitives:
 
 How it works:
 
@@ -424,7 +424,7 @@ The result: relay operators who invest in real capacity earn proportionally more
 
 Most tokens just sit in wallets. In an agent economy, that's a problem: idle money means idle capacity. **[Demurrage](https://en.wikipedia.org/wiki/Demurrage_(currency))** is an old economic idea (proposed by [Silvio Gesell](https://en.wikipedia.org/wiki/Silvio_Gesell) in 1916) that puts a holding cost on currency, effectively encouraging people to spend it rather than hoard it.
 
-Backproto implements this as the **DemurrageToken**, a token whose balance continuously decays if you hold it without using it:
+Pura implements this as the **DemurrageToken**, a token whose balance continuously decays if you hold it without using it:
 
 ```mermaid
 graph LR
@@ -457,7 +457,7 @@ Details:
 
 With four different domains using BPE, there's a coordination problem: how do you share infrastructure and reputation across domains? That's what the platform layer handles.
 
-**UniversalCapacityAdapter.** A registry of domain adapters that normalizes capacity signals from any domain into a common format the core BPE contracts understand. This means a new domain (say, decentralized storage or compute marketplaces) can plug into Backproto by registering a single adapter contract.
+**UniversalCapacityAdapter.** A registry of domain adapters that normalizes capacity signals from any domain into a common format the core BPE contracts understand. This means a new domain (say, decentralized storage or compute marketplaces) can plug into Pura by registering a single adapter contract.
 
 **ReputationLedger.** A cross-domain reputation system that makes your track record portable:
 
@@ -488,7 +488,7 @@ The platform layer lets any capacity-constrained domain plug into the same routi
 
 [OpenClaw](https://openclaw.com/) is the largest open-source AI agent framework (315k GitHub stars and growing) with ClawHub, a marketplace of installable agent skills. As OpenClaw deployments grow from single agents to multi-agent pipelines, a coordination problem emerges: which agent gets the next task, how do you verify it was completed, and how do you build trust across skill types?
 
-Backproto adds an economic coordination layer for OpenClaw agent networks using three purpose-built contracts:
+Pura adds an economic coordination layer for OpenClaw agent networks using three purpose-built contracts:
 
 How it works:
 
@@ -522,20 +522,20 @@ sequenceDiagram
 
 What this enables:
 
-- Capacity-weighted task routing: when a pipeline needs a research agent, Backproto routes to the agent with the most verified spare capacity
+- Capacity-weighted task routing: when a pipeline needs a research agent, Pura routes to the agent with the most verified spare capacity
 - Verifiable execution history: dual-signature completion records provide an auditable log that ClawHub can reference for dispute resolution
 - Portable reputation: an agent's reliability in one skill category carries over to others. Strong cross-domain reputation (OpenClaw + Lightning node + Nostr relay) earns up to 50% stake discounts
-- Pipeline orchestration: multi-stage agent pipelines (research -> analysis -> report) can efficiently allocate each stage to available agents using Backproto's Pipeline contract
+- Pipeline orchestration: multi-stage agent pipelines (research -> analysis -> report) can efficiently allocate each stage to available agents using Pura's Pipeline contract
 
 **Evidence-backed verification with vr.dev.** OpenClaw completions can be verified off-chain by [vr.dev](https://vr.dev) before they hit the chain. When an agent finishes a skill execution, vr.dev runs domain-specific verifiers (code correctness, factual accuracy, safety checks) and produces a SHA-256 evidence hash. That hash is used as the `executionId` in the `CompletionVerifier`, bridging the off-chain proof to the on-chain record. The `ReputationBridge` then feeds the PASS/FAIL result into the cross-domain `ReputationLedger`. Operators can also anchor batches of evidence hashes via the `MerkleRootAnchor` contract for gas-efficient bulk verification.
 
-The sidecar model: Backproto does not modify OpenClaw's core. Agents opt in by installing a Backproto coordination skill that handles staking, capacity reporting, and completion attestation. The integration lives entirely on-chain on Base L2.
+The sidecar model: Pura does not modify OpenClaw's core. Agents opt in by installing a Pura coordination skill that handles staking, capacity reporting, and completion attestation. The integration lives entirely on-chain on Base L2.
 
 ---
 
 ## How This Helps Bitcoin
 
-If you're in the Bitcoin ecosystem, the Lightning section above is where Backproto directly contributes. Here's the full picture.
+If you're in the Bitcoin ecosystem, the Lightning section above is where Pura directly contributes. Here's the full picture.
 
 ### The problem: Lightning routing is unreliable
 
@@ -543,9 +543,9 @@ Lightning Network payments fail more often than they should. The root cause is s
 
 Node operators face a related problem. Keeping channels well-balanced (with liquidity on both sides) is essential for routing fees, but there's no standardized signal telling operators where demand is flowing or which channels need rebalancing.
 
-### What Backproto adds
+### What Pura adds
 
-Backproto provides three things the Lightning ecosystem currently lacks:
+Pura provides three things the Lightning ecosystem currently lacks:
 
 **1. Real-time capacity signals.** The `LightningCapacityOracle` collects signed capacity attestations from node operators, smooths them with EWMA to resist manipulation, and makes them available on-chain. This is aggregate outbound liquidity per node, not individual channel balances, so privacy is preserved. Pathfinding algorithms can query this for fresher data than gossip provides.
 
@@ -555,9 +555,9 @@ Backproto provides three things the Lightning ecosystem currently lacks:
 
 ### The sidecar model
 
-Critically, Backproto **does not modify the Lightning protocol**. It runs on Base (an Ethereum L2) as a sidecar, providing an external capacity signaling and incentive layer. Lightning node operators can opt in by submitting capacity attestations. Pathfinding services can query the oracle. Nothing about Lightning's core architecture changes.
+Critically, Pura **does not modify the Lightning protocol**. It runs on Base (an Ethereum L2) as a sidecar, providing an external capacity signaling and incentive layer. Lightning node operators can opt in by submitting capacity attestations. Pathfinding services can query the oracle. Nothing about Lightning's core architecture changes.
 
-This is important because the Lightning developer community is (rightly) conservative about protocol changes. Backproto offers improved routing without requiring a BOLT update, a node software fork, or consensus among Lightning implementations.
+This is important because the Lightning developer community is (rightly) conservative about protocol changes. Pura offers improved routing without requiring a BOLT update, a node software fork, or consensus among Lightning implementations.
 
 ### Why this matters for Bitcoin adoption
 
@@ -577,7 +577,7 @@ graph LR
     style E fill:#d97706,color:#fff
 ```
 
-The economic incentive layer also addresses a structural problem: Lightning routing is somewhat of a public good (routers earn small fees relative to the capital they lock up). By providing streaming revenue proportional to verified capacity, Backproto makes routing more financially sustainable, which should attract more liquidity into the network.
+The economic incentive layer also addresses a structural problem: Lightning routing is somewhat of a public good (routers earn small fees relative to the capital they lock up). By providing streaming revenue proportional to verified capacity, Pura makes routing more financially sustainable, which should attract more liquidity into the network.
 
 ---
 
@@ -607,7 +607,7 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 | **Staking** | Locking up tokens as a security deposit. In BPE, agents stake to declare capacity. |
 | **Slashing** | Penalty: taking part of a participant's staked deposit for dishonest behavior (e.g., claiming capacity they don't deliver) |
 | **Gas** | The small fee paid for each blockchain transaction. On Base L2, gas costs are fractions of a cent. |
-| **Base** | An Ethereum Layer 2 network built by Coinbase. Low fees, fast confirmations, Ethereum security. Where Backproto is deployed. |
+| **Base** | An Ethereum Layer 2 network built by Coinbase. Low fees, fast confirmations, Ethereum security. Where Pura is deployed. |
 | **Layer 2 (L2)** | A faster, cheaper blockchain that batches transactions and posts proofs to a main chain (Layer 1) for security |
 | **Superfluid** | A protocol for real-time token streaming. BPE uses its General Distribution Agreement (GDA) for payment routing. |
 | **GDA** | General Distribution Agreement. Superfluid's mechanism for splitting a single incoming payment stream among multiple recipients proportionally. |
@@ -643,7 +643,7 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 
 **Academic & Formal:**
 
-- **[Research Paper](https://backproto.io/paper)**: formal model, proofs, and evaluation
+- **[Research Paper](https://pura.xyz/paper)**: formal model, proofs, and evaluation
 - **[Paper: Introduction](paper/introduction.md)**: problem statement and contributions
 - **[Paper: Protocol Design](paper/protocol.md)**: technical details of each smart contract
 
@@ -655,8 +655,8 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 
 **Domain-Specific:**
 
-- **[NIP-XX Specification](https://github.com/backproto/backproto/blob/main/docs/nips/NIP-XX-backpressure-relay-economics.md)**: the Nostr relay economics standard
-- **[GitHub Repository](https://github.com/backproto/backproto)**: all code, MIT licensed
+- **[NIP-XX Specification](https://github.com/pura-xyz/pura/blob/main/docs/nips/NIP-XX-backpressure-relay-economics.md)**: the Nostr relay economics standard
+- **[GitHub Repository](https://github.com/pura-xyz/pura)**: all code, MIT licensed
 
 **Live Products:**
 
@@ -664,4 +664,4 @@ The economic incentive layer also addresses a structural problem: Lightning rout
 - **[Relay.Gold](https://relay.gold)**: Nostr relay capacity dashboard
 - **[Lightning.Gold](https://lightning.gold)**: Lightning routing dashboard with route explorer
 - **[DarkSource](https://darksource.ai)**: Agent reputation explorer with verified completions
-- **[vr.dev](https://vr.dev)**: Verifiable Rewards — off-chain verification engine with 38 domain-specific verifiers, producing evidence hashes that anchor into Backproto's on-chain completion records
+- **[vr.dev](https://vr.dev)**: Verifiable Rewards — off-chain verification engine with 38 domain-specific verifiers, producing evidence hashes that anchor into Pura's on-chain completion records

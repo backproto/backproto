@@ -67,7 +67,7 @@ contract OpenClawCapacityAdapter is IOpenClawAdapter, ICapacityAdapter, Ownable,
     constructor(
         address stakeManager_,
         address owner_
-    ) Ownable(owner_) EIP712("Backproto-OpenClawAdapter", "1") {
+    ) Ownable(owner_) EIP712("Pura-OpenClawAdapter", "1") {
         stakeManager = IStakeManager(stakeManager_);
     }
 

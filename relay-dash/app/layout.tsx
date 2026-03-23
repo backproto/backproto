@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Relay.Gold — Nostr Relay Capacity Dashboard",
   description:
-    "Monitor and manage Nostr relay capacity with on-chain routing. Powered by Backproto on Base.",
+    "Monitor and manage Nostr relay capacity with on-chain routing. Powered by Pura on Base.",
 };
 
 export default function RootLayout({

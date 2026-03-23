@@ -107,5 +107,5 @@ If a pipeline stage enters Shock or Collapse phase (tracked in the Pipeline cont
 ## Reference implementation
 
 - Contracts: `TemperatureOracle.sol`, `VirialMonitor.sol`, `SystemStateEmitter.sol`
-- SDK: `@backproto/sdk` — `temperature`, `virial`, `systemState` action modules
+- SDK: `@pura/sdk` — `temperature`, `virial`, `systemState` action modules
 - Simulation: `simulation/bpe_sim.py` experiment E6 (Boltzmann temperature sweep)

@@ -15,6 +15,19 @@ import {
   type GatewayState,
 } from "@/lib/shared/seed";
 
+interface ThermoState {
+  temperature: string;
+  virialRatio: string;
+  escrowPressure: string;
+  demurrageRate: string;
+  phase: string;
+  phaseIndex: number;
+  tauMin: string;
+  tauMax: string;
+  equilibriumTarget: string;
+  seed?: boolean;
+}
+
 interface SimState {
   tickNumber: number;
   phase: string;
@@ -73,6 +86,7 @@ export default function Dashboard() {
   const [agents, setAgents] = useState<ExplorerState | null>(null);
   const [gateway, setGateway] = useState<GatewayState | null>(null);
   const [sim, setSim] = useState<SimState | null>(null);
+  const [thermo, setThermo] = useState<ThermoState | null>(null);
   const [seeds, setSeeds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -102,6 +116,7 @@ export default function Dashboard() {
     fetchOrSeed("/api/agents/state", "agents", generateAgentSeedState, setAgents);
     fetchOrSeed("/api/gateway/state", "gateway", generateGatewaySeedState, setGateway);
     fetchOrSeed<SimState>("/api/sim/state", "sim", null, setSim);
+    fetchOrSeed<ThermoState>("/api/thermo/state", "thermo", null, setThermo);
   }, []);
 
   const seed = (key: string) =>
@@ -110,10 +125,10 @@ export default function Dashboard() {
   return (
     <main className={styles.main}>
       <header className={styles.hero}>
-        <h1 className={styles.title}>Backpressure infrastructure for Nostr</h1>
+        <h1 className={styles.title}>Pura protocol</h1>
         <p className={styles.subtitle}>
-          Capacity-routed payments with thermodynamic equilibrium for relays,
-          Lightning, AI agents, and LLMs. Built on Base Sepolia.
+          Capacity-routed streaming payments with thermodynamic equilibrium.
+          Relays, Lightning, AI agents, and LLMs on Base Sepolia.
         </p>
       </header>
 
@@ -129,24 +144,51 @@ export default function Dashboard() {
           buffer fill level. Together these drive adaptive pricing, demurrage,
           and circuit breakers.
         </p>
-        <div className={styles.stats}>
-          <span className={styles.kv}>
-            <span className={styles.k}>τ range</span>{" "}
-            <span className={styles.v}>0.5 – 5.0</span>
-          </span>
-          <span className={styles.kv}>
-            <span className={styles.k}>V target</span>{" "}
-            <span className={styles.v}>1.0</span>
-          </span>
-          <span className={styles.kv}>
-            <span className={styles.k}>contracts</span>{" "}
-            <span className={styles.v}>TemperatureOracle · VirialMonitor · SystemStateEmitter</span>
-          </span>
-        </div>
+        {thermo ? (
+          <>
+            <div className={styles.stats}>
+              <span className={styles.kv}>
+                <span className={styles.k}>phase</span>{" "}
+                <span className={styles.v}>{thermo.phase}</span>
+              </span>
+              <span className={styles.kv}>
+                <span className={styles.k}>τ</span>{" "}
+                <span className={styles.v}>{thermo.temperature}</span>
+              </span>
+              <span className={styles.kv}>
+                <span className={styles.k}>V</span>{" "}
+                <span className={styles.v}>{thermo.virialRatio}</span>
+              </span>
+              <span className={styles.kv}>
+                <span className={styles.k}>P</span>{" "}
+                <span className={styles.v}>{thermo.escrowPressure}</span>
+              </span>
+              <span className={styles.kv}>
+                <span className={styles.k}>δ</span>{" "}
+                <span className={styles.v}>{thermo.demurrageRate}%/yr</span>
+              </span>
+              {thermo.seed && <span className={styles.seedTag}>[seed]</span>}
+            </div>
+            <div className={styles.stats}>
+              <span className={styles.kv}>
+                <span className={styles.k}>τ range</span>{" "}
+                <span className={styles.v}>{thermo.tauMin} – {thermo.tauMax}</span>
+              </span>
+              <span className={styles.kv}>
+                <span className={styles.k}>V target</span>{" "}
+                <span className={styles.v}>{thermo.equilibriumTarget}</span>
+              </span>
+              <span className={styles.kv}>
+                <span className={styles.k}>contracts</span>{" "}
+                <span className={styles.v}>TemperatureOracle · VirialMonitor · SystemStateEmitter</span>
+              </span>
+            </div>
+          </>
+        ) : (
+          <p className={styles.wait}>connecting...</p>
+        )}
         <a
-          href="https://backproto.io/plan/13-THERMODYNAMIC-ADOPTION/"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/docs/contracts"
           className={styles.docLink}
         >
           thermodynamic plan →
@@ -179,7 +221,7 @@ export default function Dashboard() {
           </div>
         </div>
         <p className={styles.desc}>
-          Pro relays register capacity on-chain through Backproto. They earn a
+          Pro relays register capacity on-chain through Pura. They earn a
           share of the relay payment pool proportional to their verified
           throughput. You run a relay and get paid for it.
         </p>
@@ -250,9 +292,7 @@ export default function Dashboard() {
               <p className={styles.wait}>connecting...</p>
             )}
             <a
-              href="https://backproto.io/plan/03-PROTOCOL-SPEC/"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/contracts"
               className={styles.docLink}
             >
               protocol spec →
@@ -308,9 +348,7 @@ export default function Dashboard() {
               <p className={styles.wait}>connecting...</p>
             )}
             <a
-              href="https://backproto.io/plan/03-PROTOCOL-SPEC/"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/contracts"
               className={styles.docLink}
             >
               protocol spec →
@@ -395,9 +433,7 @@ export default function Dashboard() {
               <p className={styles.wait}>connecting...</p>
             )}
             <a
-              href="https://backproto.io/plan/03-PROTOCOL-SPEC/"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/contracts"
               className={styles.docLink}
             >
               openclaw spec →
@@ -471,9 +507,7 @@ export default function Dashboard() {
               <p className={styles.wait}>connecting...</p>
             )}
             <a
-              href="https://backproto.io/plan/03-PROTOCOL-SPEC/"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/contracts"
               className={styles.docLink}
             >
               gateway docs →
@@ -484,7 +518,7 @@ export default function Dashboard() {
           <section className={styles.section} id="sim">
             <SectionHead label="simulator" color="var(--color-sim)" />
             <p className={styles.desc}>
-              Live agent-based simulation of the backpressure protocol. Multiple
+              Live agent-based simulation of the Pura protocol. Multiple
               agents with different strategies compete for capacity allocation
               across market phases (bull, bear, shock, recovery). Validates that
               the mechanism is throughput-optimal and that truthful capacity
@@ -540,9 +574,7 @@ export default function Dashboard() {
               </p>
             )}
             <a
-              href="https://backproto.io/plan/05-SIMULATION-DESIGN/"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/simulation"
               className={styles.docLink}
             >
               simulation design →

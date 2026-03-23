@@ -25,6 +25,9 @@ import QualityOracleAbi from "./QualityOracle.json";
 import VelocityTokenAbi from "./VelocityToken.json";
 import UrgencyTokenAbi from "./UrgencyToken.json";
 import MerkleRootAnchorAbi from "./MerkleRootAnchor.json";
+import TemperatureOracleAbi from "./TemperatureOracle.json";
+import VirialMonitorAbi from "./VirialMonitor.json";
+import SystemStateEmitterAbi from "./SystemStateEmitter.json";
 export const abis = {
     BackpressurePool: BackpressurePoolAbi,
     CapacityRegistry: CapacityRegistryAbi,
@@ -53,4 +56,7 @@ export const abis = {
     VelocityToken: VelocityTokenAbi,
     UrgencyToken: UrgencyTokenAbi,
     MerkleRootAnchor: MerkleRootAnchorAbi,
+    TemperatureOracle: TemperatureOracleAbi,
+    VirialMonitor: VirialMonitorAbi,
+    SystemStateEmitter: SystemStateEmitterAbi,
 };

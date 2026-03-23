@@ -4,9 +4,9 @@ Use as a Google Form, Typeform, or Tally form. Can also send as plain-text quest
 
 ---
 
-## Backproto Testnet Feedback
+## Pura Testnet Feedback
 
-Thanks for trying Backproto! This takes ~5 minutes. Your feedback informs what gets built next.
+Thanks for trying Pura! This takes ~5 minutes. Your feedback informs what gets built next.
 
 ### Questions
 
@@ -58,7 +58,7 @@ Thanks for trying Backproto! This takes ~5 minutes. Your feedback informs what g
 
 [Free text. Skip if not applicable]
 
-**8. How would you describe Backproto to a colleague in one sentence?**
+**8. How would you describe Pura to a colleague in one sentence?**
 
 [Free text. Reveals how they understood the product]
 

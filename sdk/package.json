@@ -1,7 +1,7 @@
 {
-  "name": "@backproto/sdk",
+  "name": "@pura/sdk",
   "version": "0.1.0",
-  "description": "TypeScript SDK for the Backproto protocol — backpressure economics for decentralized networks",
+  "description": "TypeScript SDK for the Pura protocol — backpressure economics for decentralized networks",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

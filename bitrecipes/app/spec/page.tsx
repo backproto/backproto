@@ -12,7 +12,7 @@ export default function SpecPage() {
           <section>
             <h2 className="text-xl font-bold mb-3">Overview</h2>
             <p className="text-[var(--color-text-muted)]">
-              A recipe is a YAML file that declares a complete Backproto
+              A recipe is a YAML file that declares a complete Pura
               pipeline: the providers, their pricing curves, routing policy,
               settlement contracts, and observability configuration. The format
               is machine-readable (for the <code>bake</code> CLI and simulation
@@ -61,7 +61,7 @@ export default function SpecPage() {
                     <td className="px-4 py-2">contracts_used</td>
                     <td className="px-4 py-2 text-[var(--color-text-muted)]">string[]</td>
                     <td className="px-4 py-2 text-[var(--color-green)]">yes</td>
-                    <td className="px-4 py-2 font-sans text-[var(--color-text-muted)]">Backproto contracts this recipe uses</td>
+                    <td className="px-4 py-2 font-sans text-[var(--color-text-muted)]">Pura contracts this recipe uses</td>
                   </tr>
                   <tr className="border-b border-[var(--color-border)]">
                     <td className="px-4 py-2">steps</td>

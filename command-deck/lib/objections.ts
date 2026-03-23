@@ -76,7 +76,7 @@ export const objections: Objection[] = [
     id: "why-not-existing",
     challenge: "Why not use an existing payment routing protocol?",
     response:
-      "None exist for this specific problem. Google AP2, Coinbase x402, OpenAI-Stripe ACP, and Visa TAP all handle payment authorization — can this agent pay? Is this payment valid? None of them handle what happens when the agent you are paying is at capacity. There is no reroute mechanism, no upstream throttle signal, no capacity-weighted distribution. Backproto is orthogonal to these protocols: it sits between the authorization layer and the work execution layer.",
+      "None exist for this specific problem. Google AP2, Coinbase x402, OpenAI-Stripe ACP, and Visa TAP all handle payment authorization — can this agent pay? Is this payment valid? None of them handle what happens when the agent you are paying is at capacity. There is no reroute mechanism, no upstream throttle signal, no capacity-weighted distribution. Pura is orthogonal to these protocols: it sits between the authorization layer and the work execution layer.",
     evidence:
       "The novelty assessment documents the gap: 'Agent payment ecosystem (March 2026): Google AP2, Coinbase x402, OpenAI-Stripe ACP, Visa TAP all focus on authorization/trust. None address flow control.'",
     sources: [
@@ -122,7 +122,7 @@ export const objections: Objection[] = [
     id: "competition",
     challenge: "What if Superfluid or Coinbase builds this?",
     response:
-      "We would welcome it. The protocol is MIT licensed specifically so that if Superfluid, Coinbase, or anyone else wants to build capacity-weighted routing, they can use our code and research. The goal is to prove the mechanism works, not to own the market. That said, Superfluid builds payment infrastructure, not routing algorithms. Coinbase builds payment rails, not congestion control. Neither team has network theory expertise as their core competency. Backproto fills a gap in their stack — it is more likely to become a module they integrate than a product they build from scratch.",
+      "We would welcome it. The protocol is MIT licensed specifically so that if Superfluid, Coinbase, or anyone else wants to build capacity-weighted routing, they can use our code and research. The goal is to prove the mechanism works, not to own the market. That said, Superfluid builds payment infrastructure, not routing algorithms. Coinbase builds payment rails, not congestion control. Neither team has network theory expertise as their core competency. Pura fills a gap in their stack — it is more likely to become a module they integrate than a product they build from scratch.",
     evidence:
       "The project is positioned for ecosystem integration, not competition. Grant applications to both Base Builder and Superfluid Ecosystem frame it as adding value to their platforms.",
     sources: [

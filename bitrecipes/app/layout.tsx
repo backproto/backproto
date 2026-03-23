@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "bit.recipes — Composable pipelines for backpressure economics",
   description:
-    "Visual, executable pipeline builder for Backproto. Browse recipes, simulate backpressure routing, deploy to Base.",
+    "Visual, executable pipeline builder for Pura. Browse recipes, simulate backpressure routing, deploy to Base.",
 };
 
 export default function RootLayout({

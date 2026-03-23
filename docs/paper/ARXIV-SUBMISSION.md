@@ -5,7 +5,7 @@
 - Primary category: cs.GT (Computer Science and Game Theory)
 - Secondary categories: cs.DC (Distributed, Parallel, and Cluster Computing), cs.CR (Cryptography and Security)
 - Title: Backpressure Economics: Capacity-Constrained Monetary Flow Control for Agent Economies
-- Comments: 18 pages, 8 figures, code at https://github.com/backproto/backproto
+- Comments: 18 pages, 8 figures, code at https://github.com/pura-xyz/pura
 
 ## Files to include
 

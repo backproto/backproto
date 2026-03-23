@@ -1,6 +1,6 @@
 # Mandalay
 
-Capacity-routed LLM API gateway powered by [Backproto](https://backproto.io) on Base.
+Capacity-routed LLM API gateway powered by [Pura](https://pura.xyz) on Base.
 
 Routes chat completions across OpenAI and Anthropic based on on-chain capacity weights from a BackpressurePool. Is a reference implementation, customer #1 for the protocol.
 
@@ -117,7 +117,7 @@ gateway/
 
 ## On-chain integration
 
-The gateway uses these Backproto contracts on Base Sepolia:
+The gateway uses these Pura contracts on Base Sepolia:
 
 | Contract | Purpose |
 |----------|---------|

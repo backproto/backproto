@@ -84,7 +84,7 @@ export default async function RecipeDetailPage({
             <p className="text-[var(--color-text-muted)]">
               # Install the CLI
             </p>
-            <p>npm install -g @backproto/bake</p>
+            <p>npm install -g @pura/bake</p>
             <p className="text-[var(--color-text-muted)] mt-4">
               # Fork this recipe
             </p>

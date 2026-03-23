@@ -6,7 +6,8 @@ to the deployed smart contract architecture on Base Sepolia (L2).
 
 \subsection{Contract architecture}
 
-The core BPE protocol is realised by eight Solidity contracts:
+The core BPE protocol is realised by eight Solidity contracts,
+with three additional thermodynamic contracts (\Cref{sec:thermodynamic}):
 
 \begin{table}[h]
 \centering
@@ -17,12 +18,16 @@ The core BPE protocol is realised by eight Solidity contracts:
 \midrule
 \texttt{CapacityRegistry} & $\Craw_s, \Csmooth_s$ & Stores raw + EWMA-smoothed capacity \\
 \texttt{StakeManager} & $\sqrt{\cdot}$ cap & Concave staking, Sybil resistance \\
-\texttt{BackpressurePool} & $\mu^*_{s,\tau}$ & GDA wrapper, unit rebalancing \\
+\texttt{BackpressurePool} & $\mu^*_{s,\tau}$ & GDA wrapper, Boltzmann rebalancing \\
 \texttt{CompletionTracker} & Dual-signed receipts & Verifies task completions \\
 \texttt{PricingCurve} & $p_d(t)$ & EIP-1559-style dynamic pricing \\
-\texttt{EscrowBuffer} & Overflow buffer & Holds payments when all sinks saturated \\
+\texttt{EscrowBuffer} & Overflow buffer + $P$ & Holds payments; emits osmotic pressure \\
 \texttt{OffchainAggregator} & BLS aggregation & Batch-verifies capacity attestations \\
-\texttt{Pipeline} & Cross-pool routing & Composes flows across task types \\
+\texttt{Pipeline} & Cross-pool routing & Composes flows; circuit breakers \\
+\midrule
+\texttt{TemperatureOracle} & $\tau(\sigma^2)$ & Variance-to-temperature mapping \\
+\texttt{VirialMonitor} & $V = 2T/(S+E)$ & Capital equilibrium + adaptive $\delta$ \\
+\texttt{SystemStateEmitter} & Phase classifier & Aggregates $\tau, V, P$ into snapshots \\
 \bottomrule
 \end{tabular}
 \caption{Mapping from formal model to deployed contracts.}
@@ -65,11 +70,11 @@ scoring.
 
 \subsection{Deployment}
 
-All 22 contracts (8 core + 14 research modules) are deployed and verified on Base
-Sepolia. The TypeScript SDK (\texttt{@backproto/sdk}) provides 18 action modules
-covering registration, staking, capacity updates, stream management, and pipeline
-composition. The test suite contains 213 passing tests spanning unit tests,
-integration tests, and gas benchmarks.
+All 25 contracts (8 core + 5 v2 extensions + 3 thermodynamic + 9 research modules)
+are deployed and verified on Base Sepolia. The TypeScript SDK (\texttt{@pura/sdk})
+provides 18 action modules covering registration, staking, capacity updates, stream
+management, and pipeline composition. The test suite contains 249 passing tests
+spanning unit tests, integration tests, and gas benchmarks.
 
 Source code, deployment addresses, and ABI exports are available at
-\url{https://github.com/backproto/backproto}.
+\url{https://github.com/pura-xyz/pura}.

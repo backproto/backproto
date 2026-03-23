@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Pura — Backproto Products",
+  title: "Pura — Pura Products",
   description:
-    "Relay capacity, Lightning routing, agent reputation, LLM gateway, and 1-click relay hosting. Powered by Backproto on Base.",
+    "Relay capacity, Lightning routing, agent reputation, LLM gateway, and 1-click relay hosting. Powered by Pura on Base.",
 };
 
 export default function RootLayout({

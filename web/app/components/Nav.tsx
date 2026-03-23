@@ -23,8 +23,8 @@ export default function Nav() {
       <nav className={styles.nav}>
         <div className={styles.inner}>
           <Link href="/" className={styles.logo}>
-            <Image src="/backproto.png" width={28} height={28} alt="" className={styles.logoIcon} />
-            backproto<span>.io</span>
+            <Image src="/pura.png" width={28} height={28} alt="" className={styles.logoIcon} />
+            pura<span>.io</span>
           </Link>
           <div className={styles.links}>
             {links.map(({ href, label }) => (
@@ -38,7 +38,7 @@ export default function Nav() {
               </Link>
             ))}
             <a
-              href="https://github.com/backproto/backproto"
+              href="https://github.com/pura-xyz/pura"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.github}
@@ -72,7 +72,7 @@ export default function Nav() {
             </Link>
           ))}
           <a
-            href="https://github.com/backproto/backproto"
+            href="https://github.com/pura-xyz/pura"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.link}

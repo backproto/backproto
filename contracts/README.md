@@ -1,4 +1,4 @@
-# Backproto Smart Contracts
+# Pura Smart Contracts
 
 **22 Solidity contracts across 5 domains + platform layer, deployed on Base Sepolia**
 

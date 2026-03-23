@@ -2,13 +2,13 @@
 
 **Capacity-routed LLM gateway. Open source. Business in a box.**
 
-Mandalay routes API requests across LLM providers based on real-time capacity, with transparent on-chain economics. It's a working product, a reference implementation for Backproto, and a forkable business.
+Mandalay routes API requests across LLM providers based on real-time capacity, with transparent on-chain economics. It's a working product, a reference implementation for Pura, and a forkable business.
 
 ---
 
 ## What Mandalay proves
 
-1. **Backproto works in production.** Real API traffic, real capacity routing, real completion receipts — not a testnet demo.
+1. **Pura works in production.** Real API traffic, real capacity routing, real completion receipts — not a testnet demo.
 2. **On-chain coordination adds value.** Routing decisions are better when they're informed by transparent, verifiable capacity signals rather than opaque load balancers.
 3. **The economics are sustainable.** A thin margin on LLM API calls, paid via streaming micropayments, covers infrastructure and generates profit.
 
@@ -87,7 +87,7 @@ Mandalay routes API requests across LLM providers based on real-time capacity, w
 - **Priority routing:** Paid tier gets guaranteed low-latency provider selection.
 - **Custom pools:** Enterprise customers get their own BackpressurePool with dedicated capacity.
 - **Analytics API:** Sell aggregated routing/latency data (which providers are fastest for which prompt types).
-- **White-label:** Forks pay for hosted Backproto integration (managed pool setup, completion tracking).
+- **White-label:** Forks pay for hosted Pura integration (managed pool setup, completion tracking).
 
 ---
 
@@ -101,7 +101,7 @@ Mandalay is open source. Someone forks it when they want:
 4. **Different chain.** Someone who wants this on Arbitrum, Optimism, or mainnet Ethereum.
 5. **Custom pricing.** Different margin, different free tier, different payment token.
 
-Every fork still uses Backproto contracts (or deploys their own instance), which validates the protocol regardless.
+Every fork still uses Pura contracts (or deploys their own instance), which validates the protocol regardless.
 
 ---
 
@@ -188,7 +188,7 @@ Total time from fork to live: **under an hour.**
 - Ship to Hacker News, /r/LocalLLaMA, AI Twitter
 
 ### Phase 2: Production (weeks 5–8)
-- Deploy Backproto contracts to Base mainnet
+- Deploy Pura contracts to Base mainnet
 - Switch from testnet to real USDC payment streams
 - Add Gemini + Groq as providers (demand-driven)
 - Launch "Fork your own gateway" tutorial
@@ -227,7 +227,7 @@ Total time from fork to live: **under an hour.**
 Mandalay is three things:
 
 1. **A product** — developers use it to get multi-provider LLM routing with zero configuration.
-2. **A proof** — it demonstrates that Backproto's capacity routing and streaming payments work in production.
+2. **A proof** — it demonstrates that Pura's capacity routing and streaming payments work in production.
 3. **A template** — anyone can fork it, deploy it, and run their own capacity-routed LLM business in under an hour.
 
-The code is the easy part. The economics are the hard part. Backproto solves the hard part. Mandalay shows it working.
+The code is the easy part. The economics are the hard part. Pura solves the hard part. Mandalay shows it working.

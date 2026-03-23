@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAddresses } from "@backproto/sdk";
+import { getAddresses } from "@pura/sdk";
 import { publicClient, chainId } from "@/lib/chain";
 import { getWallets, type AgentName } from "@/lib/wallets";
 import { agentList } from "@/lib/agents";

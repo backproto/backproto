@@ -6,8 +6,8 @@ Current state and next steps. Updated March 2026.
 
 ## What exists today
 
-- 22 Solidity contracts on Base Sepolia (8 core + 14 research modules), verified on Basescan
-- 213 passing tests across 21 test suites
+- 25 Solidity contracts on Base Sepolia (8 core + 5 v2 + 3 thermodynamic + 9 research), verified on Basescan
+- 249 passing tests across 25 test suites
 - TypeScript SDK with 18 action modules
 - Next.js website with docs, blog, paper, interactive playground, and live router dashboard
 - Mandalay reference gateway: single endpoint, multi-provider capacity-aware routing
@@ -16,14 +16,14 @@ Current state and next steps. Updated March 2026.
 - Agent-based simulation validating throughput optimality
 - Self-audit + Aderyn static analysis complete (0 exploitable findings)
 - GTM content: blog post, Twitter thread, LinkedIn posts, community posts, DM templates, feedback form, 3 grant applications
-- Design system extracted (tokens, components, agent prompt) for unified branding across Backproto, Buildlog, VR
+- Design system extracted (tokens, components, agent prompt) for unified branding across Pura, Buildlog, VR
 - Three reference products: AID Station (aidstation.app, Nostr relay dash), Spilt (spilt.dev, Lightning routing dash), DarkSource (darksource.ai, agent reputation explorer)
 - vr.dev absorbed into monorepo: Python SDK (38 verifiers, 19 domains), website, evidence chain. SDK bridge (`verify.ts`) connects vr.dev evidence hashes to CompletionTracker receipts and OpenClaw reputation. MerkleRootAnchor contract deployed for shared evidence anchoring.
 - Three additional blog posts: relay economics, Lightning capacity signals, OpenClaw reputation
 - Getting-started guide for OpenClaw agent operators
 - Community posts and DM templates for Nostr, Lightning, and OpenClaw audiences
 
-Backproto now covers four domains: AI agent routing (Mandalay), Nostr relay economics (AID Station), Lightning routing (Spilt), and agent reputation (DarkSource). The Nostr and Lightning integrations are no longer deferred research modules.
+Pura now covers four domains: AI agent routing (Mandalay), Nostr relay economics (AID Station), Lightning routing (Spilt), and agent reputation (DarkSource). The Nostr and Lightning integrations are no longer deferred research modules.
 
 ---
 
@@ -50,7 +50,7 @@ Backproto now covers four domains: AI agent routing (Mandalay), Nostr relay econ
 
 ## Catalini / a16z window (days 1-14, urgent)
 
-Catalini et al. published "Some Simple Economics of AGI" (arXiv:2602.20946v2) in February 2026. a16z crypto podcast ("AI just gave you superpowers — now what?") aired March 18, 2026. Both converge on verification cost as the binding constraint for agent economies and blockchain/stablecoins as the settlement layer. Backproto's mechanism design directly implements what both describe.
+Catalini et al. published "Some Simple Economics of AGI" (arXiv:2602.20946v2) in February 2026. a16z crypto podcast ("AI just gave you superpowers — now what?") aired March 18, 2026. Both converge on verification cost as the binding constraint for agent economies and blockchain/stablecoins as the settlement layer. Pura's mechanism design directly implements what both describe.
 
 Content window is 2-4 weeks from March 21. Full ops plan in `gtm/swarm-catalini.md`.
 
@@ -133,7 +133,7 @@ Lead every grant touchpoint with the live Mandalay demo and playground link. Ref
 
 ## Phase 5a: reference products (parallel with grants)
 
-Three reference products shipped, each demonstrating the Backproto mechanism in a different domain.
+Three reference products shipped, each demonstrating the Pura mechanism in a different domain.
 
 | Product | Domain | URL | Folder |
 |---------|--------|-----|--------|
@@ -202,7 +202,7 @@ Each product has: Next.js dashboard, API route reading on-chain state, setup scr
 - Primary target: AI agent builders
 - Non-AI domains: research modules, ship after AI agent traction
 - All content complies with AISLOP.md
-- Stack narrative: Buildlog captures, VR verifies, Backproto pays
+- Stack narrative: Buildlog captures, VR verifies, Pura pays
 
 ## Quick reference
 

@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "DarkSource — Agent Reputation Explorer",
   description:
-    "Browse agent skills, reputation scores, and verified completions. Powered by Backproto on Base.",
+    "Browse agent skills, reputation scores, and verified completions. Powered by Pura on Base.",
 };
 
 export default function RootLayout({

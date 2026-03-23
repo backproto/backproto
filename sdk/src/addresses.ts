@@ -14,7 +14,7 @@ export type ChainAddresses = {
   gdaV1: `0x${string}`;
   gdaV1Forwarder: `0x${string}`;
   superTokenFactory: `0x${string}`;
-  // Backproto extensions
+  // Pura extensions
   demurrageToken: `0x${string}`;
   velocityMetrics: `0x${string}`;
   relayCapacityRegistry: `0x${string}`;
@@ -76,7 +76,7 @@ export const addresses: Record<number, ChainAddresses> = {
     completionTracker: "0x7Dd6d47AC3b0BbF3D99bd61D1f1B1F85350A90c4",
     offchainAggregator: "0x98c621051b5909f41d3d9A32b3b7DbB02615a179",
     ...SUPERFLUID_BASE_SEPOLIA,
-    // Backproto extensions
+    // Pura extensions
     demurrageToken: "0x20C03C01Bd68d44DB89e3BA531009Cf0AA9074De",
     velocityMetrics: "0x1b7eBD1FB40dbDd624543807350b1Ffb19F96dfE",
     relayCapacityRegistry: "0x205457d92b5d92AD0F98cDC5FF37C61F5697565D",

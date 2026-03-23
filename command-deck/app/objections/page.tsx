@@ -59,8 +59,8 @@ export default function ObjectionsPage() {
       <footer className={styles.footer}>
         <p>
           Command Deck · Private briefing tool ·{" "}
-          <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-            backproto.io
+          <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+            pura.xyz
           </a>
         </p>
       </footer>

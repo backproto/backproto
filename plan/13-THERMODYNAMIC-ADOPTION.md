@@ -7,7 +7,7 @@ Repo: `synthesi` (branch `main`, commit `b7627fc`)
 
 ## TL;DR
 
-Integrate 6 physics-derived mechanisms (Boltzmann routing, virial ratio, osmotic escrow pressure, exploration bonus, adaptive demurrage, circuit breakers) into the Backproto protocol. Restructure brand (backproto.io → spec-only, vr.dev → absorbed into pura.xyz/verify, bit.recipes → Bitcoin-native cookbook). Rewrite the paper as "Thermodynamic Foundations of Capacity Control for Autonomous Service Networks." Ship a reference NIP-90 DVM, shadow mode sidecar, interactive benchmark, and 5 new recipes.
+Integrate 6 physics-derived mechanisms (Boltzmann routing, virial ratio, osmotic escrow pressure, exploration bonus, adaptive demurrage, circuit breakers) into the Pura protocol. Restructure brand (pura.xyz → spec-only, vr.dev → absorbed into pura.xyz/verify, bit.recipes → Bitcoin-native cookbook). Rewrite the paper as "Thermodynamic Foundations of Capacity Control for Autonomous Service Networks." Ship a reference NIP-90 DVM, shadow mode sidecar, interactive benchmark, and 5 new recipes.
 
 99 items across 12 execution groups. Critical path: Group 1 → Group 2 → (Groups 3+4+5 parallel) → Group 6 → Group 10 → Group 11.
 
@@ -61,14 +61,14 @@ None. This is the starting phase.
   - Current: 22 contracts in src/ (including subdirectories), 20 test files, 2 fork tests, 4 mocks
   - Update any docs that reference stale counts
 
-- [ ] **2. Update backproto.io homepage**
+- [ ] **2. Update pura.xyz homepage**
   - File: `web/app/page.tsx`
   - New headline: "Capacity Control Plane for Machine Services"
   - Strip product showcase (the 2 ref product cards added in commit b7627fc)
   - Replace with protocol spec overview: what BPE is, the 6 standard objects, the thermodynamic framework
   - Link to pura.xyz for operations, bit.recipes for recipes
 
-- [ ] **3. Strip backproto.io of product/deploy content**
+- [ ] **3. Strip pura.xyz of product/deploy content**
   - File: `web/content/docs/products.mdx` — rewrite as spec overview (no deployment instructions)
   - File: `web/content/docs/getting-started.mdx` — redirect to pura.xyz/docs
   - File: `web/content/docs/getting-started-*.mdx` (5 files) — redirect or remove
@@ -79,7 +79,7 @@ None. This is the starting phase.
 - [ ] **4. Write 6 standard object JSON schemas**
   - New file: `web/content/docs/objects.mdx` (or `web/content/docs/spec-objects.mdx`)
   - Objects: CapacityAttestation (with confidence block), PriceSignal (with escrow_pressure + system_state), VerificationReceipt, SettlementReceipt, SystemState (new), PipelineState
-  - Publish at backproto.io/docs/objects
+  - Publish at pura.xyz/docs/objects
 
 - [ ] **5. Update pura.xyz homepage**
   - File: `pura/app/page.tsx`
@@ -131,7 +131,7 @@ None. This is the starting phase.
 
 - [ ] **12. Cross-link all three sites**
   - Files: `pura/app/components/Footer.tsx`, `bitrecipes/components/Footer.tsx`, `web/app/components/Footer.tsx`
-  - Consistent footer: backproto.io (spec) | pura.xyz (operate) | bit.recipes (build)
+  - Consistent footer: pura.xyz (spec) | pura.xyz (operate) | bit.recipes (build)
   - Add cross-links in navs where appropriate
 
 ### Files touched (Phase 1)

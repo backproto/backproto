@@ -63,9 +63,9 @@ contract RelayPaymentPool is IRelayPaymentPool, Ownable {
         if (_poolTypes[RELAY_WRITE].initialized) revert PoolsAlreadyInitialized();
 
         // Create task type IDs by hashing pool type with a domain separator
-        bytes32 writeTaskType = keccak256(abi.encode("backproto.relay", RELAY_WRITE));
-        bytes32 readTaskType = keccak256(abi.encode("backproto.relay", RELAY_READ));
-        bytes32 storeTaskType = keccak256(abi.encode("backproto.relay", RELAY_STORE));
+        bytes32 writeTaskType = keccak256(abi.encode("pura.relay", RELAY_WRITE));
+        bytes32 readTaskType = keccak256(abi.encode("pura.relay", RELAY_READ));
+        bytes32 storeTaskType = keccak256(abi.encode("pura.relay", RELAY_STORE));
 
         // Register task types in core registry (minStake = 0, relay registry handles stake)
         capacityRegistry.registerTaskType(writeTaskType, 0);

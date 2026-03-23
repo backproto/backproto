@@ -1,8 +1,8 @@
-site_name: Backproto
+site_name: Pura
 site_description: Capacity-Constrained Monetary Flow Control for Agent Economies
-site_url: https://backproto.io/
-repo_url: https://github.com/backproto/backproto
-repo_name: backproto
+site_url: https://pura.xyz/
+repo_url: https://github.com/pura-xyz/pura
+repo_name: pura
 
 docs_dir: website
 
