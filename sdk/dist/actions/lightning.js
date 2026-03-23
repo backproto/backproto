@@ -51,3 +51,10 @@ export async function getRoutingFee(publicClient, addrs, nodePubkey) {
         functionName: "getRoutingFee", args: [nodePubkey],
     });
 }
+export async function getAllNodes(publicClient, addrs) {
+    const [pubkeys, capacities] = await read(publicClient, {
+        address: addrs.lightningCapacityOracle, abi: abis.LightningCapacityOracle,
+        functionName: "getAllNodes",
+    });
+    return { pubkeys, capacities };
+}

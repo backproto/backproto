@@ -4,42 +4,29 @@ order: -2
 description: Reference products built on Backproto
 ---
 
-Four products demonstrate the Backproto mechanism across different domains. Each reads on-chain capacity signals, routes payments proportionally, and provides a live dashboard. A fifth product, vr.dev, handles verification independently and feeds evidence into Backproto's completion receipt infrastructure.
+Two products demonstrate the Backproto mechanism. A third, vr.dev, handles verification independently and feeds evidence into Backproto's completion receipt infrastructure.
 
-## Mandalay — LLM gateway
+## pura.xyz — Operator dashboard
 
-A single API endpoint that routes LLM calls across OpenAI, Anthropic, and other providers based on which one has capacity right now. Automatic failover. No vendor lock-in.
+A consolidated dashboard that pulls live on-chain state from all deployed Backproto contracts on Base Sepolia. Five sections in one app:
 
-- Live: [mandalay.dev](https://mandalay.dev)
-- Source: [gateway/](https://github.com/backproto/backproto/tree/main/gateway)
-- Guide: [Get started](/docs/getting-started)
+- **LLM gateway** — Routes calls across OpenAI and Anthropic based on which provider has capacity. Reads pool member units, completion rates, and dynamic pricing from BackpressurePool and PricingCurve. Chat interface with real API passthrough.
+- **Nostr relay capacity** — Displays registered relay operators, their composite capacity scores, and anti-spam minimums across write/read/store pools. Reads from RelayCapacityRegistry and RelayPaymentPool.
+- **Lightning routing** — Shows lightning node capacity (EMA-smoothed), routing fees, and active pool membership. Reads from LightningCapacityOracle and LightningRoutingPool.
+- **Agent reputation** — Lists agents registered for a skill type, their capacity metrics, reputation scores (completions, slashes), and verified completions from CompletionTracker.
+- **Simulator** — Runs the BPE allocation algorithm against live contract state with configurable parameters.
 
-## Relay.Gold — Nostr relay dashboard
+Includes one-click economy deployment (free tier + $9/mo hosted) and a deploy status tracker.
 
-Nostr relay operators register their spare capacity (events/sec, storage, bandwidth) on-chain. The protocol distributes payment streams proportional to verified capacity. Three pool types: write, read, store.
+- Live: [pura.xyz](https://pura.xyz)
+- Source: [pura/](https://github.com/backproto/backproto/tree/main/pura)
 
-- Live: [relay.gold](https://relay.gold)
-- Source: [relay-dash/](https://github.com/backproto/backproto/tree/main/relay-dash)
-- Guide: [Get started: relay operators](/docs/getting-started-relay)
-- Blog: [Relay economics when capacity is verifiable](/blog/relay-economics)
+## bit.recipes — Pipeline builder
 
-## Lightning.Gold — Lightning routing dashboard
+Visual drag-and-drop pipeline builder for Backproto economies. Compose multi-stage task pipelines, preview cost estimates from on-chain pricing curves, and deploy the resulting economy in one transaction.
 
-Lightning node operators publish channel capacity on-chain, backed by stake. The protocol smooths the data with an EMA and computes multi-hop routes weighted by real liquidity. Includes a route explorer.
-
-- Live: [lightning.gold](https://lightning.gold)
-- Source: [lightning-dash/](https://github.com/backproto/backproto/tree/main/lightning-dash)
-- Guide: [Get started: Lightning node operators](/docs/getting-started-lightning)
-- Blog: [Lightning needs better capacity signals](/blog/lightning-capacity-signals)
-
-## DarkSource — Agent reputation explorer
-
-AI agents register capacity metrics (throughput, latency, error rate). Both agent and requester sign execution receipts. The protocol tracks completions, failures, and computes reputation scores. High reputation reduces stake requirements.
-
-- Live: [darksource.ai](https://darksource.ai)
-- Source: [agent-explorer/](https://github.com/backproto/backproto/tree/main/agent-explorer)
-- Guide: [Get started: agent operators](/docs/getting-started-openclaw)
-- Blog: [Agent reputation that actually measures something](/blog/openclaw-reputation)
+- Live: [bit.recipes](https://bit.recipes)
+- Source: [bitrecipes/](https://github.com/backproto/backproto/tree/main/bitrecipes)
 
 ## vr.dev — Agent verification platform
 

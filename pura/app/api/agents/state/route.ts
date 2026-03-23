@@ -1,19 +1,21 @@
 import { NextResponse } from "next/server";
 import { getAddresses, openclaw, completion, platform } from "@backproto/sdk";
 import { publicClient, chainId } from "@/lib/shared/chain";
+import { keccak256, toHex } from "viem";
 
 export const runtime = "nodejs";
 
 const VR_API_BASE = process.env.VR_API_URL || "https://api.vr.dev/v1";
 
-const DEMO_SKILL: `0x${string}` =
-  "0x0000000000000000000000000000000000000000000000000000000000000001";
+const SKILL_TYPE: `0x${string}` =
+  (process.env.AGENT_SKILL_TYPE as `0x${string}`) ??
+  keccak256(toHex("code-generation"));
 
 export async function GET() {
   const addrs = getAddresses(chainId);
 
   const agentIds = await openclaw
-    .getAgentsForSkill(publicClient, addrs, DEMO_SKILL)
+    .getAgentsForSkill(publicClient, addrs, SKILL_TYPE)
     .catch(() => [] as `0x${string}`[]);
 
   const agents = await Promise.all(

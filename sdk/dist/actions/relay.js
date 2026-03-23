@@ -47,3 +47,10 @@ export async function getAntiSpamMinimum(publicClient, addrs, poolType) {
         functionName: "getAntiSpamMinimum", args: [poolType],
     });
 }
+export async function getAllRelays(publicClient, addrs) {
+    const [pubkeys, capacities] = await read(publicClient, {
+        address: addrs.relayCapacityRegistry, abi: abis.RelayCapacityRegistry,
+        functionName: "getAllRelays",
+    });
+    return { pubkeys, capacities };
+}

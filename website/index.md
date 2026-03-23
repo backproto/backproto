@@ -83,12 +83,10 @@ BPE solves this by treating **receiver-side capacity constraints as first-class 
 
 ## Reference products
 
-Five products built on Backproto, each demonstrating the mechanism in a different domain.
+Three products built on Backproto.
 
 | Product | Domain | URL |
 |---------|--------|-----|
-| Mandalay | LLM gateway routing | [mandalay.dev](https://mandalay.dev) |
-| Relay.Gold | Nostr relay capacity | [relay.gold](https://relay.gold) |
-| Lightning.Gold | Lightning routing | [lightning.gold](https://lightning.gold) |
-| DarkSource | Agent reputation | [darksource.ai](https://darksource.ai) |
-| vr.dev | Verifiable rewards | [vr.dev](https://vr.dev) |
+| pura.xyz | Operator dashboard (gateway, relays, lightning, agents, sim, deploy) | [pura.xyz](https://pura.xyz) |
+| bit.recipes | Visual pipeline builder | [bit.recipes](https://bit.recipes) |
+| vr.dev | Agent verification | [vr.dev](https://vr.dev) |

@@ -77,3 +77,13 @@ export async function getAntiSpamMinimum(
     functionName: "getAntiSpamMinimum", args: [poolType],
   });
 }
+
+export async function getAllRelays(
+  publicClient: PublicClient, addrs: ChainAddresses,
+): Promise<{ pubkeys: Hash[]; capacities: bigint[] }> {
+  const [pubkeys, capacities] = await read<[Hash[], bigint[]]>(publicClient, {
+    address: addrs.relayCapacityRegistry, abi: abis.RelayCapacityRegistry,
+    functionName: "getAllRelays",
+  });
+  return { pubkeys, capacities };
+}

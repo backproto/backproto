@@ -76,6 +76,12 @@ sdk/                    TypeScript SDK (@backproto/sdk)
                         quality, urgencyToken, velocityToken)
   src/examples/         Full-flow demo + testnet validation
 
+pura/                   Operator dashboard (pura.xyz) — Next.js
+  app/api/              9 API routes reading live on-chain state
+  scripts/              Setup scripts for on-chain registration
+
+bitrecipes/             Visual pipeline builder (bit.recipes) — Next.js
+
 docs/
   paper/                Research paper (LaTeX, 14 sections)
   nips/                 NIP-XX: Backpressure Relay Economics spec

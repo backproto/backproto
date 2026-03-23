@@ -12,3 +12,7 @@ export declare function setAntiSpamMinimum(walletClient: WalletClient, addrs: Ch
 export declare function getRelayOperator(publicClient: PublicClient, addrs: ChainAddresses, nostrPubkey: Hash): Promise<`0x${string}`>;
 export declare function getCompositeCapacity(publicClient: PublicClient, addrs: ChainAddresses, nostrPubkey: Hash): Promise<bigint>;
 export declare function getAntiSpamMinimum(publicClient: PublicClient, addrs: ChainAddresses, poolType: 0 | 1 | 2): Promise<bigint>;
+export declare function getAllRelays(publicClient: PublicClient, addrs: ChainAddresses): Promise<{
+    pubkeys: Hash[];
+    capacities: bigint[];
+}>;

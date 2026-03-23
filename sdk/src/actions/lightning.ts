@@ -82,3 +82,13 @@ export async function getRoutingFee(
     functionName: "getRoutingFee", args: [nodePubkey],
   });
 }
+
+export async function getAllNodes(
+  publicClient: PublicClient, addrs: ChainAddresses,
+): Promise<{ pubkeys: Hash[]; capacities: bigint[] }> {
+  const [pubkeys, capacities] = await read<[Hash[], bigint[]]>(publicClient, {
+    address: addrs.lightningCapacityOracle, abi: abis.LightningCapacityOracle,
+    functionName: "getAllNodes",
+  });
+  return { pubkeys, capacities };
+}

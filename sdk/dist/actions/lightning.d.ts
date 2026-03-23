@@ -12,3 +12,7 @@ export declare function getOptimalRoute(publicClient: PublicClient, addrs: Chain
     fees: bigint[];
 }>;
 export declare function getRoutingFee(publicClient: PublicClient, addrs: ChainAddresses, nodePubkey: Hash): Promise<bigint>;
+export declare function getAllNodes(publicClient: PublicClient, addrs: ChainAddresses): Promise<{
+    pubkeys: Hash[];
+    capacities: bigint[];
+}>;

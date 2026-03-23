@@ -10,7 +10,8 @@
     "sync-sdk": "rm -rf node_modules/@backproto/sdk && mkdir -p node_modules/@backproto/sdk && cp -r ../sdk/dist node_modules/@backproto/sdk/dist && cp ../sdk/package.json node_modules/@backproto/sdk/package.json && sed -i.bak 's/.json\";/.json\" with { type: \"json\" };/g' node_modules/@backproto/sdk/dist/abis/index.js && rm -f node_modules/@backproto/sdk/dist/abis/index.js.bak",
     "setup-relays": "tsx scripts/setup-relays.ts",
     "setup-lightning": "tsx scripts/setup-lightning.ts",
-    "setup-agents": "tsx scripts/setup-agents.ts"
+    "setup-agents": "tsx scripts/setup-agents.ts",
+    "setup-gateway": "tsx scripts/setup-gateway.ts"
   },
   "dependencies": {
     "next": "16.1.6",

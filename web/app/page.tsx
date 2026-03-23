@@ -5,14 +5,14 @@ import DomainPanels from "./components/DomainPanels";
 import styles from "./page.module.css";
 
 const coreContracts = [
-  { name: "StakeManager", addr: "0xdc26b147030f635a2f8ac466d28a88b3b33ca6b3" },
-  { name: "CapacityRegistry", addr: "0x6f58f28c0a270c198c65cff5c5a7ba9d86088948" },
-  { name: "BackpressurePool", addr: "0x8e999a246afea241cf3c1d400dd7786cf591fa88" },
-  { name: "EscrowBuffer", addr: "0x8d2f5b40315cccf9b7aa10869c035f9c7a0a3160" },
-  { name: "Pipeline", addr: "0xbc2c20d75ab5a03f592bcfdb7d8c40fdd3f7afa7" },
-  { name: "PricingCurve", addr: "0x11522daf010c08d5d26a2b1369567279a27338e3" },
-  { name: "CompletionTracker", addr: "0xff3dab79a53ffd11bae041e094ed0b6217acfc3c" },
-  { name: "OffchainAggregator", addr: "0xa70993d6d4cb5e4cf5ee8ddcbfde875e55a937fa" },
+  { name: "StakeManager", addr: "0x4936822CB9e316ee951Af2204916878acCDD564E" },
+  { name: "CapacityRegistry", addr: "0x4ED9386110051eC66b96e5d2e627048D57df5B64" },
+  { name: "BackpressurePool", addr: "0x8a1F99e32d6d3D79d8AaF275000D6cbb57A8AF6a" },
+  { name: "EscrowBuffer", addr: "0x31288aB9b12298Ff0C022ffD9F90797bB238d90a" },
+  { name: "Pipeline", addr: "0x1eebaB27BD472b5956D8335CDB69b940F079e6dE" },
+  { name: "PricingCurve", addr: "0x37D65E1C233a13bDf6E48Bd4BD9B4103888dA866" },
+  { name: "CompletionTracker", addr: "0x7Dd6d47AC3b0BbF3D99bd61D1f1B1F85350A90c4" },
+  { name: "OffchainAggregator", addr: "0x98c621051b5909f41d3d9A32b3b7DbB02615a179" },
 ];
 
 const comparisonRows = [
@@ -107,7 +107,7 @@ export default function Home() {
               How it works &rarr;
             </Link>
             <a
-              href="https://router.backproto.com"
+              href="https://pura.xyz"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.btnSecondary}
@@ -317,57 +317,17 @@ export default function Home() {
         <div className={styles.label}>Reference products</div>
         <div className={styles.refGrid}>
           <div className={styles.refCard}>
-            <span className={styles.refName}>Mandalay</span>
+            <span className={styles.refName}>pura.xyz</span>
             <span className={styles.refDesc}>
-              Capacity-routed LLM API gateway powered by Backproto on Base.
+              Consolidated operator dashboard: LLM gateway, Nostr relay capacity,
+              Lightning routing, agent reputation, simulator, and one-click deploy.
+              All reading live on-chain state from Base Sepolia.
             </span>
             <div className={styles.refLinks}>
-              <a href="https://mandalay.dev" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
-                mandalay.dev &rarr;
+              <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+                pura.xyz &rarr;
               </a>
-              <a href="https://github.com/backproto/backproto/tree/main/gateway" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
-                GitHub &rarr;
-              </a>
-            </div>
-          </div>
-          <div className={styles.refCard}>
-            <span className={styles.refName}>Relay.Gold</span>
-            <span className={styles.refDesc}>
-              Nostr relay capacity dashboard tracking real-time operator headroom.
-            </span>
-            <div className={styles.refLinks}>
-              <a href="https://relay.gold" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
-                relay.gold &rarr;
-              </a>
-              <a href="https://github.com/backproto/backproto/tree/main/relay-dash" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
-                GitHub &rarr;
-              </a>
-            </div>
-          </div>
-          <div className={styles.refCard}>
-            <span className={styles.refName}>Lightning.Gold</span>
-            <span className={styles.refDesc}>
-              Lightning routing dashboard with capacity-weighted routes backed by on-chain stake.
-            </span>
-            <div className={styles.refLinks}>
-              <a href="https://lightning.gold" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
-                lightning.gold &rarr;
-              </a>
-              <a href="https://github.com/backproto/backproto/tree/main/lightning-dash" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
-                GitHub &rarr;
-              </a>
-            </div>
-          </div>
-          <div className={styles.refCard}>
-            <span className={styles.refName}>DarkSource</span>
-            <span className={styles.refDesc}>
-              Agent reputation explorer for the OpenClaw protocol.
-            </span>
-            <div className={styles.refLinks}>
-              <a href="https://darksource.ai" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
-                darksource.ai &rarr;
-              </a>
-              <a href="https://github.com/backproto/backproto/tree/main/agent-explorer" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+              <a href="https://github.com/backproto/backproto/tree/main/pura" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
                 GitHub &rarr;
               </a>
             </div>
@@ -376,6 +336,8 @@ export default function Home() {
             <span className={styles.refName}>bit.recipes</span>
             <span className={styles.refDesc}>
               Visual pipeline builder and recipe cookbook for Backproto.
+              Drag-and-drop task composition, live cost estimates, and
+              one-click deployment to on-chain economies.
             </span>
             <div className={styles.refLinks}>
               <a href="https://bit.recipes" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
@@ -400,7 +362,7 @@ export default function Home() {
             Deploy an economy &rarr;
           </Link>
           <a
-            href="https://router.backproto.com"
+            href="https://pura.xyz"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.btnSecondary}

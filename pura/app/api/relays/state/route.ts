@@ -4,25 +4,22 @@ import { publicClient, chainId } from "@/lib/shared/chain";
 
 export const runtime = "nodejs";
 
-const DEMO_RELAYS: `0x${string}`[] = [
-  "0x1111111111111111111111111111111111111111111111111111111111111111",
-  "0x2222222222222222222222222222222222222222222222222222222222222222",
-  "0x3333333333333333333333333333333333333333333333333333333333333333",
-];
-
 export async function GET() {
   const addrs = getAddresses(chainId);
 
+  const { pubkeys, capacities } = await relay
+    .getAllRelays(publicClient, addrs)
+    .catch(() => ({ pubkeys: [] as `0x${string}`[], capacities: [] as bigint[] }));
+
   const relays = await Promise.all(
-    DEMO_RELAYS.map(async (pubkey) => {
-      const [operator, capacity] = await Promise.all([
-        relay.getRelayOperator(publicClient, addrs, pubkey).catch(() => null),
-        relay.getCompositeCapacity(publicClient, addrs, pubkey).catch(() => 0n),
-      ]);
+    pubkeys.map(async (pubkey, i) => {
+      const operator = await relay
+        .getRelayOperator(publicClient, addrs, pubkey)
+        .catch(() => null);
       return {
         pubkey,
         operator,
-        capacity: capacity.toString(),
+        capacity: capacities[i].toString(),
         registered: operator !== null,
       };
     }),
