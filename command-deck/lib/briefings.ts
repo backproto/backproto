@@ -3,14 +3,14 @@ import type { Briefing } from "./types";
 export const briefings: Briefing[] = [
   // ── Value proposition ─────────────────────────────────────────
   {
-    id: "what-is-backproto",
-    title: "What Backproto is",
+    id: "what-is-pura",
+    title: "What Pura is",
     audiences: ["general", "investor", "builder", "grant-reviewer"],
     scenarios: ["elevator-pitch", "5-min-pitch", "grant-app"],
     headline:
-      "Backproto routes payments to AI agents based on who actually has spare capacity, using a proven algorithm from network theory.",
+      "Pura routes payments to AI agents based on who actually has spare capacity, using a proven algorithm from network theory.",
     elevator:
-      "AI agents are starting to pay each other in real time via streaming payments. But there is no flow control. When an agent gets overloaded, the payment stream keeps flowing in with no reroute, no throttle, no feedback signal. Backproto applies backpressure routing (Tassiulas-Ephremides, 1992) to monetary flows: agents declare spare capacity backed by a staked deposit, the protocol tracks actual completions, and a smart contract pool distributes incoming payments proportional to verified capacity. Busy agents get less. Available agents get more. Automatically.",
+      "AI agents are starting to pay each other in real time via streaming payments. But there is no flow control. When an agent gets overloaded, the payment stream keeps flowing in with no reroute, no throttle, no feedback signal. Pura applies backpressure routing (Tassiulas-Ephremides, 1992) to monetary flows: agents declare spare capacity backed by a staked deposit, the protocol tracks actual completions, and a smart contract pool distributes incoming payments proportional to verified capacity. Busy agents get less. Available agents get more. Automatically.",
     detail:
       "The protocol runs on Superfluid GDA pools on Base L2. A BackpressurePool contract wraps a Superfluid Distribution Pool where member units (payment shares) are dynamically adjusted by a capacity oracle. Agents register as sinks in a CapacityRegistry, post capacity signals smoothed with EWMA (alpha=0.3), and back their claims with stake. A CompletionTracker records dual-signed completion receipts per epoch (300 seconds). Agents below 50% completion rate for 3 consecutive epochs get 10% of their stake slashed. When all sinks are saturated, overflow goes to an EscrowBuffer that drains FIFO when capacity opens up. The system achieves 95.7% allocation efficiency in simulation (vs 93.5% for round-robin), recovers from 20% node-kill shocks within 50 steps, and keeps buffer stall rates under 9%.",
     sources: [
@@ -27,7 +27,7 @@ export const briefings: Briefing[] = [
     headline:
       "Send more money to the agents who have the most spare capacity. Automatically.",
     elevator:
-      "Backproto applies backpressure routing from network theory to monetary flows. Think TCP congestion control, but for AI agent payments. When downstream agents hit capacity, payment reroutes to agents with available headroom, buffers surge, and slashes liars. No coordinator required.",
+      "Pura applies backpressure routing from network theory to monetary flows. Think TCP congestion control, but for AI agent payments. When downstream agents hit capacity, payment reroutes to agents with available headroom, buffers surge, and slashes liars. No coordinator required.",
     detail:
       "The core mechanism: a Superfluid GDA pool where member units are proportional to verified spare capacity. The capacity oracle reads EWMA-smoothed signals from a CapacityRegistry, updates pool unit weights, and the Superfluid protocol handles per-second streaming distribution. The math behind it (Lyapunov drift analysis) proves this achieves throughput-optimal allocation for any stabilizable demand vector.",
     sources: ["gtm/blog-post.md", "gtm/twitter-thread.md"],
@@ -38,11 +38,11 @@ export const briefings: Briefing[] = [
     audiences: ["general", "investor", "builder", "grant-reviewer"],
     scenarios: ["5-min-pitch", "grant-app"],
     headline:
-      "Buildlog records what agents do. VR verifies outcomes. Backproto pays based on verified capacity.",
+      "Buildlog records what agents do. VR verifies outcomes. Pura pays based on verified capacity.",
     elevator:
-      "Backproto is the payment routing layer in a three-project stack. Buildlog (buildlog.ai) captures execution trails — what agents did, in what order. VR (vr.dev) verifies that agent output actually changed system state. Backproto routes payments to agents with verified spare capacity. Together: agents that do the work get paid, agents that fake it get slashed, overloaded agents get rerouted around.",
+      "Pura is the payment routing layer in a three-project stack. Buildlog (buildlog.ai) captures execution trails — what agents did, in what order. VR (vr.dev) verifies that agent output actually changed system state. Pura routes payments to agents with verified spare capacity. Together: agents that do the work get paid, agents that fake it get slashed, overloaded agents get rerouted around.",
     detail:
-      "Each layer operates independently but composes naturally. Buildlog provides the raw execution logs. VR's verification feeds into Backproto's CompletionTracker as proof of actual task completion. Backproto's capacity signals then drive payment allocation. The stack maps directly to Catalini's (2026) framework: Buildlog is the audit trail, VR implements the verification function V(m), and Backproto handles capacity-aware settlement.",
+      "Each layer operates independently but composes naturally. Buildlog provides the raw execution logs. VR's verification feeds into Pura's CompletionTracker as proof of actual task completion. Pura's capacity signals then drive payment allocation. The stack maps directly to Catalini's (2026) framework: Buildlog is the audit trail, VR implements the verification function V(m), and Pura handles capacity-aware settlement.",
     sources: [
       "gtm/blog-post.md",
       "plan/01-NOVELTY-ASSESSMENT.md",
@@ -110,9 +110,9 @@ export const briefings: Briefing[] = [
     audiences: ["investor", "grant-reviewer", "general"],
     scenarios: ["5-min-pitch", "grant-app"],
     headline:
-      "MIT economists published a model in Feb 2026 predicting the exact infrastructure Backproto already implements.",
+      "MIT economists published a model in Feb 2026 predicting the exact infrastructure Pura already implements.",
     elevator:
-      "Catalini, Gans, and Ma published 'Some Simple Economics of AGI' (arXiv:2602.20946v2) in February 2026. Their core argument: verification cost, not production cost, is the binding constraint on task automation. They introduce a measurability parameter 'm' and predict that on-chain verification mechanisms with stablecoin settlement will be the infrastructure for agent economies. Backproto's CompletionTracker is a concrete implementation of their verification function V(m). The Superfluid GDA on Base is the settlement layer they describe.",
+      "Catalini, Gans, and Ma published 'Some Simple Economics of AGI' (arXiv:2602.20946v2) in February 2026. Their core argument: verification cost, not production cost, is the binding constraint on task automation. They introduce a measurability parameter 'm' and predict that on-chain verification mechanisms with stablecoin settlement will be the infrastructure for agent economies. Pura's CompletionTracker is a concrete implementation of their verification function V(m). The Superfluid GDA on Base is the settlement layer they describe.",
     detail:
       "Specific mapping: Catalini's measurability parameter 'm' maps to CompletionTracker's dual-signed receipt system with per-epoch completion rates. Their prediction of high-m vs low-m task separation maps to our task type registry with separate pools per task type. Their stablecoin settlement layer maps to Superfluid GDA streaming on Base L2 at sub-cent marginal cost. Their verification cost as price driver maps to our verificationBudgetBps parameter per pool (informational in v0.1, enforced in v0.2). This is convergent evidence from MIT economics arriving at the same architectural conclusion we already built.",
     sources: [
@@ -126,11 +126,11 @@ export const briefings: Briefing[] = [
     audiences: ["investor", "grant-reviewer"],
     scenarios: ["5-min-pitch", "grant-app"],
     headline:
-      "a16z described blockchain as 'the financial API for autonomous software' in March 2026. That is literally what Backproto is.",
+      "a16z described blockchain as 'the financial API for autonomous software' in March 2026. That is literally what Pura is.",
     elevator:
-      "Dixon and Lazzarin (a16z, March 18 2026) described blockchain as the financial API for autonomous software. This is why Backproto builds on Superfluid + Base rather than REST + Stripe. The routing signal and the payment are the same mechanism. When you route payment to an agent, you are simultaneously signaling demand. The protocol makes sure that demand gets served by an agent that actually has capacity.",
+      "Dixon and Lazzarin (a16z, March 18 2026) described blockchain as the financial API for autonomous software. This is why Pura builds on Superfluid + Base rather than REST + Stripe. The routing signal and the payment are the same mechanism. When you route payment to an agent, you are simultaneously signaling demand. The protocol makes sure that demand gets served by an agent that actually has capacity.",
     detail:
-      "The a16z thesis and the Catalini paper arrive at the same conclusion from different angles. Catalini from the economics of verification, a16z from the architecture of machine-to-machine finance. Both predict on-chain settlement for autonomous agents. Backproto is positioned at their intersection: on-chain verification (CompletionTracker) plus on-chain settlement (Superfluid GDA) plus capacity-aware routing (backpressure algorithm). Two independent authoritative sources validating the same thesis within 30 days of each other.",
+      "The a16z thesis and the Catalini paper arrive at the same conclusion from different angles. Catalini from the economics of verification, a16z from the architecture of machine-to-machine finance. Both predict on-chain settlement for autonomous agents. Pura is positioned at their intersection: on-chain verification (CompletionTracker) plus on-chain settlement (Superfluid GDA) plus capacity-aware routing (backpressure algorithm). Two independent authoritative sources validating the same thesis within 30 days of each other.",
     sources: [
       "gtm/swarm-catalini.md",
       "plan/01-NOVELTY-ASSESSMENT.md",
@@ -144,9 +144,9 @@ export const briefings: Briefing[] = [
     headline:
       "Google AP2, Coinbase x402, OpenAI-Stripe ACP, Visa TAP all handle authorization. None handle flow control.",
     elevator:
-      "As of March 2026, every agent payment protocol focuses on authorization and trust: can this agent pay? Is this payment valid? None of them address what happens when the agent you are paying is at capacity. There is no reroute, no throttle, no upstream feedback signal. Backproto fills this gap. It is a payment routing protocol with built-in flow control, not another authorization layer.",
+      "As of March 2026, every agent payment protocol focuses on authorization and trust: can this agent pay? Is this payment valid? None of them address what happens when the agent you are paying is at capacity. There is no reroute, no throttle, no upstream feedback signal. Pura fills this gap. It is a payment routing protocol with built-in flow control, not another authorization layer.",
     detail:
-      "Google AP2 handles agent-to-agent payment authorization. Coinbase x402 adds HTTP-native micropayments for API access. OpenAI-Stripe ACP manages billing and metering. Visa TAP handles card network integration. All of these assume the recipient can handle the payment and the work. None provide a mechanism for what happens when they cannot. Backproto's contribution is orthogonal to these: it sits between the authorization layer and the work layer, routing payment toward available capacity.",
+      "Google AP2 handles agent-to-agent payment authorization. Coinbase x402 adds HTTP-native micropayments for API access. OpenAI-Stripe ACP manages billing and metering. Visa TAP handles card network integration. All of these assume the recipient can handle the payment and the work. None provide a mechanism for what happens when they cannot. Pura's contribution is orthogonal to these: it sits between the authorization layer and the work layer, routing payment toward available capacity.",
     sources: [
       "plan/01-NOVELTY-ASSESSMENT.md",
       "gtm/blog-post.md",
@@ -197,9 +197,9 @@ export const briefings: Briefing[] = [
     headline:
       "Mandalay, DarkSource, Relay.Gold, Lightning.Gold, and bit.recipes each demonstrate backpressure in a different domain.",
     elevator:
-      "Mandalay (mandalay.dev) is a capacity-routed LLM API gateway. You send chat requests, Mandalay checks on-chain capacity weights and routes to the provider with headroom. DarkSource (darksource.ai) lets you browse AI agents registered on-chain, view their capacity metrics, completions, and reputation scores. Relay.Gold (relay.gold) shows real-time Nostr relay capacity, with operators earning payment proportional to verified spare capacity. Lightning.Gold (lightning.gold) explores capacity-weighted multi-hop Lightning routing. bit.recipes is a visual pipeline builder for deploying Backproto economies (in progress).",
+      "Mandalay (mandalay.dev) is a capacity-routed LLM API gateway. You send chat requests, Mandalay checks on-chain capacity weights and routes to the provider with headroom. DarkSource (darksource.ai) lets you browse AI agents registered on-chain, view their capacity metrics, completions, and reputation scores. Relay.Gold (relay.gold) shows real-time Nostr relay capacity, with operators earning payment proportional to verified spare capacity. Lightning.Gold (lightning.gold) explores capacity-weighted multi-hop Lightning routing. bit.recipes is a visual pipeline builder for deploying Pura economies (in progress).",
     detail:
-      "Each product uses the same SDK pattern: getAddresses(chainId) to load contract ABIs, then module-namespaced reads like pool.getMemberUnits(), completion.getCompletionRate(), relay.getRelayOperator(). All are Next.js 16 + React 19 + Viem, deployed on Vercel. Revenue model for Mandalay: 40-60% margin on provider API cost vs. payment stream fees. The products serve two purposes: proof that the mechanism works across domains, and developer onboarding (builders can fork any reference app to build on Backproto).",
+      "Each product uses the same SDK pattern: getAddresses(chainId) to load contract ABIs, then module-namespaced reads like pool.getMemberUnits(), completion.getCompletionRate(), relay.getRelayOperator(). All are Next.js 16 + React 19 + Viem, deployed on Vercel. Revenue model for Mandalay: 40-60% margin on provider API cost vs. payment stream fees. The products serve two purposes: proof that the mechanism works across domains, and developer onboarding (builders can fork any reference app to build on Pura).",
     sources: [
       "gateway/README.md",
       "agent-explorer/README.md",
@@ -269,9 +269,9 @@ export const briefings: Briefing[] = [
     headline:
       "Every AI agent that pays another AI agent needs flow control. That market did not exist 12 months ago.",
     elevator:
-      "Agent-to-agent payment is a new category. Google, Coinbase, OpenAI, Stripe, and Visa all launched agent payment protocols in 2025-2026. They handle authorization (can this agent pay?). None handle flow control (what happens when the agent you are paying is full?). As agent economies scale, the flow control gap grows proportionally. Backproto is the only protocol addressing it.",
+      "Agent-to-agent payment is a new category. Google, Coinbase, OpenAI, Stripe, and Visa all launched agent payment protocols in 2025-2026. They handle authorization (can this agent pay?). None handle flow control (what happens when the agent you are paying is full?). As agent economies scale, the flow control gap grows proportionally. Pura is the only protocol addressing it.",
     detail:
-      "The agent payment market is nascent but growing fast. Google AP2, Coinbase x402, OpenAI-Stripe ACP, and Visa TAP all launched within 12 months. Each focuses on the trust and authorization layer. The flow control problem only emerges at scale: when multiple agents compete for the same service, and that service has finite capacity. Backproto is positioned as the routing layer that sits between the payment authorization layer and the work execution layer.",
+      "The agent payment market is nascent but growing fast. Google AP2, Coinbase x402, OpenAI-Stripe ACP, and Visa TAP all launched within 12 months. Each focuses on the trust and authorization layer. The flow control problem only emerges at scale: when multiple agents compete for the same service, and that service has finite capacity. Pura is positioned as the routing layer that sits between the payment authorization layer and the work execution layer.",
     sources: [
       "plan/01-NOVELTY-ASSESSMENT.md",
       "gtm/swarm-catalini.md",
@@ -305,7 +305,7 @@ export const briefings: Briefing[] = [
     elevator:
       "The TypeScript SDK wraps every contract function with a consistent API: getAddresses(chainId) loads all ABIs and addresses, then you call module-namespaced functions like pool.getMemberUnits(publicClient, addrs, taskTypeId, address). Modules: sink, source, pool, stake, buffer, pricing, completion, aggregator, demurrage, relay, lightning, platform, plus 6 v2 modules. All return bigint (Viem native type). Every reference app uses the same pattern, so you can fork one and start building.",
     detail:
-      "Installation: npm install @backproto/sdk (or use the monorepo sync-sdk script). Chain setup: create a Viem publicClient for Base Sepolia, get chainId. Then getAddresses(chainId) returns every contract ABI and address. Example: to check how much capacity a sink has, call sink.getCapacity(publicClient, addrs, taskTypeId, sinkAddress). To register as a sink: sink.register(walletClient, addrs, taskTypeId, capacityAmount). The SDK handles ABI encoding, function selection, and type conversion.",
+      "Installation: npm install @pura/sdk (or use the monorepo sync-sdk script). Chain setup: create a Viem publicClient for Base Sepolia, get chainId. Then getAddresses(chainId) returns every contract ABI and address. Example: to check how much capacity a sink has, call sink.getCapacity(publicClient, addrs, taskTypeId, sinkAddress). To register as a sink: sink.register(walletClient, addrs, taskTypeId, capacityAmount). The SDK handles ABI encoding, function selection, and type conversion.",
     sources: [
       "sdk/README.md",
       "sdk/src/",
@@ -321,7 +321,7 @@ export const briefings: Briefing[] = [
     elevator:
       "Every reference app follows the same pattern: Next.js 16, React 19, Viem, CSS Modules, polling /api/state every 30 seconds. The /api/state route reads contract state via SDK, falls back to deterministic seed data when chain is unreachable. Fork the repo, change the task type constant, configure your sink addresses, and you have a working backpressure-routed product. Deploy to Vercel in under 5 minutes.",
     detail:
-      "The bit.recipes project (in progress) will make this even simpler: a YAML-based declarative spec for Backproto pipelines where you define sources, sinks, routing policy, and settlement config, then deploy everything to Base in a single transaction via EconomyFactory. Until that ships, the reference apps are your fastest path to building on Backproto.",
+      "The bit.recipes project (in progress) will make this even simpler: a YAML-based declarative spec for Pura pipelines where you define sources, sinks, routing policy, and settlement config, then deploy everything to Base in a single transaction via EconomyFactory. Until that ships, the reference apps are your fastest path to building on Pura.",
     sources: [
       "gateway/README.md",
       "plan/11-BITRECIPES.md",
@@ -337,7 +337,7 @@ export const briefings: Briefing[] = [
     headline:
       "Built on Superfluid GDA on Base. Uses x402 ecosystem adjacency. All contracts verified on Basescan.",
     elevator:
-      "Backproto is native to Base. All 22 contracts are deployed and verified on Base Sepolia. We use Superfluid's GDA primitive for streaming distribution. Coinbase's x402 agent payment standard creates natural ecosystem adjacency — x402 handles authorization, Backproto handles flow control. The low gas costs on Base support frequent capacity signal updates (every 300 seconds per sink).",
+      "Pura is native to Base. All 22 contracts are deployed and verified on Base Sepolia. We use Superfluid's GDA primitive for streaming distribution. Coinbase's x402 agent payment standard creates natural ecosystem adjacency — x402 handles authorization, Pura handles flow control. The low gas costs on Base support frequent capacity signal updates (every 300 seconds per sink).",
     detail:
       "Base was chosen for four reasons: (1) Superfluid is deployed there, (2) x402 ecosystem adjacency, (3) strong agent economy developer community, (4) gas costs low enough for frequent on-chain capacity updates. Mainnet deployment planned post-testnet validation and grant funding. Grant funds would cover third-party audit, mainnet deployment gas, and SDK developer documentation.",
     sources: [
@@ -353,7 +353,7 @@ export const briefings: Briefing[] = [
     headline:
       "BackpressurePool is the first dynamic-weight use case for Superfluid GDA pools.",
     elevator:
-      "Most Superfluid GDA pools use static weights — set once, distribute forever. Backproto introduces dynamic weight rebalancing based on real-time capacity signals. The BackpressurePool contract calls updateMemberUnits on every rebalance, adjusting payment distribution in real time. This is a new use case for GDA that demonstrates the primitive's flexibility beyond static distributions.",
+      "Most Superfluid GDA pools use static weights — set once, distribute forever. Pura introduces dynamic weight rebalancing based on real-time capacity signals. The BackpressurePool contract calls updateMemberUnits on every rebalance, adjusting payment distribution in real time. This is a new use case for GDA that demonstrates the primitive's flexibility beyond static distributions.",
     detail:
       "We interact with Superfluid at three levels: (1) GDA pool creation via SuperfluidGDA.createPool(). (2) Dynamic unit updates via pool.updateMemberUnits() triggered by capacity oracle. (3) Flow rate management via CFA for source-to-pool connections. The OffchainAggregator batches rebalance calls for gas efficiency. This pattern could serve as a reference implementation for other projects wanting dynamic GDA distribution.",
     sources: [
@@ -440,7 +440,7 @@ export const briefings: Briefing[] = [
     elevator:
       "This is not a novel algorithm. Tassiulas and Ephremides published the backpressure routing algorithm in 1992. It has been refined across hundreds of papers over 30 years. Neely (2010) extended it with the V-parameter technique for utility-delay tradeoffs. Kelly (1998) proved proportional fairness pricing for network resource allocation. We apply these proven results to a new domain — monetary flows — rather than inventing new math.",
     detail:
-      "The bibliography includes: Tassiulas-Ephremides (1992) for the base algorithm, Neely (2006, 2010) for Lyapunov optimization, Kelly (1998) for proportional fairness, Srikant (2004) for internet congestion control, Zhang-Zargham (2020) for token engineering, Cha et al. (2025) for blockspace pricing, Fisher (1933) and Gesell (1916) for monetary velocity theory. The paper maps exactly which result from which source applies to which mechanism in Backproto.",
+      "The bibliography includes: Tassiulas-Ephremides (1992) for the base algorithm, Neely (2006, 2010) for Lyapunov optimization, Kelly (1998) for proportional fairness, Srikant (2004) for internet congestion control, Zhang-Zargham (2020) for token engineering, Cha et al. (2025) for blockspace pricing, Fisher (1933) and Gesell (1916) for monetary velocity theory. The paper maps exactly which result from which source applies to which mechanism in Pura.",
     sources: [
       "plan/06-BIBLIOGRAPHY.md",
       "plan/01-NOVELTY-ASSESSMENT.md",

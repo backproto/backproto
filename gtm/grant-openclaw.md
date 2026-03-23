@@ -2,7 +2,7 @@
 
 ## Project name
 
-Backproto
+Pura
 
 ## One-liner
 
@@ -10,7 +10,7 @@ Backpressure routing applied to AI agent payment flows, with formal throughput g
 
 ## Summary
 
-Backproto adapts backpressure routing (Tassiulas-Ephremides, 1992) to streaming payment networks. The core insight: payment flows between AI agents have the same congestion problems as data packets in networks, and the same family of algorithms that solved network congestion can solve payment congestion.
+Pura adapts backpressure routing (Tassiulas-Ephremides, 1992) to streaming payment networks. The core insight: payment flows between AI agents have the same congestion problems as data packets in networks, and the same family of algorithms that solved network congestion can solve payment congestion.
 
 Agents register multi-dimensional capacity. Completions are verified via dual-signed receipts. A Superfluid GDA pool distributes payments proportional to verified spare capacity. Dynamic pricing (EIP-1559-style) adjusts costs per capacity dimension. Overflow goes to escrow.
 
@@ -30,7 +30,7 @@ The result is throughput-optimal payment routing under any stabilizable demand v
 
 ## What is deployed?
 
-22 contracts on Base Sepolia. 213 passing tests across all contracts. TypeScript SDK with 18 action modules.
+25 contracts on Base Sepolia. 249 passing tests across all contracts. TypeScript SDK with 18 action modules.
 
 Simulation results (50 agents, 100 time steps):
 - 95.7% allocation efficiency vs 93.5% round-robin
@@ -39,17 +39,17 @@ Simulation results (50 agents, 100 time steps):
 
 ## Part of a stack
 
-Backproto is one component in a three-project stack:
+Pura is one component in a three-project stack:
 
 - Buildlog (buildlog.ai): Captures agent execution trails — what was run, what changed, what was the outcome
 - VR (vr.dev): Verifies that agent-claimed outcomes reflect actual system state changes
-- Backproto (backproto.io): Routes payments to agents with verified spare capacity
+- Pura (pura.xyz): Routes payments to agents with verified spare capacity
 
-Buildlog generates execution traces. VR validates outcomes against those traces. Backproto uses both signals to weight payment distribution. Each project works independently but the stack closes a full observe-verify-pay loop.
+Buildlog generates execution traces. VR validates outcomes against those traces. Pura uses both signals to weight payment distribution. Each project works independently but the stack closes a full observe-verify-pay loop.
 
 ## Research paper
 
-Full paper with formal proofs available at https://backproto.io/paper.
+Full paper with formal proofs available at https://pura.xyz/paper.
 
 Sections: background on backpressure routing theory, protocol design, smart contract architecture, simulation methodology and results, security analysis, related work comparison.
 
@@ -63,12 +63,12 @@ Sections: background on backpressure routing theory, protocol design, smart cont
 
 ## Team
 
-Solo builder. Background in software engineering. Building Backproto, Buildlog, and VR.
+Solo builder. Background in software engineering. Building Pura, Buildlog, and VR.
 
 ## Links
 
-- Website: https://backproto.io
-- GitHub (MIT): https://github.com/backproto/backproto
-- Paper: https://backproto.io/paper
-- Explainer: https://backproto.io/explainer
+- Website: https://pura.xyz
+- GitHub (MIT): https://github.com/pura-xyz/pura
+- Paper: https://pura.xyz/paper
+- Explainer: https://pura.xyz/explainer
 - Simulation: simulation/bpe_sim.py

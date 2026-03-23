@@ -1,21 +1,21 @@
-# @backproto/sdk
+# @pura/sdk
 
-TypeScript SDK for the [Backproto](https://backproto.io) protocol on Base Sepolia.
+TypeScript SDK for the [Pura](https://pura.xyz) protocol on Base Sepolia.
 
 ## Installation
 
 ```bash
-npm install @backproto/sdk
+npm install @pura/sdk
 ```
 
 ## Usage
 
 ```typescript
-import { getAddresses } from "@backproto/sdk";
-import * as sink from "@backproto/sdk/actions/sink";
-import * as pool from "@backproto/sdk/actions/pool";
-import * as pricing from "@backproto/sdk/actions/pricing";
-import * as lightning from "@backproto/sdk/actions/lightning";
+import { getAddresses } from "@pura/sdk";
+import * as sink from "@pura/sdk/actions/sink";
+import * as pool from "@pura/sdk/actions/pool";
+import * as pricing from "@pura/sdk/actions/pricing";
+import * as lightning from "@pura/sdk/actions/lightning";
 import { createPublicClient, createWalletClient, http } from "viem";
 import { baseSepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";

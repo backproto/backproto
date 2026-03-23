@@ -1,4 +1,4 @@
-# Backproto: Owner's Manual
+# Pura: Owner's Manual
 
 Everything you need to know to maintain, extend, and ship this project. This is a single-maintainer project. If you need to hand it off, this document is the starting point.
 
@@ -7,14 +7,14 @@ Everything you need to know to maintain, extend, and ship this project. This is 
 ## 1. Project Map
 
 ```
-backproto/
+pura/
 ├── contracts/          Solidity contracts (Foundry)
 │   ├── src/            22 contracts across 5 domains
 │   ├── test/           Test suite (125 tests)
 │   ├── script/         Deploy.s.sol (full-stack deployment)
 │   ├── deployments/    Recorded addresses per network
 │   └── foundry.toml    Solc 0.8.26, Cancun EVM, remappings
-├── sdk/                TypeScript SDK (@backproto/sdk)
+├── sdk/                TypeScript SDK (@pura/sdk)
 │   ├── src/actions/    13 action modules
 │   ├── src/abis/       17 contract ABIs (JSON)
 │   └── src/addresses.ts  Per-chain deployed addresses
@@ -215,7 +215,7 @@ npm run build
 npm publish --access public
 ```
 
-Package name: `@backproto/sdk`. Not yet published to npm. Publish when ready.
+Package name: `@pura/sdk`. Not yet published to npm. Publish when ready.
 
 ### Adding a New Contract
 
@@ -284,7 +284,7 @@ web/
 
 ### Deployment
 
-Not yet deployed. Target: backproto.io. Options:
+Not yet deployed. Target: pura.xyz. Options:
 - **Vercel** (recommended for Next.js): Connect GitHub repo, auto-deploy on push
 - **Cloudflare Pages**: `next build && npx @cloudflare/next-on-pages`
 
@@ -451,7 +451,7 @@ grep -ri "spilt" --include="*.md" --include="*.ts" --include="*.tsx" --include="
 
 From the GTM roadmap (`gtm/ROADMAP.md`):
 
-1. **Fresh testnet deployment**: Redeploy all 22 contracts under `backproto` identity
+1. **Fresh testnet deployment**: Redeploy all 22 contracts under `pura` identity
 2. **Nostr relay pilot**: 3-5 relay operators testing NIP-XX economics
 3. **Grant applications**: Base Builder Grant + Superfluid Ecosystem Grant
 4. **Python SDK**: pip-installable package for AI/Python developers

@@ -69,15 +69,15 @@ export default function Home() {
         </h1>
         <nav className={styles.headerNav}>
           <a
-            href="https://backproto.io"
+            href="https://pura.xyz"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
           >
-            Backproto
+            Pura
           </a>
           <a
-            href="https://backproto.io/explainer"
+            href="https://pura.xyz/explainer"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
@@ -85,7 +85,7 @@ export default function Home() {
             Docs
           </a>
           <a
-            href="https://github.com/backproto/backproto/tree/main/relay-dash"
+            href="https://github.com/pura-xyz/pura/tree/main/relay-dash"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
@@ -97,8 +97,8 @@ export default function Home() {
 
       <p className={styles.subtitle}>
         Nostr relay capacity dashboard · Built on{" "}
-        <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-          Backproto
+        <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+          Pura
         </a>
       </p>
 
@@ -167,7 +167,7 @@ export default function Home() {
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Register a relay</h3>
-        <pre className={styles.compact}>{`import { relay, getAddresses } from "@backproto/sdk";
+        <pre className={styles.compact}>{`import { relay, getAddresses } from "@pura/sdk";
 
 const addrs = getAddresses(84532);
 await relay.registerRelay(walletClient, addrs,
@@ -184,7 +184,7 @@ await relay.joinRelayPool(walletClient, addrs, 0, nostrPubkey);`}</pre>
           <h4 className={styles.faqQ}>What is Relay.Gold?</h4>
           <p className={styles.faqA}>
             A dashboard for Nostr relay operators who register their spare
-            capacity on-chain. The Backproto protocol reads that capacity,
+            capacity on-chain. The Pura protocol reads that capacity,
             weights it with an exponential moving average, and distributes
             payment streams proportionally. Relay operators earn based on
             verified spare capacity rather than flat fees.
@@ -218,7 +218,7 @@ await relay.joinRelayPool(walletClient, addrs, 0, nostrPubkey);`}</pre>
             Yes. Fork the repo, deploy your own relay-dash, and point it at
             your own relay fleet. See the{" "}
             <a
-              href="https://github.com/backproto/backproto/tree/main/relay-dash"
+              href="https://github.com/pura-xyz/pura/tree/main/relay-dash"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -232,8 +232,8 @@ await relay.joinRelayPool(walletClient, addrs, 0, nostrPubkey);`}</pre>
       <footer className={styles.footer}>
         <p>
           Relay.Gold · Powered by{" "}
-          <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-            Backproto
+          <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+            Pura
           </a>
           {" · "}
           <a href={explorerBase} target="_blank" rel="noopener noreferrer">
@@ -241,7 +241,7 @@ await relay.joinRelayPool(walletClient, addrs, 0, nostrPubkey);`}</pre>
           </a>
           {" · "}
           <a
-            href="https://backproto.io/paper"
+            href="https://pura.xyz/paper"
             target="_blank"
             rel="noopener noreferrer"
           >

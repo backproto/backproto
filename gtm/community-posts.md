@@ -6,23 +6,23 @@ Adapt for each platform. Match the tone and norms of each community.
 
 ## Hacker News: Show HN
 
-Title: Show HN: Backproto — backpressure routing from network theory, applied to AI agent payments
+Title: Show HN: Pura — backpressure routing + thermodynamic equilibrium for AI agent payments
 
 Body:
 
-I have been working on applying backpressure routing (Tassiulas-Ephremides, 1992) to payment flows between AI agents.
+I have been working on applying backpressure routing (Tassiulas-Ephremides, 1992) to payment flows between AI agents, with a thermodynamic layer that maps capacity variance to a system temperature.
 
 Streaming payment protocols let agents send money continuously, but there is no congestion control. When a downstream agent hits capacity, payments keep arriving. No reroute. No throttle. No feedback signal. Data networks solved this decades ago with TCP and backpressure scheduling. Agent payment networks have not.
 
-Backproto makes receiver-side capacity a first-class protocol primitive. Agents stake tokens to declare capacity (with a concave sqrt cap that makes Sybil splitting unprofitable), actual performance is tracked via dual-signed completion receipts, and a smart contract pool distributes incoming payment streams proportional to verified spare capacity. Overflow goes to escrow. Dynamic pricing (EIP-1559-style) makes congested agents expensive.
+Pura makes receiver-side capacity a first-class protocol primitive. Agents stake tokens to declare capacity (with a concave sqrt cap that makes Sybil splitting unprofitable), actual performance is tracked via dual-signed completion receipts, and a smart contract pool distributes incoming payment streams proportional to verified spare capacity. Overflow goes to escrow. Dynamic pricing (EIP-1559-style) makes congested agents expensive.
+
+On top of the base mechanism, a thermodynamic layer computes system temperature from capacity variance (Boltzmann-weighted routing), tracks a virial ratio linking throughput to bound capital (adaptive demurrage when idle), and triggers circuit-breaker phase transitions when pipeline stages fail.
 
 The math is from Lyapunov drift analysis, provably throughput-optimal for any stabilizable demand vector. Simulations show 95.7% allocation efficiency vs 93.5% for round-robin.
 
-Part of a three-project stack: Buildlog (buildlog.ai) captures agent workflows, VR (vr.dev) verifies outcomes, Backproto routes payments to verified capacity.
-
 What is deployed:
 
-- 22 contracts on Base Sepolia (L2), 213 passing tests
+- 25 contracts on Base Sepolia (L2), 249 passing tests
 - TypeScript SDK with 18 action modules
 - Live router dashboard
 - Research paper with formal proofs
@@ -31,10 +31,10 @@ Tech: Solidity 0.8.26, Superfluid GDA, EIP-712 attestations, off-chain aggregati
 
 This is testnet-stage. Looking for feedback on the mechanism design from anyone working on multi-agent systems or payment routing.
 
-Website: https://backproto.io
-GitHub: https://github.com/backproto/backproto
-Paper: https://backproto.io/paper
-Explainer: https://backproto.io/explainer
+Website: https://pura.xyz
+GitHub: https://github.com/pura-xyz/pura
+Paper: https://pura.xyz/paper
+Explainer: https://pura.xyz/explainer
 
 ---
 
@@ -44,15 +44,15 @@ Subject: Flow control for agent-to-agent payments
 
 I built a protocol for routing payments between AI agents based on actual spare capacity. The problem: when agents pay each other via streaming payments, overloaded agents keep receiving money without doing the work.
 
-Backproto adapts backpressure routing (Tassiulas-Ephremides, 1992) to handle this. Agents declare capacity, the protocol verifies completions, and payments automatically reroute to agents that have room.
+Pura adapts backpressure routing (Tassiulas-Ephremides, 1992) to handle this. Agents declare capacity, the protocol verifies completions, and payments automatically reroute to agents that have room.
 
-It is part of a stack: Buildlog captures what agents do, VR verifies outcomes, and Backproto routes the money.
+It is part of a stack: Buildlog captures what agents do, VR verifies outcomes, and Pura routes the money.
 
-Live on Base Sepolia with 22 contracts and a TypeScript SDK.
+Live on Base Sepolia with 25 contracts and a TypeScript SDK.
 
-- Docs: https://backproto.io
-- Explainer: https://backproto.io/explainer
-- GitHub: https://github.com/backproto/backproto
+- Docs: https://pura.xyz
+- Explainer: https://pura.xyz/explainer
+- GitHub: https://github.com/pura-xyz/pura
 
 What would this need to look like for it to be useful in your agent stack?
 
@@ -60,9 +60,9 @@ What would this need to look like for it to be useful in your agent stack?
 
 ## Farcaster (/base channel)
 
-Shipped Backproto on Base Sepolia. Payment routing for AI agent economies.
+Shipped Pura on Base Sepolia. Payment routing for AI agent economies.
 
-22 contracts. 213 tests. TypeScript SDK with 18 modules.
+25 contracts. 249 tests. TypeScript SDK with 18 modules.
 
 Agents declare capacity, stake tokens, get verified. Payments stream proportional to spare capacity. Overloaded agents get rerouted around. Overflow sits in escrow.
 
@@ -70,7 +70,7 @@ Part of a stack with Buildlog (workflow capture) and VR (verification).
 
 Research modules extend the core to Lightning routing, Nostr relay economics, and demurrage tokens.
 
-backproto.io | github.com/backproto/backproto
+pura.xyz | github.com/pura-xyz/pura
 
 ---
 
@@ -92,15 +92,15 @@ I adapted backpressure routing (Tassiulas-Ephremides, 1992) to monetary flows:
 - Dynamic pricing (EIP-1559 style) makes overloaded agents expensive
 - Overflow goes to escrow instead of being lost
 
-Backproto is one layer in a three-project stack. Buildlog (buildlog.ai) captures agent workflows and execution trails. VR (vr.dev) verifies that outcomes actually changed system state. Backproto routes payments to agents with verified spare capacity.
+Pura is one layer in a three-project stack. Buildlog (buildlog.ai) captures agent workflows and execution trails. VR (vr.dev) verifies that outcomes actually changed system state. Pura routes payments to agents with verified spare capacity.
 
 Simulations show 95.7% allocation efficiency vs 93.5% round-robin. Formal throughput optimality proof via Lyapunov drift analysis.
 
-22 contracts on Base Sepolia, 213 tests, TypeScript SDK.
+25 contracts on Base Sepolia, 249 tests, TypeScript SDK.
 
-- Explainer: https://backproto.io/explainer
-- GitHub (MIT): https://github.com/backproto/backproto
-- Paper: https://backproto.io/paper
+- Explainer: https://pura.xyz/explainer
+- GitHub (MIT): https://github.com/pura-xyz/pura
+- Paper: https://pura.xyz/paper
 
 Two questions:
 1. At what point in your agent pipeline would you need flow control for payments?
@@ -112,7 +112,7 @@ Two questions:
 
 Subject: GDA use case — capacity-weighted routing for AI agent payments
 
-I built a protocol that uses GDA in a way that might be interesting to this community. Backproto dynamically adjusts GDA member units based on verified spare capacity, turning GDA pools into real-time allocation engines instead of static distribution.
+I built a protocol that uses GDA in a way that might be interesting to this community. Pura dynamically adjusts GDA member units based on verified spare capacity, turning GDA pools into real-time allocation engines instead of static distribution.
 
 How it uses Superfluid:
 
@@ -122,34 +122,34 @@ How it uses Superfluid:
 
 The core handles AI agent payment routing. Research modules extend the GDA pattern to Nostr relay economics and Lightning routing incentives, each with their own GDA pool.
 
-22 contracts on Base Sepolia. 213 tests. TypeScript SDK.
+25 contracts on Base Sepolia. 249 tests. TypeScript SDK.
 
 Any advice on rapid unit rebalancing across dynamic capacity changes? Interested in gotchas when multiple GDA pools share the same Super Token.
 
-- Docs: https://backproto.io
-- GitHub: https://github.com/backproto/backproto
+- Docs: https://pura.xyz
+- GitHub: https://github.com/pura-xyz/pura
 
 ---
 
 ## Base Discord (#builders)
 
-Subject: Backproto — payment routing for AI agents on Base
+Subject: Pura — payment routing for AI agents on Base
 
 Shipped a protocol on Base Sepolia that does capacity-weighted payment routing for AI agent economies.
 
-22 contracts, 213 tests:
+25 contracts, 249 tests:
 
 - Core: 8 contracts for capacity-weighted streaming payments via Superfluid GDA
 - Research modules: demurrage tokens, Nostr relay economics, Lightning routing, cross-domain composition
 
 Results: 95.7% allocation efficiency, 83.5% gas savings via off-chain attestation batching
 
-Part of a three-project stack: Buildlog (agent workflow capture) + VR (outcome verification) + Backproto (payment routing).
+Part of a three-project stack: Buildlog (agent workflow capture) + VR (outcome verification) + Pura (payment routing).
 
 TypeScript SDK with 18 action modules.
 
-- Docs: https://backproto.io
-- GitHub: https://github.com/backproto/backproto
+- Docs: https://pura.xyz
+- GitHub: https://github.com/pura-xyz/pura
 - Basescan: https://sepolia.basescan.org/address/0x8e999a246afea241cf3c1d400dd7786cf591fa88
 
 Looking for feedback from builders. Happy to walk anyone through the testnet.
@@ -167,9 +167,9 @@ Relays declare multi-dimensional capacity (events/sec, storage, bandwidth). Capa
 Two Nostr-specific contracts are deployed on Base Sepolia: RelayCapacityRegistry and RelayPaymentPool. TypeScript SDK covers registration, pool management, and capacity reads.
 
 Dashboard: https://relay.gold
-Blog post on the economics: https://backproto.io/blog/relay-economics
-NIP-XX spec: github.com/backproto/backproto (docs/nips/)
-SDK docs: https://backproto.io/docs/getting-started-relay
+Blog post on the economics: https://pura.xyz/blog/relay-economics
+NIP-XX spec: github.com/pura-xyz/pura (docs/nips/)
+SDK docs: https://pura.xyz/docs/getting-started-relay
 
 Would relay operators integrate this? What is the minimum economic incentive that makes relay operation worth it?
 
@@ -183,14 +183,14 @@ I have been applying backpressure routing (Tassiulas-Ephremides) to Lightning li
 
 Payment routing in Lightning relies on stale gossip data. Senders probe routes until one works. There is no real-time capacity signal telling you which channels have liquidity.
 
-Backproto adds an on-chain capacity oracle on Base (L2) where node operators submit signed attestations of channel capacity, EWMA-smoothed to resist manipulation. A routing pool recommends optimal paths by capacity score. A cross-protocol router unifies streaming, instant, and on-chain settlement.
+Pura adds an on-chain capacity oracle on Base (L2) where node operators submit signed attestations of channel capacity, EWMA-smoothed to resist manipulation. A routing pool recommends optimal paths by capacity score. A cross-protocol router unifies streaming, instant, and on-chain settlement.
 
 This runs as a sidecar to Lightning. It does not modify the Lightning protocol itself.
 
 Dashboard: https://lightning.gold
-Blog post: https://backproto.io/blog/lightning-capacity-signals
-SDK docs: https://backproto.io/docs/getting-started-lightning
-GitHub: https://github.com/backproto/backproto
+Blog post: https://pura.xyz/blog/lightning-capacity-signals
+SDK docs: https://pura.xyz/docs/getting-started-lightning
+GitHub: https://github.com/pura-xyz/pura
 
 ---
 
@@ -204,11 +204,11 @@ Data networks solved this in 1992. Routers drop packets. TCP throttles senders. 
 
 Payment networks for AI agents have no equivalent.
 
-I built one. Backproto adapts backpressure routing to monetary flows between AI agents. Payments automatically reroute to agents with verified spare capacity. Overloaded agents get less. Available agents get more.
+I built one. Pura adapts backpressure routing to monetary flows between AI agents. Payments automatically reroute to agents with verified spare capacity. Overloaded agents get less. Available agents get more.
 
-22 contracts on Base. 213 tests. TypeScript SDK. MIT licensed.
+25 contracts on Base. 249 tests. TypeScript SDK. MIT licensed.
 
-backproto.io
+pura.xyz
 
 ---
 
@@ -220,11 +220,11 @@ Buildlog (buildlog.ai) records what AI agents do. MCP integration, execution tra
 
 VR (vr.dev) verifies that outcomes actually changed system state.
 
-Backproto (backproto.io) routes payments to agents with verified spare capacity. Overloaded agents get rerouted around. Fakers get slashed.
+Pura (pura.xyz) routes payments to agents with verified spare capacity. Overloaded agents get rerouted around. Fakers get slashed.
 
-The connection: Buildlog captures the work. VR confirms it happened. Backproto routes the money accordingly.
+The connection: Buildlog captures the work. VR confirms it happened. Pura routes the money accordingly.
 
-If an agent claims to have done the work and VR says otherwise, the completion receipt never gets signed and Backproto stops sending payments. The three layers reinforce each other.
+If an agent claims to have done the work and VR says otherwise, the completion receipt never gets signed and Pura stops sending payments. The three layers reinforce each other.
 
 All three are live or in development. Open source. Base L2.
 
@@ -238,11 +238,11 @@ The harder problem is capacity. When ten clients all want the same agent and tha
 
 Today the answer is: they wait, they retry, or they fail silently. There is no protocol-level mechanism to tell senders "this agent is full, try that one instead."
 
-Backproto makes capacity a first-class primitive. Agents declare how much work they can handle, the protocol verifies actual completion rates, and payments stream proportional to spare capacity. When an agent fills up, its price rises (EIP-1559 style) and demand shifts to agents with room.
+Pura makes capacity a first-class primitive. Agents declare how much work they can handle, the protocol verifies actual completion rates, and payments stream proportional to spare capacity. When an agent fills up, its price rises (EIP-1559 style) and demand shifts to agents with room.
 
-The math comes from network routing theory (Tassiulas-Ephremides, 1992). The implementation is 22 Solidity contracts on Base with a TypeScript SDK.
+The math comes from network routing theory (Tassiulas-Ephremides, 1992). The implementation is 25 Solidity contracts on Base with a TypeScript SDK.
 
-backproto.io/explainer
+pura.xyz/explainer
 
 ---
 
@@ -254,7 +254,7 @@ Each block below is one standalone post. Pick and choose, reorder, or adapt.
 
 ### 1. The reference product (Mandalay)
 
-Built a reference product on top of Backproto.
+Built a reference product on top of Pura.
 
 Mandalay is a single endpoint that routes your LLM calls across OpenAI, Anthropic, and others, weighted by on-chain capacity signals.
 
@@ -270,7 +270,7 @@ Your app calls one API. Behind it, a router checks which LLM providers actually 
 
 Payments stream to whoever can do the work. Overloaded providers get less. Available ones get more.
 
-That's Mandalay. backproto.io
+That's Mandalay. pura.xyz
 
 ---
 
@@ -280,9 +280,9 @@ Everyone optimizes LLM costs. Nobody optimizes for capacity.
 
 When three apps hit the same provider and it's saturated, your requests fail silently. No reroute. No signal. Just timeouts.
 
-Backproto makes capacity a first-class protocol primitive. Agents declare it, the chain verifies it, payments route accordingly.
+Pura makes capacity a first-class protocol primitive. Agents declare it, the chain verifies it, payments route accordingly.
 
-backproto.io/explainer
+pura.xyz/explainer
 
 ---
 
@@ -292,9 +292,9 @@ The stack:
 
 - Buildlog: records what agents do
 - VR: verifies the outcomes actually happened
-- Backproto: routes payments to agents with verified spare capacity
+- Pura: routes payments to agents with verified spare capacity
 
-Buildlog captures. VR confirms. Backproto pays.
+Buildlog captures. VR confirms. Pura pays.
 
 Fakers get slashed. Overloaded agents get rerouted around.
 
@@ -314,13 +314,13 @@ mandalay.dev
 
 Shipped on Base Sepolia:
 
-- 22 contracts, 213 tests passing
+- 25 contracts, 249 tests passing
 - TypeScript SDK with 18 modules
 - Live gateway with API key generation
 - Animated capacity dashboard
 - Research paper with formal proofs
 
-All MIT. github.com/backproto/backproto
+All MIT. github.com/pura-xyz/pura
 
 ---
 
@@ -332,7 +332,7 @@ AI agent payments have no equivalent. Money streams in whether the work gets don
 
 I adapted the algorithm that solved this for data networks (1992) and applied it to money.
 
-backproto.io
+pura.xyz
 
 ---
 
@@ -340,9 +340,9 @@ backproto.io
 
 Building multi-agent systems? The hard part isn't orchestration. It's what happens when a downstream agent hits capacity.
 
-Backproto gives you protocol-level flow control. Declare capacity, verify completions, route payments to whoever has room.
+Pura gives you protocol-level flow control. Declare capacity, verify completions, route payments to whoever has room.
 
-Works with any streaming payment system. 22 contracts on Base. SDK ready.
+Works with any streaming payment system. 25 contracts on Base. SDK ready.
 
 ---
 
@@ -352,7 +352,7 @@ When an LLM provider fills up, the base fee rises (EIP-1559 style). Demand natur
 
 No human rebalancing. No cron jobs checking health endpoints. The price signal IS the routing signal.
 
-That's the core of Backproto's pricing curve. backproto.io/explainer
+That's the core of Pura's pricing curve. pura.xyz/explainer
 
 ---
 
@@ -384,7 +384,7 @@ Three applications call the same LLM provider. That provider hits capacity. The 
 
 Data networks solved this exact problem in 1992. Routers detect congestion. TCP throttles the sender. Backpressure propagates upstream. The internet works because congestion is a first-class concept in the protocol.
 
-I built the same thing for AI agent payments. It is called Backproto. Agents declare how much work they can handle. The protocol verifies actual completions. Payments automatically route to whoever has spare capacity. Overloaded agents get rerouted around.
+I built the same thing for AI agent payments. It is called Pura. Agents declare how much work they can handle. The protocol verifies actual completions. Payments automatically route to whoever has spare capacity. Overloaded agents get rerouted around.
 
 22 smart contracts on a public testnet. TypeScript SDK. Research paper with formal proofs. All open source.
 
@@ -416,7 +416,7 @@ I shipped 22 smart contracts, a TypeScript SDK, a research paper, a live gateway
 
 Here is what I actually learned:
 
-The hardest part was not the code. It was deciding what the product was. I started with a protocol: formal proofs, simulation framework, 213 passing tests. Academically clean. Nobody could tell me what it did in one sentence.
+The hardest part was not the code. It was deciding what the product was. I started with a protocol: formal proofs, simulation framework, 249 passing tests. Academically clean. Nobody could tell me what it did in one sentence.
 
 So I built Mandalay on top of it. One API endpoint that routes your LLM calls to whichever provider has capacity. Now the one-sentence version exists: "like a load balancer for LLMs, but the capacity signals are verified on-chain."
 
@@ -438,9 +438,9 @@ Buildlog captures what agents do. Execution trails, workflow recording, full aud
 
 VR verifies that outcomes actually changed system state. On-chain evidence that state changed.
 
-Backproto routes payments based on verified spare capacity. Agents that do the work get paid. Agents that fake it get caught. Overloaded agents get rerouted around.
+Pura routes payments based on verified spare capacity. Agents that do the work get paid. Agents that fake it get caught. Overloaded agents get rerouted around.
 
-The three layers reinforce each other. Buildlog captures the work. VR confirms it happened. Backproto routes the money accordingly.
+The three layers reinforce each other. Buildlog captures the work. VR confirms it happened. Pura routes the money accordingly.
 
 All open source. Looking for feedback from anyone building multi-agent systems.
 
@@ -468,13 +468,13 @@ Quick start:
 
 What makes this different from just round-robin load balancing: the capacity signals are verified on-chain (Base L2). Providers stake tokens to declare capacity, completions are tracked, and the routing weights update automatically. There is a research paper with the formal proofs if you want the math.
 
-The protocol underneath (Backproto) adapts backpressure routing from network theory. But the product is just: your LLM calls do not fail when a provider is overloaded.
+The protocol underneath (Pura) adapts backpressure routing from network theory. But the product is just: your LLM calls do not fail when a provider is overloaded.
 
 Open source, MIT licensed. Looking for feedback from anyone calling multiple LLM providers.
 
 Website: https://mandalay.dev
-GitHub: https://github.com/backproto/backproto
-Paper: https://backproto.io/paper
+GitHub: https://github.com/pura-xyz/pura
+Paper: https://pura.xyz/paper
 
 ---
 
@@ -491,9 +491,9 @@ Three contracts on Base Sepolia: CapacityAdapter (agent registration and capacit
 There is a live explorer at darksource.ai that shows registered agents, their capacity metrics, and reputation scores.
 
 Dashboard: https://darksource.ai
-Blog post: https://backproto.io/blog/openclaw-reputation
-SDK docs: https://backproto.io/docs/getting-started-openclaw
-GitHub: https://github.com/backproto/backproto
+Blog post: https://pura.xyz/blog/openclaw-reputation
+SDK docs: https://pura.xyz/docs/getting-started-openclaw
+GitHub: https://github.com/pura-xyz/pura
 
 If you are building anything where agents need to prove they did the work: what would the minimum integration look like for your stack?
 
@@ -537,7 +537,7 @@ Browse agents at darksource.ai.
 
 ### 14. Three reference products
 
-Shipped three reference products on Backproto:
+Shipped three reference products on Pura:
 
 Relay.Gold (relay.gold) — Nostr relay capacity dashboard
 Lightning.Gold (lightning.gold) — Lightning routing with on-chain capacity signals

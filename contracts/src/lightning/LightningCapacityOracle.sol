@@ -62,7 +62,7 @@ contract LightningCapacityOracle is ILightningCapacityOracle, Ownable, EIP712 {
         address stakeManager_,
         bytes32 lightningTaskTypeId_,
         address owner_
-    ) Ownable(owner_) EIP712("Backproto-LightningOracle", "1") {
+    ) Ownable(owner_) EIP712("Pura-LightningOracle", "1") {
         coreRegistry = ICapacitySignal(coreRegistry_);
         stakeManager = IStakeManager(stakeManager_);
         LIGHTNING_TASK_TYPE_ID = lightningTaskTypeId_;

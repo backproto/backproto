@@ -57,7 +57,7 @@
 ### Catalini, Gans, & Ma (2026)
 "Some Simple Economics of AGI" (arXiv:2602.20946v2)
 - **Role**: Formal economic model of AI verification costs. Introduces measurability parameter *m* that determines automation frontier, wage effects, and value capture. Argues verification cost, not production cost, drives task pricing.
-- **BPE usage**: External validation of Backproto's mechanism design. CompletionTracker = concrete V(m) for high-*m* tasks. Motivates `verificationBudgetBps` parameter for low-*m* tasks. Informs §2.7 (Verification Economics) and pricing mechanism (v0.2).
+- **BPE usage**: External validation of Pura's mechanism design. CompletionTracker = concrete V(m) for high-*m* tasks. Motivates `verificationBudgetBps` parameter for low-*m* tasks. Informs §2.7 (Verification Economics) and pricing mechanism (v0.2).
 
 ### Dixon & Lazzarin (2026)
 a16z crypto podcast: "AI just gave you superpowers — now what?"

@@ -117,7 +117,7 @@ export default function Home() {
               Live reference &rarr;
             </a>
             <a
-              href="https://github.com/backproto/backproto"
+              href="https://github.com/pura-xyz/pura"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.btnSecondary}
@@ -165,7 +165,7 @@ export default function Home() {
       <section className={styles.section}>
         <div className={styles.solution}>
           <h2 className={styles.solutionTitle}>
-            Backproto makes <span className={styles.underline}>capacity</span> a
+            Pura makes <span className={styles.underline}>capacity</span> a
             first-class protocol primitive
           </h2>
           <div className={styles.steps}>
@@ -290,7 +290,7 @@ export default function Home() {
                   <tr key={addr}>
                     <td>
                       <a
-                        href={`https://github.com/backproto/backproto/blob/main/contracts/src/${name}.sol`}
+                        href={`https://github.com/pura-xyz/pura/blob/main/contracts/src/${name}.sol`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -329,7 +329,7 @@ export default function Home() {
               <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
                 pura.xyz &rarr;
               </a>
-              <a href="https://github.com/backproto/backproto/tree/main/pura" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+              <a href="https://github.com/pura-xyz/pura/tree/main/pura" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
                 GitHub &rarr;
               </a>
             </div>
@@ -337,7 +337,7 @@ export default function Home() {
           <div className={styles.refCard}>
             <span className={styles.refName}>bit.recipes</span>
             <span className={styles.refDesc}>
-              Visual pipeline builder and recipe cookbook for Backproto.
+              Visual pipeline builder and recipe cookbook for Pura.
               Drag-and-drop task composition, live cost estimates, and
               one-click deployment to on-chain economies.
             </span>
@@ -345,7 +345,7 @@ export default function Home() {
               <a href="https://bit.recipes" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
                 bit.recipes &rarr;
               </a>
-              <a href="https://github.com/backproto/backproto/tree/main/bitrecipes" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
+              <a href="https://github.com/pura-xyz/pura/tree/main/bitrecipes" target="_blank" rel="noopener noreferrer" className={styles.refLink}>
                 GitHub &rarr;
               </a>
             </div>
@@ -378,7 +378,7 @@ export default function Home() {
             Paper
           </Link>
           <a
-            href="https://github.com/backproto/backproto"
+            href="https://github.com/pura-xyz/pura"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.btnSecondary}

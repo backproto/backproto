@@ -36,7 +36,7 @@ export default function PaperIndex() {
       </p>
       <p className={styles.pdfLink}>
         <a
-          href="https://github.com/backproto/backproto/blob/main/docs/paper/main.pdf"
+          href="https://github.com/pura-xyz/pura/blob/main/docs/paper/main.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -97,7 +97,7 @@ export default function PaperIndex() {
       <p className={styles.note}>
         The full LaTeX source is available in{" "}
         <a
-          href="https://github.com/backproto/backproto/tree/main/docs/paper"
+          href="https://github.com/pura-xyz/pura/tree/main/docs/paper"
           target="_blank"
           rel="noopener noreferrer"
         >

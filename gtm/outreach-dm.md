@@ -10,13 +10,13 @@ Subject: capacity routing for agent payments
 
 Hey — I saw your work on [specific project/post]. I have been working on a problem that probably shows up once you have multiple agents paying each other: what happens when the provider hits capacity?
 
-I built a protocol called Backproto that does backpressure routing for streaming payments. Agents declare capacity, the protocol verifies completions, and payments automatically reroute when someone is overloaded. Live on Base Sepolia with 22 contracts and a TS SDK.
+I built a protocol called Pura that does backpressure routing for streaming payments. Agents declare capacity, the protocol verifies completions, and payments automatically reroute when someone is overloaded. Live on Base Sepolia with 25 contracts and a TS SDK.
 
-It is part of a stack I am building: Buildlog (buildlog.ai) captures agent workflows, VR (vr.dev) verifies outcomes, and Backproto routes payments to verified capacity.
+It is part of a stack I am building: Buildlog (buildlog.ai) captures agent workflows, VR (vr.dev) verifies outcomes, and Pura routes payments to verified capacity.
 
 Would 15 minutes on a call be useful? Happy to walk through the testnet. No pitch — just want to know if the model makes sense for your use case.
 
-backproto.io
+pura.xyz
 
 ---
 
@@ -26,13 +26,13 @@ Subject: payment flow control for multi-agent frameworks
 
 Hey, I have been following your contributions to [framework]. I built something that might complement what you are doing on the payment/resource layer.
 
-Backproto is a protocol for routing payments between agents based on verified spare capacity. Concretely: agents stake tokens, report completions, and payments stream proportional to who has room for more work. Overloaded agents get rerouted around.
+Pura is a protocol for routing payments between agents based on verified spare capacity. Concretely: agents stake tokens, report completions, and payments stream proportional to who has room for more work. Overloaded agents get rerouted around.
 
-The math is from network theory (Tassiulas-Ephremides, 1992). The implementation is 22 contracts on Base plus a TypeScript SDK.
+The math is from network theory (Tassiulas-Ephremides, 1992). The implementation is 25 contracts on Base plus a TypeScript SDK.
 
 Is resource allocation / payment routing something your framework handles today, or do you leave that to app developers?
 
-backproto.io/explainer
+pura.xyz/explainer
 
 ---
 
@@ -40,11 +40,11 @@ backproto.io/explainer
 
 Subject: shipped capacity routing on Base Sepolia
 
-Hey, I shipped 22 contracts on Base Sepolia that do capacity-weighted payment routing for AI agents. Uses Superfluid GDA for streaming, EIP-712 attestations for capacity verification, off-chain aggregation for gas efficiency.
+Hey, I shipped 25 contracts on Base Sepolia that do capacity-weighted payment routing for AI agents. Uses Superfluid GDA for streaming, EIP-712 attestations for capacity verification, off-chain aggregation for gas efficiency.
 
-Part of a stack: Buildlog (agent workflow capture, buildlog.ai) + VR (outcome verification, vr.dev) + Backproto (payment routing, backproto.io).
+Part of a stack: Buildlog (agent workflow capture, buildlog.ai) + VR (outcome verification, vr.dev) + Pura (payment routing, pura.xyz).
 
-213 tests, TypeScript SDK with 18 modules. Looking for builders to try it on testnet and tell me what breaks.
+249 tests, TypeScript SDK with 18 modules. Looking for builders to try it on testnet and tell me what breaks.
 
 Would you be up for 15 minutes? I can walk through deploy → register → stream in the SDK.
 
@@ -54,15 +54,15 @@ Would you be up for 15 minutes? I can walk through deploy → register → strea
 
 Subject: using GDA for dynamic capacity rebalancing
 
-Hey, I built a protocol that uses Superfluid GDA in a way you might find interesting. Backproto dynamically adjusts GDA member units based on verified agent capacity, turning pools into real-time allocation engines.
+Hey, I built a protocol that uses Superfluid GDA in a way you might find interesting. Pura dynamically adjusts GDA member units based on verified agent capacity, turning pools into real-time allocation engines.
 
 The primary use case is AI agent payment routing: agents declare capacity, complete task receipts update their share, and the GDA pool rebalances accordingly. Overflow goes to an escrow buffer.
 
-22 contracts, 213 tests, Base Sepolia. Off-chain attestation batching gets 83.5% gas reduction.
+25 contracts, 249 tests, Base Sepolia. Off-chain attestation batching gets 83.5% gas reduction.
 
 What patterns have you seen work well for rapid GDA unit updates? I have some questions about multi-pool architectures sharing a Super Token.
 
-backproto.io
+pura.xyz
 
 ---
 
@@ -72,34 +72,34 @@ Subject: Re: [original subject]
 
 Hey, just circling back. No pressure at all. If the timing is off, I will leave it.
 
-If it helps, here is the 2-minute version of what Backproto does:
+If it helps, here is the 2-minute version of what Pura does:
 
 Agents register capacity → get verified via completion receipts → payments stream proportional to spare capacity → overloaded agents get rerouted → overflow sits in escrow.
 
 15-minute walkthrough on testnet is open if you are curious.
 
-backproto.io
+pura.xyz
 
 ---
 
 ## Pinata / OpenClaw agent platform (local Omaha connection)
 
-Subject: Backproto + OpenClaw agents on Pinata
+Subject: Pura + OpenClaw agents on Pinata
 
 Hey, I am an engineer in Omaha working on agent infrastructure on Base. I noticed Pinata is running hosted OpenClaw instances for its agent platform and I built a protocol that plugs into that.
 
-Backproto does capacity-aware payment routing for agent economies. I already have three OpenClaw-specific contracts deployed on Base Sepolia: an adapter that maps agent capacity into the routing layer, a completion verifier for dual-signed work receipts, and a reputation bridge that makes track records portable across domains.
+Pura does capacity-aware payment routing for agent economies. I already have three OpenClaw-specific contracts deployed on Base Sepolia: an adapter that maps agent capacity into the routing layer, a completion verifier for dual-signed work receipts, and a reputation bridge that makes track records portable across domains.
 
-The short version: when Pinata-hosted agents start doing multi-step work that involves paying external services (other agents, compute, storage), Backproto provides the payment routing. It uses Superfluid streaming on Base, same chain as your x402 monetization layer.
+The short version: when Pinata-hosted agents start doing multi-step work that involves paying external services (other agents, compute, storage), Pura provides the payment routing. It uses Superfluid streaming on Base, same chain as your x402 monetization layer.
 
 Not asking Pinata to change any infrastructure. This sits alongside what you already have. Your agent users opt in when they need payment flow control.
 
-22 contracts live on Base Sepolia. 213 tests. TypeScript SDK.
+25 contracts live on Base Sepolia. 249 tests. TypeScript SDK.
 
 Would a 15-minute walkthrough be useful? Happy to do it in person given we are both in Omaha.
 
-backproto.io
-github.com/backproto/backproto
+pura.xyz
+github.com/pura-xyz/pura
 
 ---
 

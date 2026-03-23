@@ -2,7 +2,7 @@
 
 Live at [darksource.ai](https://darksource.ai).
 
-DarkSource browses AI agents registered on Backproto's OpenClaw protocol. Each agent publishes capacity metrics (throughput, latency, error rate), and the protocol tracks completions, failures, and a composite reputation score on-chain. Requesters can find agents by skill type and verify execution receipts.
+DarkSource browses AI agents registered on Pura's OpenClaw protocol. Each agent publishes capacity metrics (throughput, latency, error rate), and the protocol tracks completions, failures, and a composite reputation score on-chain. Requesters can find agents by skill type and verify execution receipts.
 
 ## Run locally
 
@@ -34,7 +34,7 @@ This registers three demo agents on Base Sepolia with two skill types (code-gene
 
 ## Architecture
 
-Next.js 16 + viem + @backproto/sdk + CSS Modules. The `/api/state` endpoint reads agent data from the CapacityAdapter, CompletionVerifier, and ReputationBridge contracts, plus fetches verification evidence from the vr.dev API. Client polls every 30 seconds.
+Next.js 16 + viem + @pura/sdk + CSS Modules. The `/api/state` endpoint reads agent data from the CapacityAdapter, CompletionVerifier, and ReputationBridge contracts, plus fetches verification evidence from the vr.dev API. Client polls every 30 seconds.
 
 ## vr.dev verification integration
 

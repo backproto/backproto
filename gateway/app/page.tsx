@@ -102,15 +102,15 @@ export default function Home() {
         </h1>
         <nav className={styles.headerNav}>
           <a
-            href="https://backproto.io"
+            href="https://pura.xyz"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
           >
-            Backproto
+            Pura
           </a>
           <a
-            href="https://backproto.io/explainer"
+            href="https://pura.xyz/explainer"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
@@ -118,7 +118,7 @@ export default function Home() {
             Docs
           </a>
           <a
-            href="https://github.com/backproto/backproto/tree/main/gateway"
+            href="https://github.com/pura-xyz/pura/tree/main/gateway"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
@@ -130,8 +130,8 @@ export default function Home() {
 
       <p className={styles.subtitle}>
         Capacity-routed LLM gateway · Built on{" "}
-        <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-          Backproto
+        <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+          Pura
         </a>
       </p>
 
@@ -290,7 +290,7 @@ curl ${typeof window !== "undefined" ? window.location.origin : "https://mandala
             Yes — Mandalay is fully open source. Fork it, deploy it, run your own
             gateway. See the{" "}
             <a
-              href="https://github.com/backproto/backproto/tree/main/gateway"
+              href="https://github.com/pura-xyz/pura/tree/main/gateway"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -303,8 +303,8 @@ curl ${typeof window !== "undefined" ? window.location.origin : "https://mandala
       <footer className={styles.footer}>
         <p>
           Mandalay · Powered by{" "}
-          <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-            Backproto
+          <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+            Pura
           </a>
           {" · "}
           <a href={explorerBase} target="_blank" rel="noopener noreferrer">
@@ -324,7 +324,7 @@ curl ${typeof window !== "undefined" ? window.location.origin : "https://mandala
           )}
           {" · "}
           <a
-            href="https://backproto.io/paper"
+            href="https://pura.xyz/paper"
             target="_blank"
             rel="noopener noreferrer"
           >

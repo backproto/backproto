@@ -19,10 +19,10 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-6 py-16">
             <div className="mb-8">
               <h1 className="text-4xl font-bold tracking-tight mb-3">
-                Composable pipelines for backpressure economics
+                Composable pipelines for the Pura protocol
               </h1>
               <p className="text-lg text-[var(--color-text-muted)] max-w-2xl">
-                Browse recipes. Fork them. Simulate backpressure routing with
+                Browse recipes. Fork them. Simulate capacity routing with
                 Boltzmann allocation and thermodynamic equilibrium in your
                 browser. Deploy to Base with one CLI command.
               </p>

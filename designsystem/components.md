@@ -1,6 +1,6 @@
 # Components
 
-Shared component patterns across Backproto, Buildlog, and VR.
+Shared component patterns across Pura, Buildlog, and VR.
 
 ## Nav
 

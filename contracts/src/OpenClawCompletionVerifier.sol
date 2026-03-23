@@ -49,7 +49,7 @@ contract OpenClawCompletionVerifier is EIP712 {
 
     constructor(
         address completionTracker_
-    ) EIP712("Backproto-OpenClawVerifier", "1") {
+    ) EIP712("Pura-OpenClawVerifier", "1") {
         completionTracker = ICompletionTracker(completionTracker_);
     }
 

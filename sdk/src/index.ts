@@ -1,4 +1,4 @@
-// @backproto/sdk - TypeScript SDK for Backproto
+// @pura/sdk - TypeScript SDK for Pura
 
 export { abis } from "./abis/index.js";
 export { addresses, getAddresses, type ChainAddresses } from "./addresses.js";
@@ -14,7 +14,7 @@ export * as pricing from "./actions/pricing.js";
 export * as completion from "./actions/completion.js";
 export * as aggregator from "./actions/aggregator.js";
 
-// Action modules: Backproto extensions
+// Action modules: Pura extensions
 export * as demurrage from "./actions/demurrage.js";
 export * as relay from "./actions/relay.js";
 export * as lightning from "./actions/lightning.js";

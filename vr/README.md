@@ -1,6 +1,6 @@
 # vr.dev — Verifiable Rewards
 
-Agent verification platform absorbed into the Backproto monorepo. Provides a Python SDK, 38-verifier registry, composition engine, evidence chain, and on-chain anchoring on Base L2.
+Agent verification platform absorbed into the Pura monorepo. Provides a Python SDK, 38-verifier registry, composition engine, evidence chain, and on-chain anchoring on Base L2.
 
 See [plan/12-VR-ABSORB.md](../plan/12-VR-ABSORB.md) for the absorption rationale and integration plan.
 
@@ -15,9 +15,9 @@ vr/
 └── contracts/  EvidenceAnchor.sol (Merkle root anchoring)
 ```
 
-## Integration with Backproto
+## Integration with Pura
 
-vr.dev's evidence hashes feed into Backproto's completion receipt infrastructure:
+vr.dev's evidence hashes feed into Pura's completion receipt infrastructure:
 
 - **CompletionTracker**: evidence hash serves as `taskId` in dual-signed receipts
 - **OpenClawCompletionVerifier**: evidence hash serves as `executionId` in skill execution receipts
@@ -25,7 +25,7 @@ vr.dev's evidence hashes feed into Backproto's completion receipt infrastructure
 
 The bridge lives in two places:
 - `sdk/src/actions/verify.ts` (TypeScript, on-chain submission)
-- `vr/sdk/src/vrdev/adapters/backproto.py` (Python, calls TS SDK via REST)
+- `vr/sdk/src/vrdev/adapters/pura.py` (Python, calls TS SDK via REST)
 
 ## Independent operation
 

@@ -29,7 +29,7 @@ export function Nav() {
             </Link>
           ))}
           <a
-            href="https://github.com/backproto/bitrecipes"
+            href="https://github.com/pura-xyz/pura"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
@@ -37,12 +37,12 @@ export function Nav() {
             GitHub
           </a>
           <a
-            href="https://backproto.io"
+            href="https://pura.xyz"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors"
           >
-            backproto.io
+            pura.xyz
           </a>
         </div>
       </div>

@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Mandalay — Capacity-Routed LLM Gateway",
   description:
-    "Multi-provider LLM API gateway with on-chain capacity routing. Powered by Backproto on Base.",
+    "Multi-provider LLM API gateway with on-chain capacity routing. Powered by Pura on Base.",
 };
 
 export default function RootLayout({

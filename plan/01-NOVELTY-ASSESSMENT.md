@@ -43,9 +43,9 @@ Stream 3: Token Engineering    Stream 4: Monetary Velocity
 
 Catalini, Gans, & Ma ("Some Simple Economics of AGI", arXiv:2602.20946v2) published a formal economic model where a measurability parameter *m* determines the automation frontier. Their framework predicts that verification cost, not production cost, drives task pricing — and that on-chain verification mechanisms with stablecoin settlement will be the infrastructure for agent economies.
 
-Backproto convergences with Catalini's model:
+Pura convergences with Catalini's model:
 
-| Catalini concept | Backproto mechanism |
+| Catalini concept | Pura mechanism |
 |---|---|
 | Measurability *m* | CompletionTracker: dual-signed receipts, per-epoch rates, auto-slash |
 | Verification function V(m) | On-chain completion tracking + staked capacity declarations |
@@ -55,7 +55,7 @@ Backproto convergences with Catalini's model:
 
 Dixon and Lazzarin (a16z, March 2026) independently described blockchain as "the financial API for autonomous software" — the same thesis that motivated building on Superfluid + Base rather than off-chain payment rails.
 
-This is convergent evidence from MIT economics and a16z crypto arriving at the same architectural conclusion Backproto implements.
+This is convergent evidence from MIT economics and a16z crypto arriving at the same architectural conclusion Pura implements.
 
 ## Feasibility
 

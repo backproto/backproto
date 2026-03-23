@@ -3,9 +3,9 @@
 
 We have presented Backpressure Economics (BPE), a cryptoeconomic mechanism that
 adapts Tassiulas--Ephremides backpressure routing to monetary flows in AI agent
-economies. BPE addresses a gap unserved by current agent payment protocols:
-the dynamic rerouting of continuous payment streams based on real-time capacity
-constraints.
+economies, implemented as the Pura protocol. BPE addresses a gap unserved by
+current agent payment protocols: the dynamic rerouting of continuous payment
+streams based on real-time capacity constraints.
 
 Our formal model maps network backpressure concepts---virtual queues, differential
 backlogs, max-weight scheduling---to the monetary domain, with a bounded overflow
@@ -13,10 +13,19 @@ buffer handling the fundamental constraint that money cannot be dropped. We prov
 throughput optimality within the capacity region via Lyapunov drift analysis and
 implement the protocol using Superfluid GDA pools on Base.
 
+The thermodynamic extensions (\Cref{sec:thermodynamic}) recast the allocation
+problem in physical terms: capacity variance becomes a system temperature
+governing Boltzmann-weighted routing, the ratio of throughput to bound capital
+defines a virial equilibrium, and sustained departures from equilibrium trigger
+circuit-breaker phase transitions. Adaptive demurrage closes the feedback loop by
+taxing idle capital in proportion to the virial deficit, pushing the system back
+toward balance without manual intervention.
+
 Simulation results demonstrate that BPE achieves 95.7\% allocation efficiency
 compared to 93.5\% for round-robin and 79.7\% for random allocation, with robust
 shock recovery and effective Sybil resistance via the concave stake cap.
 
 As AI agent economies scale and payment flows become continuous, capacity-aware
 flow control will be as essential to monetary infrastructure as congestion control
-is to data networks. BPE is a working foundation for this capability.
+is to data networks. BPE---and its thermodynamic layer---is a working foundation
+for this capability.

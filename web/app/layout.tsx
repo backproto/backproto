@@ -17,14 +17,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Backproto: Backpressure Economics for Decentralized Networks",
-    template: "%s | Backproto",
+    default: "Pura: Backpressure Economics for Decentralized Networks",
+    template: "%s | Pura",
   },
   description:
     "Universal capacity-constrained flow control across AI agents, Nostr relays, Lightning routing, and streaming payments.",
-  metadataBase: new URL("https://backproto.io"),
+  metadataBase: new URL("https://pura.xyz"),
   openGraph: {
-    images: [{ url: "/backproto.png", width: 512, height: 512 }],
+    images: [{ url: "/pura.png", width: 512, height: 512 }],
   },
 };
 

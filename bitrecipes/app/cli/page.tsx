@@ -9,13 +9,13 @@ export default function CliPage() {
         <h1 className="text-3xl font-bold mb-2">bake CLI</h1>
         <p className="text-[var(--color-text-muted)] mb-10">
           The command-line tool for working with bit.recipes. Validate, simulate,
-          and deploy Backproto pipelines.
+          and deploy Pura pipelines.
         </p>
 
         <section className="mb-12">
           <h2 className="text-xl font-bold mb-4">Installation</h2>
           <pre className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 font-mono text-sm text-[var(--color-text)]">
-            npm install -g @backproto/bake
+            npm install -g @pura/bake
           </pre>
         </section>
 
@@ -49,7 +49,7 @@ export default function CliPage() {
             },
             {
               cmd: "bake sim --chaos",
-              desc: "Same as test but with fault injection: randomly kill providers, spike load, degrade capacity. Prints a comparison of Backproto routing vs naive round-robin.",
+              desc: "Same as test but with fault injection: randomly kill providers, spike load, degrade capacity. Prints a comparison of Pura routing vs naive round-robin.",
             },
             {
               cmd: "bake deploy",
@@ -61,7 +61,7 @@ export default function CliPage() {
             },
             {
               cmd: "bake serve",
-              desc: "Run a deployed recipe as a live service. Starts an HTTP gateway that routes requests via the configured Backproto pipeline.",
+              desc: "Run a deployed recipe as a live service. Starts an HTTP gateway that routes requests via the configured Pura pipeline.",
             },
             {
               cmd: "bake publish",

@@ -96,15 +96,15 @@ export default function Home() {
         </h1>
         <nav className={styles.headerNav}>
           <a
-            href="https://backproto.io"
+            href="https://pura.xyz"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
           >
-            Backproto
+            Pura
           </a>
           <a
-            href="https://backproto.io/explainer"
+            href="https://pura.xyz/explainer"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
@@ -112,7 +112,7 @@ export default function Home() {
             Docs
           </a>
           <a
-            href="https://github.com/backproto/backproto/tree/main/lightning-dash"
+            href="https://github.com/pura-xyz/pura/tree/main/lightning-dash"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
@@ -124,8 +124,8 @@ export default function Home() {
 
       <p className={styles.subtitle}>
         Lightning routing dashboard · Built on{" "}
-        <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-          Backproto
+        <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+          Pura
         </a>
       </p>
 
@@ -240,7 +240,7 @@ export default function Home() {
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Register a node</h3>
-        <pre className={styles.compact}>{`import { lightning, getAddresses } from "@backproto/sdk";
+        <pre className={styles.compact}>{`import { lightning, getAddresses } from "@pura/sdk";
 
 const addrs = getAddresses(84532);
 await lightning.registerNode(walletClient, addrs, nodePubkey, 5_000_000n);
@@ -254,7 +254,7 @@ await lightning.joinRoutingPool(walletClient, addrs, nodePubkey);`}</pre>
           <h4 className={styles.faqQ}>What is Lightning.Gold?</h4>
           <p className={styles.faqA}>
             A dashboard for Lightning node operators who publish their channel
-            capacity on-chain. Backproto reads that capacity, applies
+            capacity on-chain. Pura reads that capacity, applies
             exponential smoothing to filter stale data, and computes optimal
             multi-hop routes weighted by real liquidity rather than gossip.
           </p>
@@ -287,7 +287,7 @@ await lightning.joinRoutingPool(walletClient, addrs, nodePubkey);`}</pre>
           <p className={styles.faqA}>
             Yes. Fork the repo and deploy your own instance. See the{" "}
             <a
-              href="https://github.com/backproto/backproto/tree/main/lightning-dash"
+              href="https://github.com/pura-xyz/pura/tree/main/lightning-dash"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -301,8 +301,8 @@ await lightning.joinRoutingPool(walletClient, addrs, nodePubkey);`}</pre>
       <footer className={styles.footer}>
         <p>
           Lightning.Gold · Powered by{" "}
-          <a href="https://backproto.io" target="_blank" rel="noopener noreferrer">
-            Backproto
+          <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
+            Pura
           </a>
           {" · "}
           <a href={explorerBase} target="_blank" rel="noopener noreferrer">
@@ -310,7 +310,7 @@ await lightning.joinRoutingPool(walletClient, addrs, nodePubkey);`}</pre>
           </a>
           {" · "}
           <a
-            href="https://backproto.io/paper"
+            href="https://pura.xyz/paper"
             target="_blank"
             rel="noopener noreferrer"
           >

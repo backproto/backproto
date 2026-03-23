@@ -1,6 +1,6 @@
 # Agent prompt: Design system implementation
 
-You are implementing a unified dark-theme design system across three projects: Backproto (backproto.io), Buildlog (buildlog.ai), and VR (vr.dev).
+You are implementing a unified dark-theme design system across three projects: Pura (pura.xyz), Buildlog (buildlog.ai), and VR (vr.dev).
 
 ## Design tokens
 
@@ -43,11 +43,11 @@ All visible content must comply with the AISLOP writing rules (see `gtm/AISLOP.m
 ## Project-specific notes
 
 - Each project has its own identity but shares the visual language
-- Backproto: payment routing for AI agents (primary amber accent)
+- Pura: payment routing for AI agents (primary amber accent)
 - Buildlog: agent workflow capture (may use teal #0d9488 as secondary accent)
 - VR: outcome verification (may use indigo #6366f1 as secondary accent)
 - Footer includes cross-links to all three projects
-- "The Stack" narrative: Buildlog captures. VR verifies. Backproto pays.
+- "The Stack" narrative: Buildlog captures. VR verifies. Pura pays.
 
 ## Implementation checklist
 

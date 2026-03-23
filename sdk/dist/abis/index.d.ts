@@ -27,4 +27,7 @@ export declare const abis: {
     readonly VelocityToken: Abi;
     readonly UrgencyToken: Abi;
     readonly MerkleRootAnchor: Abi;
+    readonly TemperatureOracle: Abi;
+    readonly VirialMonitor: Abi;
+    readonly SystemStateEmitter: Abi;
 };

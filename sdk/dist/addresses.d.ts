@@ -32,6 +32,9 @@ export type ChainAddresses = {
     velocityToken: `0x${string}`;
     urgencyToken: `0x${string}`;
     merkleRootAnchor: `0x${string}`;
+    temperatureOracle: `0x${string}`;
+    virialMonitor: `0x${string}`;
+    systemStateEmitter: `0x${string}`;
 };
 /**
  * Deployed contract addresses per chain.

@@ -154,7 +154,7 @@ contract Deploy is Script {
         stakeManager.setSlasher(address(tracker), true);
 
         // ─── Phase A: Demurrage Layer ───
-        _deployBackproto(deployer, address(stakeToken), address(registry), address(stakeManager), address(pool), address(pricing));
+        _deployPura(deployer, address(stakeToken), address(registry), address(stakeManager), address(pool), address(pricing));
 
         vm.stopBroadcast();
 
@@ -165,7 +165,7 @@ contract Deploy is Script {
         console.log("--- Deployment Complete ---");
     }
 
-    function _deployBackproto(
+    function _deployPura(
         address deployer,
         address stakeToken_,
         address registry_,

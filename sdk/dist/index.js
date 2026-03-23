@@ -1,4 +1,4 @@
-// @backproto/sdk - TypeScript SDK for Backproto
+// @pura/sdk - TypeScript SDK for Pura
 export { abis } from "./abis/index.js";
 export { addresses, getAddresses } from "./addresses.js";
 export { getContracts } from "./contracts.js";
@@ -11,7 +11,7 @@ export * as buffer from "./actions/buffer.js";
 export * as pricing from "./actions/pricing.js";
 export * as completion from "./actions/completion.js";
 export * as aggregator from "./actions/aggregator.js";
-// Action modules: Backproto extensions
+// Action modules: Pura extensions
 export * as demurrage from "./actions/demurrage.js";
 export * as relay from "./actions/relay.js";
 export * as lightning from "./actions/lightning.js";
@@ -24,5 +24,9 @@ export * as economy from "./actions/economy.js";
 export * as quality from "./actions/quality.js";
 export * as velocityToken from "./actions/velocityToken.js";
 export * as urgencyToken from "./actions/urgencyToken.js";
+// Action modules: Thermodynamic layer
+export * as temperature from "./actions/temperature.js";
+export * as virial from "./actions/virial.js";
+export * as systemState from "./actions/systemState.js";
 // Signing helpers
 export * from "./signing.js";

@@ -1,4 +1,4 @@
-# Backproto
+# Pura
 
 **Capacity-Constrained Monetary Flow Control for Agent Economies**
 
@@ -83,7 +83,7 @@ BPE solves this by treating **receiver-side capacity constraints as first-class 
 
 ## Reference products
 
-Three products built on Backproto.
+Three products built on Pura.
 
 | Product | Domain | URL |
 |---------|--------|-----|

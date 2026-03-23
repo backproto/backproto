@@ -5,7 +5,7 @@
  * Usage: cd router && npx tsx scripts/sweep.ts
  */
 import "dotenv/config";
-import { getAddresses } from "@backproto/sdk";
+import { getAddresses } from "@pura/sdk";
 import { publicClient, chainId } from "../lib/chain";
 import { getWallets } from "../lib/wallets";
 import { agentList } from "../lib/agents";

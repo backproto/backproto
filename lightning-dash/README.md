@@ -2,7 +2,7 @@
 
 Live at [lightning.gold](https://lightning.gold).
 
-Lightning.Gold reads Lightning node capacity from Backproto's on-chain oracle and lets you explore capacity-weighted routes. Node operators register their channel liquidity on-chain, backed by stake. The protocol applies exponential smoothing and computes multi-hop routes weighted by real capacity rather than gossip.
+Lightning.Gold reads Lightning node capacity from Pura's on-chain oracle and lets you explore capacity-weighted routes. Node operators register their channel liquidity on-chain, backed by stake. The protocol applies exponential smoothing and computes multi-hop routes weighted by real capacity rather than gossip.
 
 ## Run locally
 
@@ -33,7 +33,7 @@ This registers three demo nodes on Base Sepolia and joins the routing pool.
 
 ## Architecture
 
-Next.js 16 + viem + @backproto/sdk + CSS Modules. Two API routes:
+Next.js 16 + viem + @pura/sdk + CSS Modules. Two API routes:
 
 - `/api/state` — returns all registered nodes with smoothed capacity and fees
 - `/api/route?amount=100000&maxNodes=5` — calls `getOptimalRoute` and returns the computed path

@@ -2,7 +2,7 @@
 
 Live at [relay.gold](https://relay.gold).
 
-Relay.Gold reads relay capacity from Backproto's on-chain registry and displays it in real time. Relay operators register their spare capacity (events/sec, storage, bandwidth), and the protocol distributes payment streams proportional to verified headroom.
+Relay.Gold reads relay capacity from Pura's on-chain registry and displays it in real time. Relay operators register their spare capacity (events/sec, storage, bandwidth), and the protocol distributes payment streams proportional to verified headroom.
 
 ## Run locally
 
@@ -33,7 +33,7 @@ This registers three demo relays on Base Sepolia and joins the write pool.
 
 ## Architecture
 
-Same stack as all Backproto reference products: Next.js 16 + viem + @backproto/sdk + CSS Modules. The `/api/state` endpoint reads relay data from the CapacityRegistry and PaymentPool contracts, and the client polls every 30 seconds.
+Same stack as all Pura reference products: Next.js 16 + viem + @pura/sdk + CSS Modules. The `/api/state` endpoint reads relay data from the CapacityRegistry and PaymentPool contracts, and the client polls every 30 seconds.
 
 ## SDK functions used
 
