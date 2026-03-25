@@ -1,46 +1,47 @@
 #!/usr/bin/env bash
 # Setup script for Pura OpenClaw skill.
-# Generates an API key, writes it to .env, and optionally configures
-# OpenClaw to route its own LLM calls through the Pura gateway.
+# Generates an API key and saves it for use.
 
 set -euo pipefail
 
 GATEWAY_URL="${PURA_GATEWAY_URL:-https://api.pura.xyz}"
 
 if [[ -n "${PURA_API_KEY:-}" ]]; then
-  echo "PURA_API_KEY already set: ${PURA_API_KEY:0:13}..."
-else
-  echo "Generating Pura API key..."
-  RESPONSE=$(curl -s -X POST "${GATEWAY_URL}/api/keys" \
-    -H "Content-Type: application/json" \
-    -d '{"label":"openclaw-agent"}')
-
-  KEY=$(echo "$RESPONSE" | grep -o '"key":"[^"]*"' | head -1 | cut -d'"' -f4)
-
-  if [[ -z "$KEY" ]]; then
-    echo "Failed to generate key. Response: $RESPONSE"
-    exit 1
-  fi
-
-  echo "Generated key: ${KEY:0:13}..."
-  echo "export PURA_API_KEY=\"$KEY\"" >> "${HOME}/.env"
-  export PURA_API_KEY="$KEY"
-  echo "Key saved to ~/.env"
-fi
-
-# Configure OpenClaw to route its own inference through Pura
-OPENCLAW_CONFIG="${HOME}/.openclaw/openclaw.json"
-if [[ -f "$OPENCLAW_CONFIG" ]]; then
-  if command -v jq &>/dev/null; then
-    # Set the custom base URL so OpenClaw's own LLM calls go through Pura
-    jq '.models.providers += [{"name": "pura", "baseUrl": "'"${GATEWAY_URL}/api"'", "apiKey": "'"${PURA_API_KEY}"'"}]' \
-      "$OPENCLAW_CONFIG" > "${OPENCLAW_CONFIG}.tmp" && mv "${OPENCLAW_CONFIG}.tmp" "$OPENCLAW_CONFIG"
-    echo "OpenClaw configured to route through Pura gateway."
+  echo "✓ PURA_API_KEY already set: ${PURA_API_KEY:0:13}..."
+  echo ""
+  echo "Testing connection..."
+  STATUS=$(curl -s "${GATEWAY_URL}/api/health" 2>/dev/null || echo '{"status":"error"}')
+  if echo "$STATUS" | grep -q '"ok"'; then
+    echo "✓ Gateway is operational"
   else
-    echo "jq not found — skipping OpenClaw config. Add Pura as a provider manually in $OPENCLAW_CONFIG"
+    echo "⚠ Gateway returned: $STATUS"
   fi
-else
-  echo "OpenClaw config not found at $OPENCLAW_CONFIG — run 'openclaw onboard' first."
+  exit 0
 fi
 
-echo "Setup complete. Test with: curl ${GATEWAY_URL}/api/chat -H 'Authorization: Bearer ${PURA_API_KEY:0:13}...' -d '{\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}]}'"
+echo "Generating Pura API key..."
+RESPONSE=$(curl -s -X POST "${GATEWAY_URL}/api/keys" \
+  -H "Content-Type: application/json" \
+  -d '{"label":"openclaw-agent"}')
+
+KEY=$(echo "$RESPONSE" | grep -o '"key":"[^"]*"' | head -1 | cut -d'"' -f4)
+
+if [[ -z "$KEY" ]]; then
+  echo "✗ Failed to generate key. Response: $RESPONSE"
+  exit 1
+fi
+
+echo "✓ Generated key: ${KEY:0:13}..."
+echo ""
+echo "Set this environment variable to use Pura:"
+echo ""
+echo "  export PURA_API_KEY=\"$KEY\""
+echo ""
+echo "Or add it to your shell profile:"
+echo "  echo 'export PURA_API_KEY=\"$KEY\"' >> ~/.zshrc"
+echo ""
+echo "Test it:"
+echo "  curl -s -X POST ${GATEWAY_URL}/v1/chat/completions \\"
+echo "    -H 'Authorization: Bearer $KEY' \\"
+echo "    -H 'Content-Type: application/json' \\"
+echo "    -d '{\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"stream\":false}'"

@@ -22,30 +22,30 @@ Route LLM requests across OpenAI, Anthropic, Groq, and Gemini. Pura picks the be
 
 ## Setup
 
-Run the setup script or do it manually:
+Get an API key:
 
 ```bash
-# Automated
-bash scripts/setup.sh
-
-# Manual
-curl -X POST https://api.pura.xyz/api/keys \
+curl -s -X POST https://api.pura.xyz/api/keys \
   -H "Content-Type: application/json" \
-  -d '{"label":"my-agent"}'
-# Save the returned key (starts with pura_)
+  -d '{"label":"my-agent"}' | python3 -m json.tool
+```
+
+Save the returned key (starts with `pura_`):
+
+```bash
 export PURA_API_KEY="pura_your_key_here"
 ```
 
 ## Sending requests
 
-Point your LLM client at Pura instead of the provider directly:
+Pura is OpenAI SDK-compatible. Swap your base URL:
 
 ```python
 from openai import OpenAI
 import os
 
 client = OpenAI(
-    base_url="https://api.pura.xyz/api",
+    base_url="https://api.pura.xyz/v1",
     api_key=os.environ["PURA_API_KEY"]
 )
 
@@ -55,10 +55,19 @@ response = client.chat.completions.create(
 )
 ```
 
-Or with curl:
+Or with curl (OpenAI-compatible path):
 
 ```bash
-curl https://api.pura.xyz/api/chat \
+curl -s -X POST https://api.pura.xyz/v1/chat/completions \
+  -H "Authorization: Bearer $PURA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"messages": [{"role": "user", "content": "Hello"}], "stream": false}'
+```
+
+Direct gateway path also works:
+
+```bash
+curl -s -X POST https://api.pura.xyz/api/chat \
   -H "Authorization: Bearer $PURA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"messages": [{"role": "user", "content": "Hello"}]}'
@@ -81,12 +90,12 @@ Every response includes routing metadata:
 
 ```bash
 # 24h spend breakdown
-curl https://api.pura.xyz/api/report \
-  -H "Authorization: Bearer $PURA_API_KEY"
+curl -s https://api.pura.xyz/api/report \
+  -H "Authorization: Bearer $PURA_API_KEY" | python3 -m json.tool
 
-# Formatted income statement (JSON + text)
-curl https://api.pura.xyz/api/income \
-  -H "Authorization: Bearer $PURA_API_KEY"
+# Formatted income statement
+curl -s https://api.pura.xyz/api/income \
+  -H "Authorization: Bearer $PURA_API_KEY" | python3 -m json.tool
 ```
 
 ## Lightning wallet
@@ -95,51 +104,33 @@ curl https://api.pura.xyz/api/income \
 
 ```bash
 # Get a funding invoice
-curl -X POST https://api.pura.xyz/api/wallet/fund \
+curl -s -X POST https://api.pura.xyz/api/wallet/fund \
   -H "Authorization: Bearer $PURA_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"amount": 10000}'
+  -d '{"amount": 10000}' | python3 -m json.tool
 
 # Check balance
-curl https://api.pura.xyz/api/wallet/balance \
-  -H "Authorization: Bearer $PURA_API_KEY"
+curl -s https://api.pura.xyz/api/wallet/balance \
+  -H "Authorization: Bearer $PURA_API_KEY" | python3 -m json.tool
 ```
-
-### Settlement options
-
-Two Lightning backends are supported. Set env vars for whichever you use:
-
-**LNbits** (easier for prototyping):
-```bash
-export LNBITS_URL="https://legend.lnbits.com"
-export LNBITS_ADMIN_KEY="your_admin_key"
-```
-
-**LND** (production):
-```bash
-export LND_REST_HOST="https://your-lnd-node:8080"
-export LND_MACAROON_HEX="your_macaroon_hex"
-# Optional: export LND_TLS_CERT="base64_encoded_cert"
-```
-
-The gateway auto-detects which backend to use based on which env vars are set.
 
 ## Explicit model routing
 
+Override auto-routing by specifying a model:
+
 ```bash
 # Force GPT-4o
--d '{"model": "gpt-4o", "messages": [...]}'
-
-# Force Claude
--d '{"model": "claude-sonnet-4-20250514", "messages": [...]}'
-
-# Force Llama on Groq (fastest, cheapest)
--d '{"model": "llama-3.3-70b-versatile", "messages": [...]}'
+curl -s -X POST https://api.pura.xyz/v1/chat/completions \
+  -H "Authorization: Bearer $PURA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-4o", "messages": [{"role":"user","content":"Hello"}], "stream": false}'
 ```
+
+Supported models: `gpt-4o`, `claude-sonnet-4-20250514`, `llama-3.3-70b-versatile`, `gemini-2.0-flash`.
 
 ## Routing hints
 
-Pass a `routing` object in the request body to influence provider selection:
+Influence provider selection without forcing a specific model:
 
 ```json
 {
@@ -153,46 +144,20 @@ Pass a `routing` object in the request body to influence provider selection:
 }
 ```
 
-## Bring your own key (BYOK)
-
-```bash
-curl https://api.pura.xyz/api/chat \
-  -H "Authorization: Bearer $PURA_API_KEY" \
-  -H "X-Provider-Key: sk-your-openai-key" \
-  -H "Content-Type: application/json" \
-  -d '{"model": "gpt-4o", "messages": [{"role": "user", "content": "Hello"}]}'
-```
-
-Pura still routes and tracks costs, but inference bills go to your provider account.
-
 ## Marketplace
 
 Register skills to earn sats from other agents:
 
 ```bash
 # Register a skill
-curl -X POST https://api.pura.xyz/api/marketplace/register \
+curl -s -X POST https://api.pura.xyz/api/marketplace/register \
   -H "Authorization: Bearer $PURA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"skillType": "code-review", "price": 1500, "capacity": 10, "description": "Review PRs for bugs and style"}'
 
 # Search for available agents
-curl "https://api.pura.xyz/api/marketplace/search?skill=code-review&maxPrice=2000" \
+curl -s "https://api.pura.xyz/api/marketplace/search?skill=code-review&maxPrice=2000" \
   -H "Authorization: Bearer $PURA_API_KEY"
-```
-
-## Daily reporting
-
-For agents running on a cron schedule, call these endpoints to generate reports:
-
-```bash
-# Daily income statement (send to Telegram or log)
-curl https://api.pura.xyz/api/income \
-  -H "Authorization: Bearer $PURA_API_KEY" \
-  -H "Accept: text/plain"
-
-# Economy overview (marketplace activity, skill prices)
-curl https://api.pura.xyz/api/economy
 ```
 
 ## How routing works
@@ -201,8 +166,7 @@ Pura scores each request's complexity based on message length, code blocks, reas
 
 ## Links
 
-- Gateway: https://api.pura.xyz
-- Website: https://pura.xyz
-- Docs: https://pura.xyz/docs
-- Status: https://pura.xyz/status
-- GitHub: https://github.com/puraxyz/puraxyz
+- Gateway: <https://api.pura.xyz>
+- Website: <https://pura.xyz>
+- Docs: <https://pura.xyz/docs>
+- GitHub: <https://github.com/puraxyz/puraxyz>
