@@ -251,10 +251,11 @@ export async function POST(request: Request) {
     if (done) break;
     const text = decoder.decode(value, { stream: true });
     const lines = text.split("\n");
+    let streamDone = false;
     for (const line of lines) {
       if (!line.startsWith("data: ")) continue;
       const payload = line.slice(6).trim();
-      if (payload === "[DONE]") continue;
+      if (payload === "[DONE]") { streamDone = true; break; }
       try {
         const chunk = JSON.parse(payload);
         const delta = chunk.choices?.[0]?.delta?.content;
@@ -263,6 +264,7 @@ export async function POST(request: Request) {
         // skip
       }
     }
+    if (streamDone) break;
   }
 
   return NextResponse.json(
