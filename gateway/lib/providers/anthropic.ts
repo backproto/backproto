@@ -45,20 +45,31 @@ export async function streamAnthropic(
   const reader = res.body!.getReader();
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
+  let buffer = "";
+  let closed = false;
 
   return new ReadableStream<Uint8Array>({
     async pull(controller) {
+      if (closed) return;
+
       const { done, value } = await reader.read();
       if (done) {
-        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-        controller.close();
+        if (!closed) {
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+          closed = true;
+        }
         return;
       }
 
-      const text = decoder.decode(value, { stream: true });
-      const lines = text.split("\n");
+      buffer += decoder.decode(value, { stream: true });
 
-      for (const line of lines) {
+      // Process complete lines from the buffer
+      const parts = buffer.split("\n");
+      // Last element may be incomplete — keep it in buffer
+      buffer = parts.pop() ?? "";
+
+      for (const line of parts) {
         if (!line.startsWith("data: ")) continue;
         const payload = line.slice(6).trim();
         if (!payload || payload === "[DONE]") continue;
@@ -67,7 +78,6 @@ export async function streamAnthropic(
           const event = JSON.parse(payload);
 
           if (event.type === "content_block_delta" && event.delta?.text) {
-            // Convert to OpenAI chunk format
             const chunk = {
               id: `chatcmpl-${Date.now()}`,
               object: "chat.completion.chunk",
@@ -97,12 +107,10 @@ export async function streamAnthropic(
             controller.enqueue(
               encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`),
             );
-            // Close the stream after message_stop — Anthropic may send
-            // additional events (message_delta with usage) but the completion
-            // is done. Without this, the non-streaming collector hangs.
             controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            closed = true;
             controller.close();
-            reader.cancel();
+            reader.cancel().catch(() => {});
             return;
           }
         } catch {
@@ -111,8 +119,8 @@ export async function streamAnthropic(
       }
     },
     cancel() {
-      reader.cancel();
+      closed = true;
+      reader.cancel().catch(() => {});
     },
   });
 }
-// deploy 1774473663
