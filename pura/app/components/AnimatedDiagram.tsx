@@ -171,10 +171,12 @@ export default function AnimatedDiagram({
 
     // ── Groups / subgraphs ──────────────────────────────────
     for (const g of st.groups) {
-      const gx = PAD + g.x * (w - 2 * PAD) - 12;
-      const gy = PAD + g.y * (h - 2 * PAD) - 24;
-      const gw = g.w * (w - 2 * PAD) + 24;
-      const gh = g.h * (h - 2 * PAD) + 36;
+      const mx = NODE_W / 2 + 8;  // horizontal margin: ensures rect/pill nodes fit
+      const my = 34;               // vertical margin: ensures diamond nodes (31px radius) fit
+      const gx = PAD + g.x * (w - 2 * PAD) - mx;
+      const gy = PAD + g.y * (h - 2 * PAD) - my;
+      const gw = g.w * (w - 2 * PAD) + 2 * mx;
+      const gh = g.h * (h - 2 * PAD) + 2 * my;
       const gc = g.color || "#334155";
 
       ctx.globalAlpha = 0.08;

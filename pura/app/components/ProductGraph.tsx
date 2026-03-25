@@ -28,8 +28,8 @@ const EDGES: DiagramEdge[] = [
 ];
 
 const GROUPS: DiagramGroup[] = [
-  { id: "onchain",  label: "ON-CHAIN",  x: 0.38, y: 0.55, w: 0.24, h: 0.42, color: "#a78bfa" },
-  { id: "offchain", label: "OFF-CHAIN", x: 0.08, y: 0.02, w: 0.84, h: 0.28, color: "#808090" },
+  { id: "onchain",  label: "ON-CHAIN",  x: 0.48, y: 0.55, w: 0.04, h: 0.35, color: "#a78bfa" },
+  { id: "offchain", label: "OFF-CHAIN", x: 0.20, y: 0.08, w: 0.60, h: 0.04, color: "#808090" },
 ];
 
 export default function ProductGraph() {
