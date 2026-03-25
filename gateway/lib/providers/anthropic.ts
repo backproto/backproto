@@ -97,6 +97,13 @@ export async function streamAnthropic(
             controller.enqueue(
               encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`),
             );
+            // Close the stream after message_stop — Anthropic may send
+            // additional events (message_delta with usage) but the completion
+            // is done. Without this, the non-streaming collector hangs.
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            controller.close();
+            reader.cancel();
+            return;
           }
         } catch {
           // Skip malformed lines
