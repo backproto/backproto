@@ -50,6 +50,17 @@ export function getSettlementProvider(): SettlementProvider | null {
 }
 
 /**
+ * Lazily initialize and return the settlement provider.
+ * Safe to call on every request — only inits once.
+ * Use this instead of getSettlementProvider() in route handlers
+ * to handle Vercel's serverless cold starts.
+ */
+export async function getOrInitSettlement(): Promise<SettlementProvider | null> {
+  if (!activeProvider) await initSettlement();
+  return activeProvider;
+}
+
+/**
  * Auto-detect and initialize the settlement provider from env vars.
  * Priority: LND_REST_HOST → LNbits → dev stub (null).
  * Call once at gateway startup.
