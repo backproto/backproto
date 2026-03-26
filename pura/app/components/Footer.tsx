@@ -40,7 +40,7 @@ export function Footer() {
           </div>
         </div>
         <div className={styles.bottom}>
-          MIT &middot; pura.xyz
+          pura.xyz
         </div>
       </div>
     </footer>
