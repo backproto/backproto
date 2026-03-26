@@ -1,7 +1,10 @@
-# HEARTBEAT.md Template
+# HEARTBEAT.md — Korben's periodic checks
 
-```markdown
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+## Quick checks (rotate through these)
+- [ ] Is api.pura.xyz responding? `curl -s https://api.pura.xyz/api/health`
+- [ ] Any new GitHub issues on puraxyz/puraxyz? `gh issue list -R puraxyz/puraxyz --limit 5`
+- [ ] Check git status of workspace and puraxyz repo
 
-# Add tasks below when you want the agent to check something periodically.
-```
+## Don't do these here (handled by cron)
+- Full healthcheck (every 4h autonomous loop)
+- Morning briefing (8am daily)
