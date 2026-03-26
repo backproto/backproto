@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/auth";
-import { getSettlementProvider } from "@/lib/settlement";
+import { getOrInitSettlement } from "@/lib/settlement";
 import { createHash } from "crypto";
 
 export const runtime = "nodejs";
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: { message: auth.error } }, { status: 401 });
   }
 
-  const settlement = getSettlementProvider();
+  const settlement = await getOrInitSettlement();
   if (!settlement) {
     return NextResponse.json(
       { error: { message: "No settlement provider configured" } },
