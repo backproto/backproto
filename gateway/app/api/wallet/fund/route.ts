@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/auth";
+import { buildInvoiceLinks } from "@/lib/invoice-links";
 import { getOrInitSettlement } from "@/lib/settlement";
+import { storePendingInvoice } from "@/lib/invoices";
 import { createHash } from "crypto";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const origin = new URL(request.url).origin;
   const auth = await authenticate(request.headers.get("authorization"));
   if (!auth.valid) {
     return NextResponse.json({ error: { message: auth.error } }, { status: 401 });
@@ -39,6 +42,16 @@ export async function POST(request: Request) {
     .digest("hex");
 
   const invoice = await settlement.createInvoice(keyHash, amountSats);
+  await storePendingInvoice({
+    id: invoice.id,
+    keyHash,
+    amount: invoice.amount,
+    rail: settlement.name,
+    paymentRequest: invoice.paymentRequest,
+    expiresAt: invoice.expiresAt,
+  });
+
+  const links = buildInvoiceLinks(origin, invoice.id, invoice.paymentRequest);
 
   return NextResponse.json({
     paymentRequest: invoice.paymentRequest,
@@ -46,5 +59,8 @@ export async function POST(request: Request) {
     invoiceId: invoice.id,
     expiresAt: invoice.expiresAt,
     rail: settlement.name,
+    invoiceUrl: links.invoiceUrl,
+    statusUrl: links.statusUrl,
+    lightningUrl: links.lightningUrl,
   });
 }

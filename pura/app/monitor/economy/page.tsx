@@ -72,6 +72,12 @@ export default function MonitorEconomyPage() {
         ))}
       </div>
 
+      <div className={s.sourceNote}>
+        <span className={s.sourceLabel}>data source</span>
+        <span className={s.sourceValue}>live gateway API</span>
+        <span className={s.sourceCopy}>Pulled from `api.pura.xyz/api/economy` on a 10 second poll.</span>
+      </div>
+
       {error && <p style={{ color: "var(--red)", fontFamily: "var(--font-mono)", fontSize: "0.8rem" }}>{error}</p>}
 
       {/* aggregate stats */}

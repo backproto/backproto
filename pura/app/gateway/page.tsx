@@ -138,13 +138,19 @@ const res = await client.chat.completions.create({
           Lightning wallet
         </h2>
         <p className={styles.desc}>
-          The first 5,000 requests are free. After that, fund a Lightning wallet:
+          The first 5,000 requests are free. After that, create a Lightning invoice, pay it, and let the gateway credit your key balance:
         </p>
         <pre className={styles.codePre}>{`# Create a funding invoice (10,000 sats ~ $4)
 curl -X POST https://api.pura.xyz/api/wallet/fund \\
   -H "Authorization: Bearer pura_YOUR_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{"amount": 10000}'
+
+# The response includes invoiceUrl and lightningUrl
+
+# Check invoice status
+curl "https://api.pura.xyz/api/wallet/status?invoiceId=INV_ID" \
+  -H "Authorization: Bearer pura_YOUR_KEY"
 
 # Check balance
 curl https://api.pura.xyz/api/wallet/balance \\

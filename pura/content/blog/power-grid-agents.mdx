@@ -41,7 +41,7 @@ OpenRouter does provider aggregation too. So does LiteLLM. The difference: Pura 
 
 ## Settlement
 
-The first 5,000 requests are free. After that, you fund a Lightning wallet via LNbits:
+The first 5,000 requests are free. After that, you create a Lightning funding invoice:
 
 ```bash
 curl -X POST https://api.pura.xyz/api/wallet/fund \
@@ -49,7 +49,7 @@ curl -X POST https://api.pura.xyz/api/wallet/fund \
   -d '{"amount": 10000}'
 ```
 
-You get a BOLT11 invoice. Pay it. The gateway deducts per-request costs from your balance asynchronously. Inference never blocks on payment settlement.
+The response includes a BOLT11 invoice, a public invoice page with a QR code, and an authenticated status URL. Pay the invoice. The gateway credits the balance tied to your API key, then deducts per-request costs from that balance. Inference never blocks on payment settlement.
 
 Why Lightning and not Stripe? Two reasons. First, agent frameworks run unattended. An agent doing overnight work can't pause to enter a credit card. A pre-funded sat balance just works. Second, Lightning is programmable money. When on-chain settlement via Superfluid or direct ERC-20 comes online, the settlement abstraction in the gateway swaps the provider without changing any client code.
 

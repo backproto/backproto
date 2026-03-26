@@ -179,6 +179,12 @@ export default function MonitorPage() {
         ))}
       </div>
 
+      <div className={s.sourceNote}>
+        <span className={s.sourceLabel}>data source</span>
+        <span className={s.sourceValue}>mixed</span>
+        <span className={s.sourceCopy}>Shadow metrics come from live sidecar endpoints when available. If those calls fail, this page falls back to seeded demo values and local simulation output.</span>
+      </div>
+
       {/* top-line stats */}
       <div className={s.statsRow}>
         <div className={s.stat}>

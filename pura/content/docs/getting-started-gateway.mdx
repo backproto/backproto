@@ -119,9 +119,9 @@ curl https://api.pura.xyz/api/chat \
 
 With BYOK, Pura still routes and tracks costs, but inference charges go to your provider account.
 
-## Lightning wallet (optional)
+## Lightning funding
 
-The first 5,000 requests are free. After that, fund a Lightning wallet:
+The first 5,000 requests are free. After that, the gateway returns HTTP 402 with a Lightning funding invoice. You can also create one directly:
 
 ```bash
 # Create a funding invoice
@@ -130,6 +130,23 @@ curl -X POST https://api.pura.xyz/api/wallet/fund \
   -H "Content-Type: application/json" \
   -d '{"amount": 10000}'
 
+# Response fields include:
+# - paymentRequest: raw BOLT11 string
+# - invoiceUrl: hosted invoice page with QR code
+# - statusUrl: authenticated status endpoint
+
+
+Pay the BOLT11 invoice in your wallet, or open `invoiceUrl` on mobile and let the wallet handle the `lightning:` deeplink.
+
+```bash
+# Check invoice status
+curl "https://api.pura.xyz/api/wallet/status?invoiceId=INV_ID" \
+  -H "Authorization: Bearer $PURA_API_KEY"
+```
+
+Once the invoice settles, the gateway credits your sat balance and starts debiting request costs from that balance.
+
+```bash
 # Check balance
 curl https://api.pura.xyz/api/wallet/balance \
   -H "Authorization: Bearer $PURA_API_KEY"

@@ -33,6 +33,8 @@ export interface SettlementProvider {
   checkBalance(keyHash: string): Promise<BalanceInfo>;
   /** Deduct amount from balance after a request. Returns false if insufficient. */
   deductBalance(keyHash: string, amountSats: number): Promise<boolean>;
+  /** Credit amount to balance after an invoice settles. */
+  creditBalance(keyHash: string, amountSats: number): Promise<number>;
   /** Check if a specific invoice has been paid */
   isInvoicePaid(invoiceId: string): Promise<boolean>;
 }

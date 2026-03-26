@@ -74,11 +74,13 @@ The provider is selected automatically based on complexity score and pool capaci
 5,000 free requests per key. After that, fund a Lightning wallet and pay per-request in sats:
 
 ```bash
-curl -X POST http://localhost:3100/api/wallet \
+curl -X POST http://localhost:3100/api/wallet/fund \
   -H "Authorization: Bearer pura_..." \
   -H "Content-Type: application/json" \
-  -d '{"wallet": "0x..."}'
+  -d '{"amount": 10000}'
 ```
+
+The funding response includes a BOLT11 `paymentRequest`, a public `invoiceUrl` with a QR code, and an authenticated `statusUrl` for settlement checks.
 
 ### `GET /api/state`
 
@@ -104,7 +106,11 @@ gateway/
 │   │   ├── marketplace/         # Skill registration, listing, hiring, completion
 │   │   ├── report/route.ts      # Cost report
 │   │   ├── state/route.ts       # Pool state
-│   │   └── wallet/route.ts      # Link wallet
+│   │   └── wallet/
+│   │       ├── balance/route.ts # Balance check
+│   │       ├── fund/route.ts    # Funding invoice creation
+│   │       └── status/route.ts  # Authenticated invoice status
+│   ├── invoice/page.tsx         # Public invoice + QR page
 │   ├── economy/page.tsx         # Economy dashboard
 │   ├── page.tsx                 # Gateway dashboard
 │   └── layout.tsx               # Root layout
@@ -114,6 +120,8 @@ gateway/
 │   ├── completion.ts            # Record completions on-chain
 │   ├── complexity.ts            # Task complexity scoring
 │   ├── income.ts                # Income tracking
+│   ├── invoice-links.ts         # Public invoice/status URL helpers
+│   ├── invoices.ts              # Invoice persistence + reconciliation
 │   ├── keys.ts                  # Key storage (JSON file for MVP)
 │   ├── marketplace.ts           # Skill marketplace logic
 │   ├── providers.ts             # Provider config

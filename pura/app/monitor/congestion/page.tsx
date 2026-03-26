@@ -99,6 +99,12 @@ export default function CongestionPage() {
         ))}
       </div>
 
+      <div className={s.sourceNote}>
+        <span className={s.sourceLabel}>data source</span>
+        <span className={s.sourceValue}>simulated</span>
+        <span className={s.sourceCopy}>This pricing and queue data is generated locally to illustrate congestion behavior. It is not yet wired to live routing pressure.</span>
+      </div>
+
       <div className={s.section}>
         <div className={s.sectionHead}>
           congestion pricing — price = baseFee x (1 + gamma x queueLoad / capacity)

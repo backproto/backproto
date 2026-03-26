@@ -25,11 +25,11 @@ Mandalay routes API requests across LLM providers based on real-time capacity, w
    - Before: https://api.openai.com/v1/chat/completions
    - After:  https://mandalay.dev/api/chat
 4. Same request format. Same streaming SSE. Just works.
-5. First 100 requests are free.
-6. At request 101, get 402 response: "Link a wallet to continue."
-7. POST /api/wallet with their Ethereum address.
-8. Wallet opens a Superfluid payment stream (pennies per request).
-9. Requests resume. Provider is chosen automatically by capacity.
+5. First 5,000 requests are free.
+6. At request 5,001, get a 402 response with a Lightning funding invoice.
+7. Open the hosted invoice page or wallet deeplink and pay the BOLT11 invoice.
+8. The gateway reconciles settlement, credits the key balance, and requests resume.
+9. Provider is chosen automatically by capacity.
 10. Dashboard at mandalay.dev shows which provider handled each request,
     capacity weights, completion count, and spend.
 ```
@@ -47,11 +47,11 @@ Mandalay routes API requests across LLM providers based on real-time capacity, w
 - Monitor the dashboard (provider capacity, request volume, key creation rate)
 - Top up the operator wallet with ETH for gas (Base Sepolia is ~free; Base mainnet is cheap)
 - Keep provider API keys funded (OpenAI/Anthropic billing)
-- Review rebalance transactions (automatic, but worth watching)
+- Review rebalance transactions and pending invoice settlement (automatic, but worth watching)
 
 **Weekly:**
 - Check completion receipts on-chain match expected volume
-- Review new API key signups and wallet linkage rate (conversion funnel)
+- Review new API key signups and invoice payment rate (conversion funnel)
 - Adjust free tier threshold if needed (env var, redeploy)
 
 **Monthly:**
@@ -68,7 +68,7 @@ Mandalay routes API requests across LLM providers based on real-time capacity, w
 | Item | Amount |
 |------|--------|
 | Average LLM API cost per request (blended) | ~$0.003–0.01 |
-| Mandalay charge per request (via payment stream) | ~$0.005–0.015 |
+| Mandalay charge per request (via funded sat balance) | ~$0.005–0.015 |
 | **Gross margin per request** | **~40–60%** |
 | Free tier cost (100 req × $0.01) | $1.00 per key |
 

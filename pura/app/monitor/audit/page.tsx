@@ -134,6 +134,12 @@ export default function AuditPage() {
         ))}
       </div>
 
+      <div className={s.sourceNote}>
+        <span className={s.sourceLabel}>data source</span>
+        <span className={s.sourceValue}>demo log</span>
+        <span className={s.sourceCopy}>These protocol events are seeded in the page for now. They illustrate the target audit surface, not a live event feed.</span>
+      </div>
+
       <div className={s.section}>
         <div className={s.sectionHead}>protocol event log</div>
         <table className={s.tbl}>

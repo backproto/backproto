@@ -16,6 +16,7 @@ const COST_PER_1K: Record<string, number> = {
 };
 
 const DEFAULT_DAILY_CAP_USD = 10;
+const DEFAULT_SATS_PER_USD = 2500;
 const DAY_MS = 86_400_000;
 
 interface DailyBudget {
@@ -88,6 +89,11 @@ async function saveBudget(keyHash: string, budget: DailyBudget): Promise<void> {
 export function estimateCostUsd(provider: Provider | string, totalTokens: number): number {
   const rate = COST_PER_1K[provider] ?? COST_PER_1K.openai;
   return (totalTokens / 1000) * rate;
+}
+
+export function estimateCostSats(provider: Provider | string, totalTokens: number): number {
+  const satsPerUsd = Number(process.env.PURA_SATS_PER_USD ?? DEFAULT_SATS_PER_USD);
+  return Math.max(1, Math.ceil(estimateCostUsd(provider, totalTokens) * satsPerUsd));
 }
 
 export interface BudgetCheck {

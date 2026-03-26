@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/auth";
 import { getOrInitSettlement } from "@/lib/settlement";
+import { reconcilePendingInvoicesForKey } from "@/lib/invoices";
 import { createHash } from "crypto";
 
 export const runtime = "nodejs";
@@ -23,6 +24,7 @@ export async function GET(request: Request) {
     .update(request.headers.get("authorization")!.slice(7))
     .digest("hex");
 
+  await reconcilePendingInvoicesForKey(keyHash, settlement);
   const info = await settlement.checkBalance(keyHash);
 
   return NextResponse.json({

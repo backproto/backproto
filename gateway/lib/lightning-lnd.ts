@@ -127,6 +127,13 @@ export const lndSettlement: SettlementProvider = {
     return true;
   },
 
+  async creditBalance(keyHash: string, amountSats: number): Promise<number> {
+    const current = await getBalance(keyHash);
+    const newBalance = current + amountSats;
+    await setBalance(keyHash, newBalance);
+    return newBalance;
+  },
+
   async isInvoicePaid(invoiceId: string): Promise<boolean> {
     if (!LND_REST_HOST || !LND_MACAROON_HEX) return false;
 
@@ -145,8 +152,5 @@ export const lndSettlement: SettlementProvider = {
 
 /** Credit sats to a key's balance (after invoice payment confirmed) */
 export async function creditBalanceLnd(keyHash: string, sats: number): Promise<number> {
-  const current = await getBalance(keyHash);
-  const newBalance = current + sats;
-  await setBalance(keyHash, newBalance);
-  return newBalance;
+  return lndSettlement.creditBalance(keyHash, sats);
 }

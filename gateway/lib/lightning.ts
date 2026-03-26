@@ -117,6 +117,13 @@ export const lightningSettlement: SettlementProvider = {
     return true;
   },
 
+  async creditBalance(keyHash: string, amountSats: number): Promise<number> {
+    const current = await getBalance(keyHash);
+    const newBalance = current + amountSats;
+    await setBalance(keyHash, newBalance);
+    return newBalance;
+  },
+
   async isInvoicePaid(invoiceId: string): Promise<boolean> {
     if (!LNBITS_ADMIN_KEY) return false;
 
@@ -133,8 +140,5 @@ export const lightningSettlement: SettlementProvider = {
 
 /** Credit sats to a key's balance (after invoice payment confirmed) */
 export async function creditBalance(keyHash: string, sats: number): Promise<number> {
-  const current = await getBalance(keyHash);
-  const newBalance = current + sats;
-  await setBalance(keyHash, newBalance);
-  return newBalance;
+  return lightningSettlement.creditBalance(keyHash, sats);
 }

@@ -10,10 +10,13 @@ import { maybeRebalance } from "@/lib/rebalance";
 import { checkRateLimitAsync } from "@/lib/ratelimit";
 import { estimateTokens } from "@/lib/tokens";
 import { log } from "@/lib/log";
-import { checkBudget, recordSpend, estimateCostUsd } from "@/lib/budget";
+import { checkBudget, recordSpend, estimateCostUsd, estimateCostSats } from "@/lib/budget";
 import { recordRequest } from "@/lib/metrics";
-import type { ChatMessage } from "@/lib/providers";
+import { buildInvoiceLinks } from "@/lib/invoice-links";
+import type { ChatMessage, Provider } from "@/lib/providers";
 import { createHash } from "crypto";
+import { getOrInitSettlement } from "@/lib/settlement";
+import { storePendingInvoice } from "@/lib/invoices";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -30,9 +33,79 @@ export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
+async function createFundingInvoice(origin: string, keyHash: string, amountSats = 10_000) {
+  const settlement = await getOrInitSettlement();
+  if (!settlement) return null;
+
+  try {
+    const invoice = await settlement.createInvoice(keyHash, amountSats, "Pura gateway funding");
+    await storePendingInvoice({
+      id: invoice.id,
+      keyHash,
+      amount: invoice.amount,
+      rail: settlement.name,
+      paymentRequest: invoice.paymentRequest,
+      expiresAt: invoice.expiresAt,
+    });
+    const links = buildInvoiceLinks(origin, invoice.id, invoice.paymentRequest);
+    return {
+      paymentRequest: invoice.paymentRequest,
+      amount: invoice.amount,
+      expiresAt: invoice.expiresAt,
+      rail: settlement.name,
+      invoiceId: invoice.id,
+      invoiceUrl: links.invoiceUrl,
+      statusUrl: links.statusUrl,
+      lightningUrl: links.lightningUrl,
+    };
+  } catch (error) {
+    log.warn("wallet.invoice_create_failed", {
+      keyHash: keyHash.slice(0, 8),
+      amountSats,
+      error: (error as Error).message,
+    });
+    return null;
+  }
+}
+
+function withUsageFinalizer(
+  stream: ReadableStream<Uint8Array>,
+  finalize: () => Promise<void>,
+): ReadableStream<Uint8Array> {
+  const reader = stream.getReader();
+  let finalized = false;
+
+  async function runFinalize() {
+    if (finalized) return;
+    finalized = true;
+    await finalize();
+  }
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      try {
+        const { done, value } = await reader.read();
+        if (done) {
+          await runFinalize();
+          controller.close();
+          return;
+        }
+        if (value) controller.enqueue(value);
+      } catch (error) {
+        controller.error(error);
+      }
+    },
+    async cancel(reason) {
+      await runFinalize();
+      await reader.cancel(reason);
+    },
+  });
+}
+
 export async function POST(request: Request) {
   const requestId = crypto.randomUUID();
   const startMs = Date.now();
+  const origin = new URL(request.url).origin;
 
   // --- Auth ---
   const auth = await authenticate(request.headers.get("authorization"));
@@ -42,28 +115,10 @@ export async function POST(request: Request) {
       { status: 401, headers: CORS_HEADERS },
     );
   }
+  const raw = request.headers.get("authorization")!.slice(7);
+  const keyHash = createHash("sha256").update(raw).digest("hex");
   if (auth.walletRequired) {
-    // Generate a funding invoice so the user can pay immediately
-    const { getOrInitSettlement } = await import("@/lib/settlement");
-    const settlement = await getOrInitSettlement();
-    let fundingInvoice = null;
-
-    if (settlement) {
-      try {
-        const keyHash = createHash("sha256")
-          .update(request.headers.get("authorization")!.slice(7))
-          .digest("hex");
-        const invoice = await settlement.createInvoice(keyHash, 10_000, "Pura gateway funding");
-        fundingInvoice = {
-          paymentRequest: invoice.paymentRequest,
-          amount: invoice.amount,
-          expiresAt: invoice.expiresAt,
-          rail: settlement.name,
-        };
-      } catch {
-        // Invoice generation failed — still return 402 without invoice
-      }
-    }
+    const fundingInvoice = await createFundingInvoice(origin, keyHash);
 
     return NextResponse.json(
       {
@@ -72,8 +127,8 @@ export async function POST(request: Request) {
           type: "payment_required",
           code: "free_tier_exceeded",
           funding: fundingInvoice,
-          fundUrl: "https://api.pura.xyz/api/wallet/fund",
-          docs: "https://pura.xyz/docs/getting-started",
+          fundUrl: `${origin}/api/wallet/fund`,
+          docs: "https://pura.xyz/docs/getting-started-gateway",
         },
       },
       { status: 402, headers: CORS_HEADERS },
@@ -81,9 +136,6 @@ export async function POST(request: Request) {
   }
 
   // --- Rate limit ---
-  const keyHash = createHash("sha256")
-    .update(request.headers.get("authorization")!.slice(7))
-    .digest("hex");
   const rl = await checkRateLimitAsync(keyHash);
   if (!rl.allowed) {
     return NextResponse.json(
@@ -135,7 +187,7 @@ export async function POST(request: Request) {
   }
 
   // --- Route ---
-  let provider;
+  let provider: Provider;
   let tier;
   let explored = false;
   let experimentalFields: string[] = [];
@@ -150,6 +202,45 @@ export async function POST(request: Request) {
       { error: { message: (e as Error).message } },
       { status: 503 },
     );
+  }
+
+  const promptText = messages.map((m) => m.content).join(" ");
+  const promptTokens = estimateTokens(promptText);
+  const estimatedTotalTokens = promptTokens * 2;
+  const estCost = estimateCostUsd(provider, estimatedTotalTokens);
+  const estimatedCostSats = estimateCostSats(provider, estimatedTotalTokens);
+
+  const paidTier = (auth.record?.requests ?? 0) >= 5000;
+  const settlement = paidTier ? await getOrInitSettlement() : null;
+  if (paidTier) {
+    if (!settlement) {
+      return NextResponse.json(
+        { error: { message: "Settlement provider unavailable" } },
+        { status: 503, headers: CORS_HEADERS },
+      );
+    }
+
+    const balance = await settlement.checkBalance(keyHash);
+    if (balance.balance < estimatedCostSats) {
+      const fundingInvoice = await createFundingInvoice(
+        origin,
+        keyHash,
+        Math.max(10_000, estimatedCostSats),
+      );
+      return NextResponse.json(
+        {
+          error: {
+            message: `Insufficient balance (${balance.balance} sats). Fund your account to continue.`,
+            type: "payment_required",
+            code: "insufficient_balance",
+            funding: fundingInvoice,
+            fundUrl: `${origin}/api/wallet/fund`,
+            docs: "https://pura.xyz/docs/getting-started-gateway",
+          },
+        },
+        { status: 402, headers: CORS_HEADERS },
+      );
+    }
   }
 
   // --- Budget check ---
@@ -203,23 +294,36 @@ export async function POST(request: Request) {
     }
   }
 
+  async function finalizeUsage(totalTokens: number) {
+    await recordSpend(keyHash, provider, totalTokens);
+    if (!paidTier || !settlement) return;
+
+    const debitSats = estimateCostSats(provider, totalTokens);
+    const debited = await settlement.deductBalance(keyHash, debitSats);
+    if (debited) {
+      log.info("wallet.debited", {
+        requestId,
+        keyHash: keyHash.slice(0, 8),
+        debitSats,
+        provider,
+      });
+      return;
+    }
+
+    log.warn("wallet.debit_failed", {
+      requestId,
+      keyHash: keyHash.slice(0, 8),
+      debitSats,
+      provider,
+    });
+  }
+
   // Increment usage
-  const raw = request.headers.get("authorization")!.slice(7);
   incrementRequests(raw);
 
   // Fire-and-forget: advance completion epoch + maybe rebalance
   recordCompletionEpoch(provider).catch(() => {});
   maybeRebalance().catch(() => {});
-
-  // Estimate prompt tokens from input messages
-  const promptText = messages.map((m) => m.content).join(" ");
-  const promptTokens = estimateTokens(promptText);
-
-  // Estimate cost for headers
-  const estCost = estimateCostUsd(provider, promptTokens * 2);
-
-  // Record spend and metrics (fire-and-forget)
-  recordSpend(keyHash, provider, promptTokens * 2).catch(() => {});
 
   const puraHeaders: Record<string, string> = {
     ...CORS_HEADERS,
@@ -257,7 +361,7 @@ export async function POST(request: Request) {
   });
 
   if (wantStream) {
-    return new Response(stream, {
+    return new Response(withUsageFinalizer(stream, () => finalizeUsage(estimatedTotalTokens)), {
       headers: {
         ...puraHeaders,
         "Content-Type": "text/event-stream",
@@ -272,6 +376,7 @@ export async function POST(request: Request) {
   if (!wantStream && (provider === "anthropic")) {
     try {
       const content = await collectAnthropicResponse(messages, body.model, providerKey);
+      await finalizeUsage(promptTokens + estimateTokens(content));
       return NextResponse.json(
         {
           id: `chatcmpl-${Date.now()}`,
@@ -325,6 +430,7 @@ export async function POST(request: Request) {
     if (streamDone) break;
   }
 
+  await finalizeUsage(promptTokens + estimateTokens(fullContent));
   return NextResponse.json(
     {
       id: `chatcmpl-${Date.now()}`,

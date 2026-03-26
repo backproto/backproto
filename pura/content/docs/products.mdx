@@ -33,15 +33,17 @@ A skill package for the OpenClaw agent framework. Install it and your agent rout
 
 ## Lightning settlement — pay in sats
 
-The first 5,000 requests are free. After that, fund a Lightning wallet via LNbits. The gateway deducts per-request costs asynchronously — inference never blocks on payment.
+The first 5,000 requests are free. After that, the gateway issues a Lightning funding invoice. Pay the BOLT11 invoice, the gateway credits your sat balance, and per-request costs are deducted from that balance.
 
 - Fund: `POST /api/wallet/fund`
+- Status: `GET /api/wallet/status?invoiceId=...`
+- Public invoice page: `https://api.pura.xyz/invoice?id=...`
 - Balance: `GET /api/wallet/balance`
 - Docs: [Lightning guide](/docs/getting-started-lightning)
 
 ## pura.xyz — routing dashboard
 
-Consolidated dashboard pulling live on-chain state from all deployed contracts on Base Sepolia. Gateway metrics, relay capacity, Lightning routing, agent reputation, and BPE simulation.
+Mixed observability surface for the Pura stack. Economy and provider pages read live gateway data. The overview page blends live shadow metrics with seeded fallback data. Capacity, congestion, and audit are currently simulated or demo views.
 
 - Live: [pura.xyz](https://pura.xyz)
 - Source: [pura/](https://github.com/puraxyz/puraxyz/tree/main/pura)

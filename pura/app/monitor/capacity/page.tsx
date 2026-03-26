@@ -104,6 +104,12 @@ export default function CapacityPage() {
         ))}
       </div>
 
+      <div className={s.sourceNote}>
+        <span className={s.sourceLabel}>data source</span>
+        <span className={s.sourceValue}>simulated</span>
+        <span className={s.sourceCopy}>This view is seeded locally in the page and updates on a timer. It is not reading live capacity attestations yet.</span>
+      </div>
+
       <div className={s.section}>
         <div className={s.sectionHead}>EWMA-smoothed capacity per sink (alpha = 0.3)</div>
         <table className={s.tbl}>
