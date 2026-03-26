@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/auth";
 import { searchSkills } from "@/lib/marketplace";
 
+export const runtime = "nodejs";
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
@@ -31,7 +33,7 @@ export async function GET(request: Request) {
   const maxPriceStr = url.searchParams.get("maxPrice");
   const maxPrice = maxPriceStr ? Number(maxPriceStr) : undefined;
 
-  const results = searchSkills({ skillType: skill, maxPrice });
+  const results = await searchSkills({ skillType: skill, maxPrice });
 
   return NextResponse.json({ results }, { headers: CORS_HEADERS });
 }

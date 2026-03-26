@@ -3,6 +3,8 @@ import { authenticate } from "@/lib/auth";
 import { completeTask, getTask } from "@/lib/marketplace";
 import { createHash } from "crypto";
 
+export const runtime = "nodejs";
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -38,7 +40,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const task = getTask(body.taskId);
+  const task = await getTask(body.taskId);
   if (!task) {
     return NextResponse.json(
       { error: { message: "Task not found" } },
@@ -53,7 +55,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const completed = completeTask(body.taskId, task.assignedTo, body.qualityRating);
+  const completed = await completeTask(body.taskId, task.assignedTo, body.qualityRating);
   if (!completed) {
     return NextResponse.json(
       { error: { message: "Task cannot be completed — wrong status or agent" } },

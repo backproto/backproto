@@ -3,6 +3,8 @@ import { authenticate } from "@/lib/auth";
 import { searchSkills, createTask, assignTask } from "@/lib/marketplace";
 import { createHash } from "crypto";
 
+export const runtime = "nodejs";
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -41,7 +43,7 @@ export async function POST(request: Request) {
   }
 
   // Find best matching agent
-  const candidates = searchSkills({ skillType: body.skillType, maxPrice: body.maxPrice });
+  const candidates = await searchSkills({ skillType: body.skillType, maxPrice: body.maxPrice });
   if (candidates.length === 0) {
     return NextResponse.json(
       { error: { message: "No agents available for this skill type and price" } },
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
   }
 
   // Create task
-  const task = createTask({
+  const task = await createTask({
     skillType: body.skillType,
     payload: body.payload,
     maxPrice: body.maxPrice,
@@ -58,7 +60,7 @@ export async function POST(request: Request) {
   });
 
   // Assign to top candidate
-  const assigned = assignTask(task.taskId, candidates[0].agentId);
+  const assigned = await assignTask(task.taskId, candidates[0].agentId);
   if (!assigned) {
     return NextResponse.json(
       { error: { message: "Failed to assign task — agent capacity may have changed" } },

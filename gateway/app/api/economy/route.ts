@@ -13,6 +13,6 @@ export async function OPTIONS() {
 
 /** GET /api/economy — public marketplace aggregate data */
 export async function GET() {
-  const stats = getMarketplaceStats();
+  const stats = await getMarketplaceStats();
   return NextResponse.json(stats, { headers: CORS_HEADERS });
 }

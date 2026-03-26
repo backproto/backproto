@@ -1,7 +1,11 @@
 /**
  * Marketplace: agent-to-agent skill exchange.
- * In-memory store with Redis persistence when available.
+ * Uses Redis for persistence when available, falls back to in-memory for dev.
  */
+
+import { useRedis, getRedisUrl, getRedisToken } from "./redis-config";
+
+// ─── Types ───
 
 export interface SkillRegistration {
   agentId: string;
@@ -28,20 +32,67 @@ export interface TaskPost {
   paymentHash: string | null;
 }
 
-// --- In-memory stores ---
+// ─── Redis helpers ───
 
-const skills = new Map<string, SkillRegistration[]>(); // agentId -> registrations
-const tasks = new Map<string, TaskPost>(); // taskId -> task
+async function redisGet(key: string): Promise<string | null> {
+  const res = await fetch(`${getRedisUrl()}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${getRedisToken()}` },
+  });
+  const data = (await res.json()) as { result: string | null };
+  return data.result;
+}
 
-// --- Helpers ---
+async function redisSet(key: string, value: string): Promise<void> {
+  await fetch(`${getRedisUrl()}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getRedisToken()}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(["SET", key, value]),
+  });
+}
+
+async function redisSMembers(key: string): Promise<string[]> {
+  const res = await fetch(`${getRedisUrl()}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getRedisToken()}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(["SMEMBERS", key]),
+  });
+  const data = (await res.json()) as { result: string[] };
+  return data.result ?? [];
+}
+
+async function redisSAdd(key: string, member: string): Promise<void> {
+  await fetch(`${getRedisUrl()}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getRedisToken()}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(["SADD", key, member]),
+  });
+}
+
+// ─── In-memory fallback (dev only) ───
+
+const memSkills = new Map<string, SkillRegistration[]>();
+const memTasks = new Map<string, TaskPost>();
+
+// ─── Helpers ───
 
 function generateId(): string {
   return `task_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-// --- Skill registration ---
+// ─── Skill registration ───
 
-export function registerSkill(reg: Omit<SkillRegistration, "activeJobs" | "qualityScore" | "registeredAt">): SkillRegistration {
+export async function registerSkill(
+  reg: Omit<SkillRegistration, "activeJobs" | "qualityScore" | "registeredAt">,
+): Promise<SkillRegistration> {
   const full: SkillRegistration = {
     ...reg,
     activeJobs: 0,
@@ -49,39 +100,76 @@ export function registerSkill(reg: Omit<SkillRegistration, "activeJobs" | "quali
     registeredAt: Date.now(),
   };
 
-  const existing = skills.get(reg.agentId) ?? [];
-  // Replace if same skillType already registered
-  const idx = existing.findIndex((s) => s.skillType === reg.skillType);
-  if (idx >= 0) {
-    existing[idx] = full;
+  if (useRedis()) {
+    // Load existing registrations for this agent
+    const existing = await getAgentSkills(reg.agentId);
+    const idx = existing.findIndex((s) => s.skillType === reg.skillType);
+    if (idx >= 0) {
+      existing[idx] = full;
+    } else {
+      existing.push(full);
+    }
+    await redisSet(`pura:mp:agent:${reg.agentId}`, JSON.stringify(existing));
+    await redisSAdd("pura:mp:agents", reg.agentId);
+    // Also index by skill type for fast search
+    await redisSAdd(`pura:mp:skill:${reg.skillType}`, reg.agentId);
+    await redisSAdd("pura:mp:skillTypes", reg.skillType);
   } else {
-    existing.push(full);
+    const existing = memSkills.get(reg.agentId) ?? [];
+    const idx = existing.findIndex((s) => s.skillType === reg.skillType);
+    if (idx >= 0) {
+      existing[idx] = full;
+    } else {
+      existing.push(full);
+    }
+    memSkills.set(reg.agentId, existing);
   }
-  skills.set(reg.agentId, existing);
+
   return full;
 }
 
-export function getAgentSkills(agentId: string): SkillRegistration[] {
-  return skills.get(agentId) ?? [];
+export async function getAgentSkills(agentId: string): Promise<SkillRegistration[]> {
+  if (useRedis()) {
+    const data = await redisGet(`pura:mp:agent:${agentId}`);
+    if (!data) return [];
+    return JSON.parse(data) as SkillRegistration[];
+  }
+  return memSkills.get(agentId) ?? [];
 }
 
-// --- Search ---
+// ─── Search ───
 
 export interface SearchParams {
   skillType: string;
   maxPrice?: number;
 }
 
-export function searchSkills(params: SearchParams): SkillRegistration[] {
+export async function searchSkills(params: SearchParams): Promise<SkillRegistration[]> {
   const results: SkillRegistration[] = [];
-  for (const regs of skills.values()) {
-    for (const reg of regs) {
-      if (reg.skillType !== params.skillType) continue;
-      if (params.maxPrice !== undefined && reg.price > params.maxPrice) continue;
-      if (reg.activeJobs >= reg.capacity) continue;
-      results.push(reg);
+
+  if (useRedis()) {
+    // Get all agents that registered this skill type
+    const agentIds = await redisSMembers(`pura:mp:skill:${params.skillType}`);
+    for (const agentId of agentIds) {
+      const skills = await getAgentSkills(agentId);
+      for (const reg of skills) {
+        if (reg.skillType !== params.skillType) continue;
+        if (params.maxPrice !== undefined && reg.price > params.maxPrice) continue;
+        if (reg.activeJobs >= reg.capacity) continue;
+        results.push(reg);
+      }
+    }
+  } else {
+    for (const regs of memSkills.values()) {
+      for (const reg of regs) {
+        if (reg.skillType !== params.skillType) continue;
+        if (params.maxPrice !== undefined && reg.price > params.maxPrice) continue;
+        if (reg.activeJobs >= reg.capacity) continue;
+        results.push(reg);
+      }
     }
   }
+
   // Sort by quality/price ratio (higher is better)
   results.sort((a, b) => {
     const ratioA = a.qualityScore / Math.max(a.price, 1);
@@ -91,9 +179,11 @@ export function searchSkills(params: SearchParams): SkillRegistration[] {
   return results;
 }
 
-// --- Task lifecycle ---
+// ─── Task lifecycle ───
 
-export function createTask(post: Pick<TaskPost, "skillType" | "payload" | "maxPrice" | "requesterId">): TaskPost {
+export async function createTask(
+  post: Pick<TaskPost, "skillType" | "payload" | "maxPrice" | "requesterId">,
+): Promise<TaskPost> {
   const task: TaskPost = {
     taskId: generateId(),
     skillType: post.skillType,
@@ -107,16 +197,22 @@ export function createTask(post: Pick<TaskPost, "skillType" | "payload" | "maxPr
     qualityRating: null,
     paymentHash: null,
   };
-  tasks.set(task.taskId, task);
+
+  if (useRedis()) {
+    await redisSet(`pura:mp:task:${task.taskId}`, JSON.stringify(task));
+    await redisSAdd("pura:mp:tasks", task.taskId);
+  } else {
+    memTasks.set(task.taskId, task);
+  }
+
   return task;
 }
 
-export function assignTask(taskId: string, agentId: string): TaskPost | null {
-  const task = tasks.get(taskId);
+export async function assignTask(taskId: string, agentId: string): Promise<TaskPost | null> {
+  const task = await getTask(taskId);
   if (!task || task.status !== "open") return null;
 
-  // Find the agent's registration for this skill
-  const regs = skills.get(agentId) ?? [];
+  const regs = await getAgentSkills(agentId);
   const reg = regs.find((r) => r.skillType === task.skillType);
   if (!reg || reg.activeJobs >= reg.capacity) return null;
   if (reg.price > task.maxPrice) return null;
@@ -124,15 +220,22 @@ export function assignTask(taskId: string, agentId: string): TaskPost | null {
   task.assignedTo = agentId;
   task.status = "assigned";
   reg.activeJobs++;
+
+  if (useRedis()) {
+    await redisSet(`pura:mp:task:${taskId}`, JSON.stringify(task));
+    // Update agent skills with incremented activeJobs
+    await redisSet(`pura:mp:agent:${agentId}`, JSON.stringify(regs));
+  }
+
   return task;
 }
 
-export function completeTask(
+export async function completeTask(
   taskId: string,
   agentId: string,
   qualityRating: number,
-): TaskPost | null {
-  const task = tasks.get(taskId);
+): Promise<TaskPost | null> {
+  const task = await getTask(taskId);
   if (!task || task.status !== "assigned" || task.assignedTo !== agentId) return null;
 
   task.status = "completed";
@@ -140,21 +243,31 @@ export function completeTask(
   task.qualityRating = Math.max(0, Math.min(1, qualityRating));
 
   // Update agent quality score (exponential moving average)
-  const regs = skills.get(agentId) ?? [];
+  const regs = await getAgentSkills(agentId);
   const reg = regs.find((r) => r.skillType === task.skillType);
   if (reg) {
     reg.activeJobs = Math.max(0, reg.activeJobs - 1);
     reg.qualityScore = 0.8 * reg.qualityScore + 0.2 * task.qualityRating;
   }
 
+  if (useRedis()) {
+    await redisSet(`pura:mp:task:${taskId}`, JSON.stringify(task));
+    await redisSet(`pura:mp:agent:${agentId}`, JSON.stringify(regs));
+  }
+
   return task;
 }
 
-export function getTask(taskId: string): TaskPost | null {
-  return tasks.get(taskId) ?? null;
+export async function getTask(taskId: string): Promise<TaskPost | null> {
+  if (useRedis()) {
+    const data = await redisGet(`pura:mp:task:${taskId}`);
+    if (!data) return null;
+    return JSON.parse(data) as TaskPost;
+  }
+  return memTasks.get(taskId) ?? null;
 }
 
-// --- Aggregate stats ---
+// ─── Aggregate stats ───
 
 export interface MarketplaceStats {
   totalAgents: number;
@@ -167,12 +280,21 @@ export interface MarketplaceStats {
   leaderboard: { agentId: string; earnings: number; quality: number }[];
 }
 
-export function getMarketplaceStats(): MarketplaceStats {
+export async function getMarketplaceStats(): Promise<MarketplaceStats> {
   let totalSkills = 0;
   const skillPriceMap = new Map<string, { sum: number; count: number }>();
   const agentEarnings = new Map<string, { earnings: number; quality: number }>();
 
-  for (const [agentId, regs] of skills.entries()) {
+  // Load all agents
+  let allAgentIds: string[];
+  if (useRedis()) {
+    allAgentIds = await redisSMembers("pura:mp:agents");
+  } else {
+    allAgentIds = Array.from(memSkills.keys());
+  }
+
+  for (const agentId of allAgentIds) {
+    const regs = await getAgentSkills(agentId);
     totalSkills += regs.length;
     for (const reg of regs) {
       const sp = skillPriceMap.get(reg.skillType) ?? { sum: 0, count: 0 };
@@ -185,29 +307,39 @@ export function getMarketplaceStats(): MarketplaceStats {
     }
   }
 
+  // Load all tasks
+  let allTasks: TaskPost[];
+  if (useRedis()) {
+    const taskIds = await redisSMembers("pura:mp:tasks");
+    allTasks = [];
+    for (const taskId of taskIds) {
+      const task = await getTask(taskId);
+      if (task) allTasks.push(task);
+    }
+  } else {
+    allTasks = Array.from(memTasks.values());
+  }
+
   let completedTasks = 0;
   let totalSats = 0;
-  const recent: TaskPost[] = [];
 
-  for (const task of tasks.values()) {
-    if (task.status === "completed") {
+  for (const task of allTasks) {
+    if (task.status === "completed" && task.assignedTo) {
       completedTasks++;
-      // Use assigned agent's price for this skill
-      const regs = skills.get(task.assignedTo!) ?? [];
+      const regs = await getAgentSkills(task.assignedTo);
       const reg = regs.find((r) => r.skillType === task.skillType);
       const price = reg?.price ?? 0;
       totalSats += price;
 
-      const ae = agentEarnings.get(task.assignedTo!) ?? { earnings: 0, quality: 1 };
+      const ae = agentEarnings.get(task.assignedTo) ?? { earnings: 0, quality: 1 };
       ae.earnings += price;
       if (reg) ae.quality = reg.qualityScore;
-      agentEarnings.set(task.assignedTo!, ae);
+      agentEarnings.set(task.assignedTo, ae);
     }
-    recent.push(task);
   }
 
   // Sort recent by creation time, take last 20
-  recent.sort((a, b) => b.createdAt - a.createdAt);
+  allTasks.sort((a, b) => b.createdAt - a.createdAt);
 
   const skillPrices: Record<string, { avgPrice: number; count: number }> = {};
   for (const [type, data] of skillPriceMap.entries()) {
@@ -220,13 +352,13 @@ export function getMarketplaceStats(): MarketplaceStats {
     .slice(0, 10);
 
   return {
-    totalAgents: skills.size,
+    totalAgents: allAgentIds.length,
     totalSkills,
-    totalTasks: tasks.size,
+    totalTasks: allTasks.length,
     completedTasks,
     totalSatsTransacted: totalSats,
     skillPrices,
-    recentTasks: recent.slice(0, 20),
+    recentTasks: allTasks.slice(0, 20),
     leaderboard,
   };
 }

@@ -3,6 +3,8 @@ import { authenticate } from "@/lib/auth";
 import { registerSkill, getAgentSkills } from "@/lib/marketplace";
 import { createHash } from "crypto";
 
+export const runtime = "nodejs";
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -37,7 +39,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const reg = registerSkill({
+  const reg = await registerSkill({
     agentId,
     skillType: body.skillType,
     price: body.price,
@@ -58,5 +60,6 @@ export async function GET(request: Request) {
   const raw = request.headers.get("authorization")!.slice(7);
   const agentId = createHash("sha256").update(raw).digest("hex").slice(0, 16);
 
-  return NextResponse.json({ skills: getAgentSkills(agentId) }, { headers: CORS_HEADERS });
+  const skills = await getAgentSkills(agentId);
+  return NextResponse.json({ skills }, { headers: CORS_HEADERS });
 }
