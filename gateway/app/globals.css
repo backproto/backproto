@@ -1,30 +1,28 @@
 :root {
-  --bg: #09090b;
-  --bg-elevated: #111113;
-  --bg-surface: #18181b;
-  --bg-hover: #222222;
-  --border: #27272a;
-  --border-bright: #3f3f46;
+  --bg: #0a0a0c;
+  --bg-elevated: #111114;
+  --bg-surface: #17171a;
+  --bg-hover: #1e1e22;
+  --border: #222228;
+  --border-bright: #333340;
 
-  --text: #e4e4e7;
-  --text-muted: #a1a1aa;
-  --text-dim: #71717a;
+  --text: #e0e0e6;
+  --text-muted: #b0b0be;
+  --text-dim: #808090;
 
-  --accent: #d97706;
-  --accent-hover: #f59e0b;
-  --accent-dim: rgba(217, 119, 6, 0.15);
+  --accent: #8b5cf6;
+  --accent-hover: #a78bfa;
+  --accent-dim: rgba(139, 92, 246, 0.12);
 
-  --green: #22c55e;
+  --green: #4ade80;
   --blue: #3b82f6;
-  --red: #ef4444;
-  --yellow: #eab308;
+  --red: #f87171;
+  --yellow: #fbbf24;
 
-  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
-  --font-mono: "Geist Mono", "JetBrains Mono", "Fira Code", monospace;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 
-  --radius-sm: 4px;
-  --radius-md: 5px;
-  --radius-lg: 8px;
+  --radius: 1px;
 }
 
 * {
@@ -41,8 +39,9 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   line-height: 1.5;
+  padding-bottom: 28px;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -62,8 +61,13 @@ code, pre {
 pre {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 1rem;
   overflow-x: auto;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
+}
+
+::selection {
+  background: var(--accent-dim);
+  color: var(--text);
 }

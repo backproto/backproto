@@ -1,5 +1,5 @@
 /**
- * Deterministic seed data for the Mandalay gateway dashboard.
+ * Deterministic seed data for the Pura gateway dashboard.
  * Wall-clock-derived values — same numbers for every visitor at a given moment.
  */
 

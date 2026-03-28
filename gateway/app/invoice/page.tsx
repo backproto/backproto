@@ -112,7 +112,7 @@ const pageStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   padding: "2rem",
-  background: "#0a0a0a",
+  background: "#0a0a0c",
   color: "#f5f5f5",
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
 };
@@ -130,7 +130,7 @@ const eyebrowStyle: CSSProperties = {
   fontSize: "0.8rem",
   textTransform: "uppercase",
   letterSpacing: "0.08em",
-  color: "#f59e0b",
+  color: "#8b5cf6",
 };
 
 const titleStyle: CSSProperties = {
@@ -166,8 +166,8 @@ const actionsStyle: CSSProperties = {
 const primaryLinkStyle: CSSProperties = {
   display: "inline-block",
   padding: "0.8rem 1rem",
-  background: "#f59e0b",
-  color: "#111111",
+  background: "#8b5cf6",
+  color: "#ffffff",
   textDecoration: "none",
   fontWeight: 700,
 };

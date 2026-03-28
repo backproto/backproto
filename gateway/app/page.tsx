@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, type FormEvent } from "react";
 import FlowDiagram from "./components/FlowDiagram";
+import CascadeViz from "./components/CascadeViz";
 import styles from "./page.module.css";
 import { generateSeedState } from "@/lib/seed";
 
@@ -89,50 +90,49 @@ export default function Home() {
     );
   }
 
-  const explorerBase =
-    state?.chainId === 8453
-      ? "https://basescan.org"
-      : "https://sepolia.basescan.org";
-
   return (
     <main className={styles.main}>
       <header className={styles.header}>
         <h1 className={styles.title}>
-          <span className={styles.logo}>◆</span> Mandalay
+          <span className={styles.logo}>⚡</span> pura<span className={styles.tagSuffix}>api</span>
         </h1>
         <nav className={styles.headerNav}>
           <a
-            href="https://pura.xyz"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#how-it-works"
             className={styles.headerLink}
           >
-            Pura
+            how it works
           </a>
           <a
-            href="https://pura.xyz/explainer"
+            href="https://pura.xyz/docs"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
           >
-            Docs
+            docs
+          </a>
+          <a
+            href="https://pura.xyz/paper"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.headerLink}
+          >
+            paper
           </a>
           <a
             href="https://github.com/puraxyz/puraxyz/tree/main/gateway"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.headerLink}
+            aria-label="GitHub"
           >
-            GitHub
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
           </a>
         </nav>
       </header>
 
       <p className={styles.subtitle}>
-        Capacity-routed LLM gateway · Built on{" "}
-        <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
-          Pura
-        </a>
+        Cascade-routed LLM gateway · 4 providers, one endpoint
       </p>
 
       {state?.seed && (
@@ -140,6 +140,12 @@ export default function Home() {
           ◈ Simulated data · Connect providers for live metrics
         </div>
       )}
+
+      <section className={styles.hero}>
+        <div className={styles.heroViz}>
+          <CascadeViz />
+        </div>
+      </section>
 
       <FlowDiagram />
 
@@ -227,35 +233,35 @@ export default function Home() {
       {/* Quick start */}
       <section className={styles.usage}>
         <h3 className={styles.usageTitle}>Quick start</h3>
-        <pre className={styles.compact}>{`curl ${typeof window !== "undefined" ? window.location.origin : "https://mandalay.dev"}/api/chat \\
+        <pre className={styles.compact}>{`curl ${typeof window !== "undefined" ? window.location.origin : "https://api.pura.xyz"}/api/chat \\
   -H "Authorization: Bearer YOUR_KEY" \\
   -d '{"messages":[{"role":"user","content":"Hello!"}],"stream":true}'
 
 # Or bring your own provider key:
-curl ${typeof window !== "undefined" ? window.location.origin : "https://mandalay.dev"}/api/chat \\
+curl ${typeof window !== "undefined" ? window.location.origin : "https://api.pura.xyz"}/api/chat \\
   -H "Authorization: Bearer YOUR_KEY" \\
   -H "X-Provider-Key: sk-your-openai-key" \\
   -d '{"messages":[{"role":"user","content":"Hello!"}],"model":"gpt-4o"}'`}</pre>
       </section>
 
       {/* FAQ */}
-      <section className={styles.faq}>
+      <section className={`${styles.faq} ${styles.howItWorks}`} id="how-it-works">
         <h3 className={styles.faqTitle}>Common questions</h3>
 
         <div className={styles.faqItem}>
           <h4 className={styles.faqQ}>How does this work?</h4>
           <p className={styles.faqA}>
-            You send requests to Mandalay using the standard OpenAI chat format.
-            Mandalay checks real-time capacity weights from an on-chain registry
-            and routes to the provider with the most headroom. If one goes down,
-            traffic shifts automatically.
+            You send requests using the standard OpenAI chat format. The gateway
+            scores each request&apos;s complexity and routes to the cheapest provider
+            that can handle it. If the response looks weak — hedging, too short,
+            refusal — it cascades up to the next tier automatically.
           </p>
         </div>
 
         <div className={styles.faqItem}>
           <h4 className={styles.faqQ}>Are my API keys secure?</h4>
           <p className={styles.faqA}>
-            Your Mandalay API key is SHA-256 hashed before storage — we never
+            Your Pura API key is SHA-256 hashed before storage — we never
             store it in plaintext. If you bring your own provider key via the{" "}
             <code>X-Provider-Key</code> header, it is used only for the single
             outbound request to the provider, then discarded. It is never stored,
@@ -269,8 +275,8 @@ curl ${typeof window !== "undefined" ? window.location.origin : "https://mandala
             Yes. Pass your OpenAI or Anthropic key via the{" "}
             <code>X-Provider-Key</code> header and set the <code>model</code>{" "}
             parameter to route to the right provider. Your key is used
-            pass-through for that single request — Mandalay never stores it. If
-            you don&apos;t send a provider key, Mandalay uses its own managed
+            pass-through for that single request — the gateway never stores it. If
+            you don&apos;t send a provider key, the gateway uses its own managed
             keys.
           </p>
         </div>
@@ -278,16 +284,15 @@ curl ${typeof window !== "undefined" ? window.location.origin : "https://mandala
         <div className={styles.faqItem}>
           <h4 className={styles.faqQ}>What&apos;s the catch?</h4>
           <p className={styles.faqA}>
-            First 100 requests are free, no signup required. After that, link an
-            Ethereum wallet and open a payment stream — pennies per request on
-            Base. You can stop anytime.
+            First 5,000 requests are free, no signup required. After that, fund a
+            Lightning wallet — pennies per request. You can stop anytime.
           </p>
         </div>
 
         <div className={styles.faqItem}>
           <h4 className={styles.faqQ}>Can I self-host this?</h4>
           <p className={styles.faqA}>
-            Yes — Mandalay is fully open source. Fork it, deploy it, run your own
+            Yes — the gateway is fully open source. Fork it, deploy it, run your own
             gateway. See the{" "}
             <a
               href="https://github.com/puraxyz/puraxyz/tree/main/gateway"
@@ -301,36 +306,31 @@ curl ${typeof window !== "undefined" ? window.location.origin : "https://mandala
       </section>
 
       <footer className={styles.footer}>
-        <p>
-          Mandalay · Powered by{" "}
-          <a href="https://pura.xyz" target="_blank" rel="noopener noreferrer">
-            Pura
-          </a>
-          {" · "}
-          <a href={explorerBase} target="_blank" rel="noopener noreferrer">
-            {state?.chainId === 8453 ? "Base" : "Base Sepolia"}
-          </a>
-          {state?.pool && (
-            <>
-              {" · "}
-              <a
-                href={`${explorerBase}/address/${state.pool}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Pool ↗
-              </a>
-            </>
-          )}
-          {" · "}
-          <a
-            href="https://pura.xyz/paper"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Paper
-          </a>
-        </p>
+        <div className={styles.footerTop}>
+          <div className={styles.footerLinks}>
+            <a href="#how-it-works">how it works</a>
+            <a href="https://pura.xyz/docs" target="_blank" rel="noopener noreferrer">docs</a>
+            <a href="https://pura.xyz/paper" target="_blank" rel="noopener noreferrer">paper</a>
+            <a href="https://pura.xyz/compare" target="_blank" rel="noopener noreferrer">compare</a>
+          </div>
+          <div className={styles.footerLinks}>
+            <a
+              href="https://github.com/puraxyz/puraxyz/tree/main/gateway"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              github
+            </a>
+            <a
+              href="https://github.com/puraxyz/puraxyz/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              report an issue
+            </a>
+          </div>
+        </div>
+        <div className={styles.footerBottom}>api.pura.xyz</div>
       </footer>
     </main>
   );

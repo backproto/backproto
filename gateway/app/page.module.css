@@ -49,7 +49,7 @@
 }
 
 .subtitle {
-  text-align: center;
+  text-align: left;
   font-size: 0.85rem;
   color: var(--text-muted);
   margin: -0.5rem 0 1.5rem;
@@ -68,9 +68,9 @@
   text-align: center;
   font-size: 0.75rem;
   color: var(--accent);
-  background: rgba(255, 200, 50, 0.08);
-  border: 1px solid rgba(255, 200, 50, 0.2);
-  border-radius: 6px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--radius);
   padding: 0.4rem 0.8rem;
   margin: 0 auto 1rem;
   max-width: 360px;
@@ -82,7 +82,7 @@
 .keySection {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -97,7 +97,7 @@
   flex: 1;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 0.55rem 0.75rem;
   color: var(--text);
   font-family: var(--font-sans);
@@ -111,9 +111,9 @@
 
 .keyButton {
   background: var(--accent);
-  color: #000;
+  color: #fff;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 0.55rem 1.25rem;
   font-weight: 600;
   font-size: 0.85rem;
@@ -132,7 +132,7 @@
 .keyResult {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 0.75rem;
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -157,7 +157,7 @@
 .stat {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   padding: 1rem 1.1rem;
 }
 
@@ -186,7 +186,7 @@
 .providerCard {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   padding: 1rem 1.1rem;
 }
 
@@ -313,4 +313,49 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Tag suffix ("api" after "pura") */
+.tagSuffix {
+  font-weight: 400;
+  color: var(--text-dim);
+  font-size: 0.8em;
+}
+
+/* Hero layout */
+.hero {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+}
+
+.heroViz {
+  margin-top: 1rem;
+}
+
+/* Footer — pura-style structured */
+.footerTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.footerBottom {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+}
+
+/* How-it-works anchor offset for sticky nav */
+.howItWorks {
+  scroll-margin-top: 4rem;
 }

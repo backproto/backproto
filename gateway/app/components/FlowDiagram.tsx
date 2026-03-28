@@ -22,11 +22,11 @@ interface NodeDef {
 
 const NODES: NodeDef[] = [
   { id: "app",       label: "Your App",          x: 0.05, y: 0.42, color: "#71717a", shape: "pill" },
-  { id: "mandalay",  label: "\u25C6  Mandalay",  x: 0.46, y: 0.42, color: "#d97706", shape: "rect" },
+  { id: "pura",      label: "\u26A1 Pura",        x: 0.46, y: 0.42, color: "#8b5cf6", shape: "rect" },
   { id: "openai",    label: "OpenAI",            x: 0.88, y: 0.18, color: "#22c55e", shape: "rect" },
   { id: "anthropic", label: "Anthropic",         x: 0.88, y: 0.42, color: "#8b5cf6", shape: "rect" },
   { id: "more",      label: "+ more",            x: 0.88, y: 0.66, color: "#3b82f6", shape: "rect" },
-  { id: "registry",  label: "Capacity Registry", x: 0.46, y: 0.85, color: "#d97706", shape: "rect" },
+  { id: "registry",  label: "Capacity Registry", x: 0.46, y: 0.85, color: "#8b5cf6", shape: "rect" },
 ];
 
 interface EdgeDef {
@@ -39,11 +39,11 @@ interface EdgeDef {
 }
 
 const EDGES: EdgeDef[] = [
-  { from: "app",       to: "mandalay",  label: "request" },
-  { from: "mandalay",  to: "openai",    label: "route" },
-  { from: "mandalay",  to: "anthropic", label: "route" },
-  { from: "mandalay",  to: "more",      label: "route",    dashed: true },
-  { from: "registry",  to: "mandalay",  label: "on-chain weights", dashed: true, color: "#d9770660" },
+  { from: "app",       to: "pura",      label: "request" },
+  { from: "pura",      to: "openai",    label: "route" },
+  { from: "pura",      to: "anthropic", label: "route" },
+  { from: "pura",      to: "more",      label: "route",    dashed: true },
+  { from: "registry",  to: "pura",      label: "on-chain weights", dashed: true, color: "#8b5cf660" },
   { from: "openai",    to: "registry",  color: "#22c55e", reverse: true },
   { from: "anthropic", to: "registry",  color: "#8b5cf6", reverse: true },
 ];
@@ -168,12 +168,12 @@ export default function FlowDiagram() {
       ctx!.fillStyle = hexAlpha(n.color, "18");
       ctx!.fill();
       ctx!.strokeStyle = n.color;
-      ctx!.lineWidth = n.id === "mandalay" ? 1.5 : 1;
-      ctx!.globalAlpha = n.id === "mandalay" ? 0.7 : 0.45;
+      ctx!.lineWidth = n.id === "pura" ? 1.5 : 1;
+      ctx!.globalAlpha = n.id === "pura" ? 0.7 : 0.45;
       roundRect(x0, y0, nw, nh, r);
       ctx!.stroke();
       ctx!.globalAlpha = n.id === "more" ? 0.45 : 0.85;
-      ctx!.font = n.id === "mandalay"
+      ctx!.font = n.id === "pura"
         ? "600 10px var(--font-sans, system-ui)"
         : "500 9px var(--font-mono, monospace)";
       ctx!.fillStyle = "#e4e4e7";
@@ -315,13 +315,13 @@ export default function FlowDiagram() {
   return (
     <div className={styles.wrap}>
       <p className={styles.tagline}>
-        <strong>One endpoint.</strong> Every provider. Capacity-routed.
+        <strong>One endpoint.</strong> Every provider. Cascade-routed.
       </p>
       <div
         className={styles.container}
         style={{ height: CANVAS_H }}
         role="img"
-        aria-label="Flow diagram: Your App sends requests to Mandalay, which routes them to OpenAI, Anthropic, or other providers based on on-chain capacity weights from the Capacity Registry"
+        aria-label="Flow diagram: Your App sends requests to Pura, which routes them to OpenAI, Anthropic, or other providers based on cascade routing with capacity weights from the Capacity Registry"
       >
         <canvas ref={canvasRef} className={styles.canvas} />
       </div>
