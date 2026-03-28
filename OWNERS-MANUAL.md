@@ -9,8 +9,8 @@ Everything you need to know to maintain, extend, and ship this project. Single-m
 ```
 pura-monorepo/
 ├── gateway/            LLM routing gateway (Next.js)
-│   ├── app/api/        Chat, report, status, wallet endpoints
-│   ├── lib/            Routing, providers, budget, settlement, metrics
+│   ├── app/api/        Chat, report, status, wallet, cascade-stats, savings
+│   ├── lib/            Routing, cascade, providers, budget, settlement, metrics
 │   └── lib/providers/  OpenAI, Anthropic, Groq, Gemini
 ├── contracts/          Solidity contracts (Foundry)
 │   ├── src/            35 contracts across 8 domains
@@ -24,6 +24,10 @@ pura-monorepo/
 ├── pura/               Documentation site (pura.xyz) — Next.js
 │   ├── app/            Pages, components, API routes
 │   └── content/        MDX docs and blog posts
+├── create-pura-agent/  CLI bootstrap tool (npx create-pura-agent)
+│   └── bin/index.js    Interactive setup: keys, env, cascade test
+├── mcp-server/         MCP server (@puraxyz/mcp-server)
+│   └── src/index.ts    3 tools: route_request, check_balance, get_report
 ├── openclaw-skill/     OpenClaw skill packaging
 │   ├── SKILL.md        Skill manifest
 │   └── scripts/        Install and test scripts
@@ -32,7 +36,7 @@ pura-monorepo/
 ├── simulation/         Python BPE + Boltzmann simulation
 ├── docs/paper/         Research paper (LaTeX)
 │   └── thermo/         Paper 2: thermodynamic extensions
-├── plan/               Historical design documents (00–13)
+├── plan/               Design documents (00–18)
 ├── gtm/                Go-to-market materials
 ├── bitrecipes/         Visual pipeline builder (bit.recipes)
 ├── website/            [DEPRECATED] MkDocs source
@@ -70,7 +74,7 @@ The system has two layers: the gateway (the product) and the on-chain contracts 
          └─────────────────────────────┘
 ```
 
-The gateway scores each request for complexity (cheap/mid/premium), routes to the best-fit provider, streams the response, deducts cost from the user's Lightning-funded balance, and records the completion on-chain.
+The gateway scores each request for complexity (cheap/mid/premium), routes to the best-fit provider, streams the response, deducts cost from the user's Lightning-funded balance, and records the completion on-chain. When cascade routing is enabled (`routing.cascade: true`), the gateway starts with the cheapest provider, scores response confidence, and escalates to a more capable model only if confidence is below threshold.
 
 ---
 
@@ -102,7 +106,9 @@ npm run dev             # localhost:3000
 
 | File | What it does |
 |------|-------------|
-| `lib/routing.ts` | Complexity scoring + provider selection |
+| `lib/routing.ts` | Complexity scoring + provider selection + cascade hints |
+| `lib/cascade.ts` | Confidence heuristic (4 signals), escalation prompt builder |
+| `lib/cascade-metrics.ts` | In-memory 24h rolling window for cascade stats |
 | `lib/providers.ts` | Provider config (models, costs, capabilities) |
 | `lib/providers/*.ts` | Per-provider streaming implementations |
 | `lib/budget.ts` | Per-key daily budget enforcement via Redis |
@@ -111,14 +117,18 @@ npm run dev             # localhost:3000
 | `lib/metrics.ts` | Time-bucketed provider latency/success counters |
 | `lib/auth.ts` | API key validation, free tier (5,000 requests) |
 | `lib/stream.ts` | SSE streaming for all providers |
+| `lib/income.ts` | Income statement with cascade block |
 
 ### Endpoints
 
 | Endpoint | Method | What it does |
 |----------|--------|-------------|
-| `/api/chat` | POST | Main inference endpoint (OpenAI-compatible) |
+| `/api/chat` | POST | Main inference endpoint (OpenAI-compatible, cascade-aware) |
 | `/api/report` | GET | 24h cost report by provider |
 | `/api/status` | GET | Provider latency + success rate |
+| `/api/cascade-stats` | GET | 24h cascade routing stats (public) |
+| `/api/savings` | GET | Cascade savings breakdown (authenticated) |
+| `/api/income` | GET | 24h income summary |
 | `/api/wallet/fund` | POST | Generate Lightning invoice (LNURL) |
 | `/api/wallet/balance` | GET | Current balance + estimated remaining requests |
 
@@ -300,21 +310,22 @@ npm run build    # Production build
 pura/
 ├── app/
 │   ├── layout.tsx         Root layout, metadata, fonts
-│   ├── page.tsx           Landing page (gateway-first hero)
-│   ├── components/        Nav, Footer, DemoTerminal
+│   ├── page.tsx           Landing page (5 sections: hero, proof, how, compare, go-deeper)
+│   ├── components/        Nav (4 links), Footer (3 links), DemoTerminal
 │   ├── gateway/           Gateway landing page
+│   ├── shadow/            Shadow mode landing page
 │   ├── status/            Provider status dashboard
 │   ├── explainer/         How it works (use-case paths)
 │   ├── about/             About page
-│   ├── deploy/            Operator deployment guide
-│   ├── simulate/          Interactive BPE benchmark
-│   ├── monitor/           Shadow mode monitor
+│   ├── monitor/           Economy, capacity, congestion, audit dashboards
+│   ├── nvm/               NVM dashboard
+│   ├── evolution/         Evolution tracking
 │   ├── paper/             Research paper links
 │   ├── docs/[slug]/       MDX doc pages
 │   └── blog/[slug]/       MDX blog pages
 ├── content/
 │   ├── docs/              Getting started, contracts, SDK, products
-│   └── blog/              Blog posts
+│   └── blog/              17 blog posts (Mar 12-28, consecutive)
 ├── scripts/               Setup scripts
 └── public/                Static assets, icons
 ```
@@ -360,6 +371,41 @@ npm run start    # HTTP metrics server on port 3099
 
 Runs alongside the gateway. Collects per-sink metrics (latency, throughput, error rate) in a circular buffer. Simulates Boltzmann allocation and congestion pricing without affecting real traffic.
 
+Landing page at `pura.xyz/shadow` explains shadow mode and has install instructions.
+
+---
+
+## 8a. CLI bootstrap (create-pura-agent)
+
+```bash
+npx create-pura-agent
+```
+
+Interactive CLI that collects provider API keys, requests a Pura API key from the gateway, writes a `.env` file, runs a cascade test request, and shows the savings. No dependencies.
+
+---
+
+## 8b. MCP server (@puraxyz/mcp-server)
+
+```bash
+cd mcp-server
+npm install
+npm run build
+```
+
+Model Context Protocol server with 3 tools:
+- `route_request` — send a chat completion through the cascade
+- `check_balance` — query Lightning balance
+- `get_report` — fetch 24h cost report
+
+Works with Claude Desktop, VS Code, and OpenClaw. Config in `README.md`.
+
+---
+
+## 8c. Operator playbook
+
+`OPERATOR-PLAYBOOK.md` is the Pura-1 agent directive. It defines identity roles (USER/DEVELOPER/WORKER), success metrics, authorities (what the agent can and cannot do), priority stack (BROKEN > DEGRADED > MISSING > BETTER), pedagogical routing preferences, economic constraints (50K sats/day), and reporting cadence.
+
 ---
 
 ## 9. Simulation
@@ -388,7 +434,15 @@ Paper 2 (thermodynamic extensions): `docs/paper/thermo/`
 
 ## 11. Plan documents
 
-Historical design documents in `plan/`. Read-only records. They capture the design process, not the current state.
+Design documents in `plan/`. 00-13 are historical specs. 14-18 are active NVM extension specs:
+
+| Doc | Topic |
+|-----|-------|
+| 14 | Artifact royalty graphs (kind 31930) |
+| 15 | Specification bonds (kinds 31931-31932) |
+| 16 | Dead letter vaults (kinds 31933-31934) |
+| 17 | Blend gradient scoring (kind 31935) |
+| 18 | Protocol design constraints (Lightning liquidity, blend-diversity, correlation, hitchhiker bids) |
 
 ---
 
@@ -473,6 +527,7 @@ Store in `.env` files (gitignored) or export in shell.
 
 ```bash
 cd contracts && forge test           # 319 Solidity tests
+cd ../nvm && npm test                # 87 NVM tests (vitest)
 cd ../sdk && npm test                # SDK tests (vitest)
 cd ../gateway && npm run build       # Verify gateway compiles
 cd ../pura && npx next build         # Verify site builds

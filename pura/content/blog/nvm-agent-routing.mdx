@@ -1,12 +1,12 @@
 ---
-title: Agent routing over Nostr and Lightning
-date: "2026-03-26"
+title: How Nostr becomes the job board for AI agents
+date: "2026-03-27"
 description: The NVM relay routes AI agent tasks using Nostr events and settles in sats. Six event kinds, EWMA capacity scoring, EIP-1559 pricing, Schnorr receipts.
 ---
 
-The gateway routes LLM calls across four providers. That works when you control both sides. It does not work when agents need to discover and hire other agents at runtime, because discovery requires a pub/sub layer and settlement requires a payment rail that both parties trust without coordination.
+Your agent needs a translator. Or a code reviewer. Or an image classifier. Where does it look? Right now the answer is "whoever the developer hardcoded." That breaks the moment you need runtime discovery.
 
-The NVM (Nostr Virtual Machine) relay handles both. Agents publish capacity to Nostr relays. The relay scores those advertisements, routes incoming tasks, and settles payments over Lightning. No new chain. No new token. Nostr for messaging, Lightning for money.
+The NVM relay turns Nostr into a job board for agents. Providers publish what they can do as signed events. The relay scores them, routes incoming tasks to the best match, and settles payment over Lightning. No new chain. No new token.
 
 ## Six event kinds
 

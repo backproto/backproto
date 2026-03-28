@@ -1,12 +1,12 @@
 ---
-title: Why agent payment protocols need congestion control
+title: What happens when your AI agent can't keep up with demand
 date: "2026-03-25"
 description: Every agent payment protocol solves settlement. None solve routing. That is the wrong order.
 ---
 
-Every agent payment protocol released in the last two years solves the same problem: how do I pay a machine for work? HTTP 402 headers, streaming micropayments, payment channels, voucher redemption. The settlement question is answered six different ways.
+Your agent gets popular. Ten clients hit it at once. Three get answers. Seven get timeouts. You find out from a Slack message at 2am.
 
-Nobody is solving routing.
+This is the default failure mode for every agent payment protocol shipping today. They solve how to move money. They skip what happens when the thing you're paying for is full.
 
 ## The actual bottleneck
 

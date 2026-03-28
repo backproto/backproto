@@ -6,6 +6,7 @@
 import { getDailyReport } from "./budget";
 import { getQualityScore } from "./quality";
 import { getProviderStatuses } from "./metrics";
+import { getCascadeStats } from "./cascade-metrics";
 
 const SATS_PER_USD = 2500;
 
@@ -30,6 +31,13 @@ export interface IncomeStatement {
     providersUp: number;
     providersTotal: number;
     avgSuccessRate: number;
+  };
+  cascade: {
+    totalRequests: number;
+    resolvedTier1: number;
+    resolvedTier2: number;
+    resolvedTier3: number;
+    avgSavingsPct: number;
   };
   networkRank: number | null;
 }
@@ -76,6 +84,8 @@ export async function generateIncomeStatement(keyHash: string): Promise<IncomeSt
   });
   const avgSuccessRate = successRates.reduce((a, b) => a + b, 0) / successRates.length;
 
+  const cascadeStats = getCascadeStats();
+
   return {
     period: "24h",
     generatedAt: now,
@@ -97,6 +107,13 @@ export async function generateIncomeStatement(keyHash: string): Promise<IncomeSt
       providersUp: up,
       providersTotal: statuses.length,
       avgSuccessRate: Number(avgSuccessRate.toFixed(3)),
+    },
+    cascade: {
+      totalRequests: cascadeStats.totalRequests,
+      resolvedTier1: cascadeStats.resolvedTier1,
+      resolvedTier2: cascadeStats.resolvedTier2,
+      resolvedTier3: cascadeStats.resolvedTier3,
+      avgSavingsPct: cascadeStats.avgSavingsPct,
     },
     networkRank: null,
   };
@@ -133,6 +150,15 @@ export function formatIncomeText(stmt: IncomeStatement): string {
   lines.push(`  Success rate: ${(stmt.health.avgSuccessRate * 100).toFixed(1)}%`);
   if (stmt.networkRank !== null) {
     lines.push(`  Network rank: #${stmt.networkRank}`);
+  }
+  if (stmt.cascade.totalRequests > 0) {
+    lines.push("");
+    lines.push("CASCADE ROUTING");
+    lines.push(`  Total:        ${stmt.cascade.totalRequests} requests`);
+    lines.push(`  Tier 1:       ${stmt.cascade.resolvedTier1} (${stmt.cascade.totalRequests > 0 ? ((stmt.cascade.resolvedTier1 / stmt.cascade.totalRequests) * 100).toFixed(0) : 0}%)`);
+    lines.push(`  Tier 2:       ${stmt.cascade.resolvedTier2}`);
+    lines.push(`  Tier 3:       ${stmt.cascade.resolvedTier3}`);
+    lines.push(`  Avg savings:  ${stmt.cascade.avgSavingsPct.toFixed(1)}%`);
   }
   lines.push("==============================");
   return lines.join("\n");

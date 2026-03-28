@@ -1,12 +1,12 @@
 ---
-title: Capacity is the bottleneck
-date: "2026-03-03"
+title: Your agent is paying for work that never gets done
+date: "2026-03-14"
 description: AI agent economics focuses on pricing. The harder problem is capacity.
 ---
 
-Most conversations about AI agent economics focus on pricing. How much should an LLM call cost? What is the market rate for a summarization task? How do you prevent agents from overcharging?
+Your embedding service handles three concurrent requests. Ten agents send jobs at once. Seven of those jobs silently fail, time out, or sit in a queue until the caller gives up. The agents already paid. Nobody told them the service was full.
 
-These are real questions, but they are second-order. The first-order problem is capacity.
+Pricing gets all the attention in agent economics. Capacity is the problem that actually breaks things.
 
 ## The scenario nobody talks about
 

@@ -2,73 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
-import { AsciiBar } from "./components/AsciiBar";
-import { StatusDot } from "./components/StatusDot";
-import AnimatedDiagram from "./components/AnimatedDiagram";
 import { DemoTerminal } from "./components/DemoTerminal";
-import DiagramBacklink from "./components/DiagramBacklink";
-import ProductGraph from "./components/ProductGraph";
-import { HERO_DIAGRAM } from "@/lib/siteDiagrams";
-import {
-  generateRelaySeedState,
-  generateLightningSeedState,
-  generateAgentSeedState,
-  generateGatewaySeedState,
-  type RelayState,
-  type LightningState,
-  type ExplorerState,
-  type GatewayState,
-} from "@/lib/shared/seed";
-
-interface ThermoState {
-  temperature: string;
-  virialRatio: string;
-  escrowPressure: string;
-  demurrageRate: string;
-  phase: string;
-  phaseIndex: number;
-  tauMin: string;
-  tauMax: string;
-  equilibriumTarget: string;
-  seed?: boolean;
-}
-
-interface SimState {
-  tickNumber: number;
-  phase: string;
-  tickInPhase: number;
-  flowRateMultiplier: number;
-  baseFee: string;
-  flowRate: string;
-  agents: Record<
-    string,
-    {
-      address: string;
-      stake: string;
-      capacityCap: string;
-      poolUnits: string;
-      completionRate: string;
-      completions: string;
-      queueLoad: string;
-      price: string;
-    }
-  >;
-  poolAddress: string | null;
-  chainId: number;
-  blockNumber: string;
-}
-
-function truncHex(s: string, n = 6) {
-  if (s.length <= n * 2 + 2) return s;
-  return s.slice(0, n + 2) + "\u2026" + s.slice(-n);
-}
-
-function fmtNum(n: number | string): string {
-  const v = typeof n === "string" ? Number(n) : n;
-  if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + "M";
-  if (v >= 1_000) return (v / 1_000).toFixed(1) + "k";
-  return v.toLocaleString();
-}
 
 function SectionHead({
   label,
@@ -89,83 +23,17 @@ const STEPS = [
   {
     num: "1",
     name: "connect",
-    desc: "Point your agent at api.pura.xyz. Drop-in OpenAI-compatible. One line to swap.",
+    desc: "Change your baseURL to api.pura.xyz. Drop-in OpenAI-compatible.",
   },
   {
     num: "2",
     name: "route",
-    desc: "Pura scores task complexity against provider quality and picks the best-fit model.",
+    desc: "Pura picks the best model, escalates with cascade routing if the first answer falls short.",
   },
   {
     num: "3",
     name: "earn",
-    desc: "Register skills in the marketplace. Other agents hire yours. Settle in sats.",
-  },
-  {
-    num: "4",
-    name: "report",
-    desc: "Wake up to an income statement: costs by provider, earnings by skill, net sats.",
-  },
-];
-
-const INCOME_PREVIEW = `=== PURA INCOME STATEMENT ===
-Period: 24h | Generated: 2026-03-24T07:00:00Z
-
-REVENUE
-  Marketplace:  4,200 sats
-  Total:        4,200 sats
-
-COSTS
-  groq         $0.0018  (5 sats)
-  openai       $0.0340  (85 sats)
-  anthropic    $0.0120  (30 sats)
-  Total:       $0.0478  (120 sats)
-
-NET INCOME
-  +4,080 sats
-
-QUALITY
-  groq         ██████████ 1.000
-  openai       █████████░ 0.920
-  anthropic    ████████░░ 0.847
-  gemini       ██████████ 1.000
-  Aggregate:   0.942
-
-HEALTH
-  Providers:   4/4 up
-  Success rate: 99.2%
-==============================`;
-
-const BUILD_CARDS = [
-  {
-    label: "gateway API",
-    color: "var(--color-gateway)",
-    body: "OpenAI-compatible endpoint that routes across OpenAI, Anthropic, Groq, and Gemini. Complexity scoring picks cheap models for simple tasks, premium for hard ones. Budget caps and cost headers on every response.",
-    href: "/gateway",
-  },
-  {
-    label: "agent marketplace",
-    color: "var(--color-agents)",
-    body: "Register skills and set prices in sats. Other agents hire yours. Quality scores track your reputation and earn more routing priority.",
-    href: "/docs/getting-started-gateway",
-  },
-  {
-    label: "OpenClaw skill",
-    color: "var(--color-agents)",
-    body: "Install the Pura skill and your agent routes through the gateway automatically. Budget alerts and income reports built in.",
-    href: "/docs/getting-started-openclaw",
-  },
-  {
-    label: "Lightning settlement",
-    color: "var(--color-lightning)",
-    body: "5,000 free requests to start. After that, fund a Lightning wallet and pay per-request in sats. No subscriptions or credit cards.",
-    href: "/docs/getting-started",
-  },
-  {
-    label: "NVM relay",
-    color: "var(--color-agents)",
-    body: "Agents publish capacity to Nostr relays. The gateway reads those events, picks the best provider using Boltzmann-weighted scoring, and settles in sats over Lightning. Six event kinds, EWMA smoothing, Schnorr-signed receipts.",
-    href: "/nvm",
+    desc: "Register skills in the marketplace. Other agents hire yours. Get paid in sats.",
   },
 ];
 
@@ -176,7 +44,7 @@ const COMPARE_ROWS = [
   },
   {
     metric: "Cost optimization",
-    vals: ["None", "None", "Markup pricing", "None", "None", "Best-fit per task"],
+    vals: ["None", "None", "Markup pricing", "None", "None", "Cascade — cheapest sufficient tier"],
   },
   {
     metric: "Flow control",
@@ -196,140 +64,173 @@ const COMPARE_ROWS = [
   },
 ];
 
+const DEEPER_CARDS = [
+  {
+    label: "gateway docs",
+    color: "var(--color-gateway)",
+    body: "API reference, response headers, provider costs, Lightning funding.",
+    href: "/gateway",
+  },
+  {
+    label: "shadow mode",
+    color: "var(--amber)",
+    body: "See what Pura would do — without changing anything. Install the sidecar and watch.",
+    href: "/shadow",
+  },
+  {
+    label: "how it works",
+    color: "var(--green)",
+    body: "Backpressure routing, four architectural planes, five standard objects.",
+    href: "/docs/how-it-works",
+  },
+  {
+    label: "paper",
+    color: "var(--text-dim)",
+    body: "Formal model, throughput optimality proof, simulation results.",
+    href: "/paper",
+  },
+  {
+    label: "github",
+    color: "var(--text-dim)",
+    body: "Monorepo: gateway, contracts, SDK, NVM, simulation, site.",
+    href: "https://github.com/puraxyz/puraxyz",
+  },
+];
+
+interface IncomeData {
+  period: string;
+  generatedAt: string;
+  costs: { perProvider: Record<string, { usd: number; sats: number }>; totalUsd: number; totalSats: number };
+  netIncomeSats: number;
+  quality: { perProvider: Record<string, number>; aggregate: number };
+  health: { providersUp: number; providersTotal: number; avgSuccessRate: number };
+  cascade: { totalRequests: number; resolvedTier1: number; resolvedTier2: number; resolvedTier3: number; avgSavingsPct: number };
+}
+
+const SIMULATED_INCOME: IncomeData = {
+  period: "24h",
+  generatedAt: new Date().toISOString(),
+  costs: {
+    perProvider: {
+      groq: { usd: 0.0018, sats: 5 },
+      openai: { usd: 0.034, sats: 85 },
+      anthropic: { usd: 0.012, sats: 30 },
+    },
+    totalUsd: 0.0478,
+    totalSats: 120,
+  },
+  netIncomeSats: 4080,
+  quality: { perProvider: { groq: 1.0, openai: 0.92, anthropic: 0.847, gemini: 1.0 }, aggregate: 0.942 },
+  health: { providersUp: 4, providersTotal: 4, avgSuccessRate: 0.992 },
+  cascade: { totalRequests: 16, resolvedTier1: 12, resolvedTier2: 3, resolvedTier3: 1, avgSavingsPct: 73.2 },
+};
+
+function formatIncome(stmt: IncomeData): string {
+  const lines: string[] = [];
+  lines.push("=== PURA INCOME STATEMENT ===");
+  lines.push(`Period: ${stmt.period} | Generated: ${stmt.generatedAt.split("T")[0]}`);
+  lines.push("");
+  lines.push("COSTS");
+  for (const [provider, data] of Object.entries(stmt.costs.perProvider)) {
+    lines.push(`  ${provider.padEnd(12)} $${data.usd.toFixed(4)}  (${data.sats.toLocaleString()} sats)`);
+  }
+  lines.push(`  Total:        $${stmt.costs.totalUsd.toFixed(4)}  (${stmt.costs.totalSats.toLocaleString()} sats)`);
+  lines.push("");
+  lines.push("NET INCOME");
+  const sign = stmt.netIncomeSats >= 0 ? "+" : "";
+  lines.push(`  ${sign}${stmt.netIncomeSats.toLocaleString()} sats`);
+  lines.push("");
+  lines.push("QUALITY");
+  for (const [provider, score] of Object.entries(stmt.quality.perProvider)) {
+    const bar = "\u2588".repeat(Math.round(score * 10)) + "\u2591".repeat(10 - Math.round(score * 10));
+    lines.push(`  ${provider.padEnd(12)} ${bar} ${score.toFixed(3)}`);
+  }
+  lines.push(`  Aggregate:    ${stmt.quality.aggregate}`);
+  lines.push("");
+  lines.push("HEALTH");
+  lines.push(`  Providers:    ${stmt.health.providersUp}/${stmt.health.providersTotal} up`);
+  lines.push(`  Success rate: ${(stmt.health.avgSuccessRate * 100).toFixed(1)}%`);
+  if (stmt.cascade.totalRequests > 0) {
+    lines.push("");
+    lines.push("CASCADE ROUTING");
+    lines.push(`  Total:        ${stmt.cascade.totalRequests} requests`);
+    lines.push(`  Tier 1:       ${stmt.cascade.resolvedTier1} (${((stmt.cascade.resolvedTier1 / stmt.cascade.totalRequests) * 100).toFixed(0)}%)`);
+    lines.push(`  Tier 2:       ${stmt.cascade.resolvedTier2}`);
+    lines.push(`  Tier 3:       ${stmt.cascade.resolvedTier3}`);
+    lines.push(`  Avg savings:  ${stmt.cascade.avgSavingsPct.toFixed(1)}%`);
+  }
+  lines.push("==============================");
+  return lines.join("\n");
+}
+
 export default function Dashboard() {
-  const [relays, setRelays] = useState<RelayState | null>(null);
-  const [lightning, setLightning] = useState<LightningState | null>(null);
-  const [agents, setAgents] = useState<ExplorerState | null>(null);
-  const [gateway, setGateway] = useState<GatewayState | null>(null);
-  const [sim, setSim] = useState<SimState | null>(null);
-  const [thermo, setThermo] = useState<ThermoState | null>(null);
-  const [seeds, setSeeds] = useState<Set<string>>(new Set());
+  const [income, setIncome] = useState<IncomeData | null>(null);
+  const [simulated, setSimulated] = useState(false);
 
   useEffect(() => {
-    async function fetchOrSeed<T>(
-      url: string,
-      key: string,
-      seedFn: (() => T) | null,
-      setter: (v: T) => void,
-    ) {
-      try {
-        const res = await fetch(url);
-        if (res.ok) {
-          setter(await res.json());
-          return;
+    fetch("/api/income", { headers: { Authorization: "Bearer demo" } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && data.costs) {
+          setIncome(data);
+        } else {
+          setIncome(SIMULATED_INCOME);
+          setSimulated(true);
         }
-      } catch {
-        /* fall through to seed */
-      }
-      if (seedFn) {
-        setter(seedFn());
-        setSeeds((prev) => new Set(prev).add(key));
-      }
-    }
-
-    fetchOrSeed("/api/relays/state", "relays", generateRelaySeedState, setRelays);
-    fetchOrSeed("/api/lightning/state", "lightning", generateLightningSeedState, setLightning);
-    fetchOrSeed("/api/agents/state", "agents", generateAgentSeedState, setAgents);
-    fetchOrSeed("/api/gateway/state", "gateway", generateGatewaySeedState, setGateway);
-    fetchOrSeed<SimState>("/api/sim/state", "sim", null, setSim);
-    fetchOrSeed<ThermoState>("/api/thermo/state", "thermo", null, setThermo);
+      })
+      .catch(() => {
+        setIncome(SIMULATED_INCOME);
+        setSimulated(true);
+      });
   }, []);
-
-  const seed = (key: string) =>
-    seeds.has(key) ? <span className={styles.seedTag}>[seed]</span> : null;
 
   return (
     <main className={styles.main}>
-      {/* ═══════════ HERO — killer use case first ═══════════ */}
+      {/* ═══════════ HERO ═══════════ */}
       <header className={styles.hero}>
         <h1 className={styles.title}>
           Your AI agent just got smarter about money.
         </h1>
         <p className={styles.subtitle}>
-          One API endpoint. Four LLM providers. Automatic model selection by
-          task complexity. Per-request cost tracking. Your agent earns sats
-          by doing work for other agents. Settle on Lightning.
+          One API endpoint. Automatic model selection. Cascade routing
+          tries the cheapest provider first and escalates only when needed.
+          Per-request cost tracking. Your agent earns sats.
         </p>
         <div className={styles.heroCtas}>
           <a href="#demo" className={styles.ctaPrimary}>try the gateway →</a>
           <a href="/gateway" className={styles.ctaSecondary}>get an API key →</a>
           <a href="/docs/getting-started-gateway" className={styles.ctaSecondary}>quickstart →</a>
-          <a href="/nvm" className={styles.ctaSecondary}>nostr relay →</a>
         </div>
-        <AnimatedDiagram {...HERO_DIAGRAM} />
-        <DiagramBacklink id="homepage-gateway-routing" />
+        <DemoTerminal />
       </header>
 
-      {/* ═══════════ LIVE STATS BAR ═══════════ */}
-      <div className={styles.statsBar}>
-        <span>base-sepolia testnet</span>
-        <span className={styles.statsBarSep}>│</span>
-        <span>35 contracts</span>
-        <span className={styles.statsBarSep}>│</span>
-        <span>4 LLM providers</span>
-        <span className={styles.statsBarSep}>│</span>
-        <span>5,000 free requests</span>
-        <span className={styles.statsBarSep}>│</span>
-        <span>Lightning settlement</span>
-        <span className={styles.statsBarSep}>│</span>
-        <span>Nostr agent relay</span>
-      </div>
-
       <hr className={styles.divider} />
 
-      <section className={styles.problemSection}>
-        <SectionHead label="why teams switch" color="var(--red)" />
-        <p className={styles.solutionHeadline}>
-          Pura gives one truthful control surface for three things that usually break apart: model choice, spend visibility, and machine-to-machine payment.
-        </p>
-        <div className={styles.problemGrid}>
-          <div className={styles.problemCard}>
-            <span className={styles.problemLabel}>STOP HARD-CODING PROVIDERS</span>
-            <p className={styles.problemBody}>
-              Your agent should not fail because one upstream model got slower, pricier, or rate-limited. Pura turns four provider integrations into one routing surface.
-            </p>
-          </div>
-          <div className={styles.problemCard}>
-            <span className={styles.problemLabel}>SEE WHAT EACH REQUEST COST</span>
-            <p className={styles.problemBody}>
-              Every response carries provider and cost metadata. You do not have to guess where the money went after the run is over.
-            </p>
-          </div>
-          <div className={styles.problemCard}>
-            <span className={styles.problemLabel}>TURN AGENT WORK INTO REVENUE</span>
-            <p className={styles.problemBody}>
-              The same system that routes your spend can route demand toward your own skills, so the agent stack is not only a cost center.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <hr className={styles.divider} />
-
-      {/* ═══════════ INCOME STATEMENT PROOF ═══════════ */}
-      <section className={styles.section}>
+      {/* ═══════════ PROOF — INCOME STATEMENT ═══════════ */}
+      <section className={styles.section} id="proof">
         <SectionHead label="daily income statement" color="var(--green)" />
+        {simulated && (
+          <p className={styles.seedTag} style={{ marginBottom: "0.5rem" }}>
+            Simulated — live data when your agent connects
+          </p>
+        )}
         <p className={styles.desc}>
-          Every morning your agent gets this. Costs by provider, earnings
-          from marketplace work, net income in sats, quality scores, gateway
-          health. One endpoint: <code>GET /api/income</code>
+          Every morning your agent gets this. Costs by provider, net income
+          in sats, quality scores, cascade routing stats.
+          One endpoint: <code>GET /api/income</code>
         </p>
-        <pre className={styles.codePre} style={{ fontSize: "0.78rem", lineHeight: 1.5 }}>
-          {INCOME_PREVIEW}
-        </pre>
-        <p className={styles.solutionHeadline}>
-          This is the practical promise of the product: not smarter words about AI, but a cleaner operating loop for inference spend and machine revenue.
-        </p>
+        {income && (
+          <pre className={styles.codePre} style={{ fontSize: "0.78rem", lineHeight: 1.5 }}>
+            {formatIncome(income)}
+          </pre>
+        )}
       </section>
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ HOW IT WORKS ═══════════ */}
+      {/* ═══════════ HOW — 3 STEPS ═══════════ */}
       <section className={styles.section}>
         <SectionHead label="how it works" color="var(--green)" />
-        <p className={styles.solutionHeadline}>
-          Most teams still wire one provider and hope. Pura treats routing, fallback, and budget pressure as first-class system behavior instead of afterthought glue code.
-        </p>
         <div className={styles.pipeline}>
           {STEPS.map((s, i) => (
             <div key={s.name} className={styles.pipelineStep}>
@@ -342,21 +243,7 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-      </section>
-
-      <hr className={styles.divider} />
-
-      {/* ═══════════ LIVE DEMO ═══════════ */}
-      <section className={styles.section} id="demo">
-        <SectionHead label="try it" color="var(--amber)" />
-        <p className={styles.desc}>
-          Send a request through the Pura gateway. The response streams back
-          with X-Pura headers showing which provider was selected and how much
-          capacity remains. Same endpoint works as a drop-in for the OpenAI SDK.
-        </p>
-        <DemoTerminal />
-        <div className={styles.codeSnippet}>
-          <SectionHead label="one-line integration" color="var(--text-dim)" />
+        <div className={styles.codeSnippet} style={{ marginTop: "1.5rem" }}>
           <pre className={styles.codePre}>{`// swap your base URL — everything else stays the same
 const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
         </div>
@@ -364,46 +251,9 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ WHAT YOU CAN BUILD ═══════════ */}
-      <section className={styles.section}>
-        <SectionHead label="what you can build" color="var(--amber)" />
-        <div className={styles.serviceGrid}>
-          {BUILD_CARDS.map((c) => (
-            <div key={c.label} className={styles.serviceCard}>
-              <span className={styles.serviceLabel} style={{ color: c.color }}>
-                {"── "}{c.label.toUpperCase()}
-              </span>
-              <p className={styles.serviceBody}>{c.body}</p>
-              <a href={c.href} className={styles.docLink}>
-                learn more →
-              </a>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <hr className={styles.divider} />
-
-      {/* ═══════════ PRODUCT ECOSYSTEM ═══════════ */}
-      <section className={styles.section}>
-        <SectionHead label="how the pieces fit" color="var(--amber)" />
-        <p className={styles.desc}>
-          Gateway routes requests. OpenClaw gives agents the skill. Lightning
-          handles settlement. Smart contracts enforce the rules on Base.
-          Everything feeds the dashboard.
-        </p>
-        <ProductGraph />
-        <DiagramBacklink id="product-ecosystem" />
-      </section>
-
-      <hr className={styles.divider} />
-
       {/* ═══════════ COMPARISON TABLE ═══════════ */}
       <section className={styles.section}>
         <SectionHead label="how it compares" color="var(--text-dim)" />
-        <p className={styles.solutionHeadline}>
-          A proxy can forward traffic. Pura does the harder thing: it turns provider choice, capacity awareness, and settlement into one observable economic system.
-        </p>
         <div style={{ overflowX: "auto" }}>
           <table className={styles.tbl}>
             <thead>
@@ -444,303 +294,31 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ PROTOCOL STATE ═══════════ */}
-      <section className={styles.section} id="thermo">
-        <SectionHead label="live protocol state" color="var(--amber)" />
-        <p className={styles.desc}>
-          Three thermodynamic signals on-chain. Temperature (τ) from
-          attestation variance drives exploratory routing. Virial ratio V
-          measures stake-throughput equilibrium. Escrow pressure P tracks
-          buffer fill. Together they drive adaptive pricing and circuit
-          breakers.
-        </p>
-        {thermo ? (
-          <>
-            <div className={styles.stats}>
-              <span className={styles.kv}>
-                <span className={styles.k}>phase</span>{" "}
-                <span className={styles.v}>{thermo.phase}</span>
+      {/* ═══════════ GO DEEPER ═══════════ */}
+      <section className={styles.section}>
+        <SectionHead label="go deeper" color="var(--amber)" />
+        <div className={styles.serviceGrid}>
+          {DEEPER_CARDS.map((c) => (
+            <div key={c.label} className={styles.serviceCard}>
+              <span className={styles.serviceLabel} style={{ color: c.color }}>
+                {"── "}{c.label.toUpperCase()}
               </span>
-              <span className={styles.kv}>
-                <span className={styles.k}>τ</span>{" "}
-                <span className={styles.v}>{thermo.temperature}</span>
-              </span>
-              <span className={styles.kv}>
-                <span className={styles.k}>V</span>{" "}
-                <span className={styles.v}>{thermo.virialRatio}</span>
-              </span>
-              <span className={styles.kv}>
-                <span className={styles.k}>P</span>{" "}
-                <span className={styles.v}>{thermo.escrowPressure}</span>
-              </span>
-              <span className={styles.kv}>
-                <span className={styles.k}>δ</span>{" "}
-                <span className={styles.v}>{thermo.demurrageRate}%/yr</span>
-              </span>
-              {thermo.seed && <span className={styles.seedTag}>[seed]</span>}
+              <p className={styles.serviceBody}>{c.body}</p>
+              <a
+                href={c.href}
+                className={styles.docLink}
+                {...(c.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              >
+                explore →
+              </a>
             </div>
-          </>
-        ) : (
-          <p className={styles.wait}>connecting...</p>
-        )}
-        <a href="/explainer#thermo" className={styles.docLink}>
-          thermodynamic layer →
-        </a>
-      </section>
-
-      <hr className={styles.divider} />
-
-      {/* ═══════════ PROTOCOL — brief ═══════════ */}
-      <section className={styles.section}>
-        <SectionHead label="the protocol" color="var(--text-dim)" />
-        <p className={styles.desc} style={{ maxWidth: 620 }}>
-          The gateway runs on the Pura protocol (MIT). Backpressure Economics
-          applies congestion control from data networks to monetary flows.
-          On-chain primitives handle capacity declaration, completion verification,
-          congestion-driven pricing, and overflow buffering.
-        </p>
-        <div className={styles.heroCtas}>
-          <a href="/paper" className={styles.ctaSecondary}>paper →</a>
-          <a href="/explainer" className={styles.ctaSecondary}>how it works →</a>
-          <a href="/pitch" className={styles.ctaSecondary}>pitch deck →</a>
-          <a href="/docs" className={styles.ctaSecondary}>docs →</a>
-          <a href="https://github.com/puraxyz/puraxyz" target="_blank" rel="noopener noreferrer" className={styles.ctaSecondary}>github →</a>
+          ))}
         </div>
       </section>
 
       <hr className={styles.divider} />
 
-      {/* ═══════════ ADVANCED NVM SYSTEMS ═══════════ */}
-      <section className={styles.section}>
-        <SectionHead label="agent economy" color="var(--amber)" />
-        <p className={styles.desc} style={{ maxWidth: 620 }}>
-          Seven systems on top of the base relay turn bilateral agent routing
-          into a full market economy: credit networks, capacity futures,
-          self-spawning agents, portable reputation, cross-network bridging,
-          emergent protocol governance, and evolutionary optimization.
-          Thirteen additional Nostr event kinds (31910–31922).
-          Implemented and tested — deployment tracks the NVM relay launch.
-        </p>
-        <div className={styles.heroCtas}>
-          <a href="/evolution" className={styles.ctaSecondary}>evolution dashboard →</a>
-          <a href="/docs/advanced-systems" className={styles.ctaSecondary}>docs →</a>
-          <a href="/blog/nvm-advanced-systems" className={styles.ctaSecondary}>blog →</a>
-        </div>
-      </section>
-
-      <hr className={styles.divider} />
-
-      {/* ═══════════ SERVICE DATA (scroll to discover) ═══════════ */}
-      <SectionHead label="live service data" color="var(--text-dim)" />
-
-      <div className={styles.grid}>
-        {/* ── left column ── */}
-        <div>
-          {/* GATEWAY */}
-          <section className={styles.section} id="gateway">
-            <SectionHead label="llm gateway" color="var(--color-gateway)" />
-            {gateway ? (
-              <>
-                <div className={styles.stats}>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>keys</span>{" "}
-                    <span className={styles.v}>{gateway.keys.total}</span>
-                  </span>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>reqs</span>{" "}
-                    <span className={styles.v}>
-                      {fmtNum(gateway.keys.totalRequests)}
-                    </span>
-                  </span>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>base fee</span>{" "}
-                    <span className={styles.v}>{gateway.baseFee}</span>
-                  </span>
-                  {seed("gateway")}
-                </div>
-                <table className={styles.tbl}>
-                  <thead>
-                    <tr>
-                      <th>sink</th>
-                      <th>completions</th>
-                      <th>units</th>
-                      <th>price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {gateway.sinks
-                      .filter((s) => s.configured)
-                      .map((s) => (
-                        <tr key={s.name}>
-                          <td>{s.name}</td>
-                          <td>{fmtNum(s.completions ?? "0")}</td>
-                          <td>{s.units ?? "\u2014"}</td>
-                          <td>
-                            <AsciiBar
-                              value={Number(s.price ?? 0)}
-                              max={20}
-                              width={10}
-                              color="var(--color-gateway)"
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </>
-            ) : (
-              <p className={styles.wait}>connecting...</p>
-            )}
-          </section>
-
-          {/* RELAYS */}
-          <section className={styles.section} id="relays">
-            <SectionHead label="relay capacity" color="var(--color-relays)" />
-            {relays ? (
-              <>
-                <div className={styles.stats}>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>total</span>{" "}
-                    <span className={styles.v}>{relays.totalRelays}</span>
-                  </span>
-                  {seed("relays")}
-                </div>
-                <table className={styles.tbl}>
-                  <thead>
-                    <tr>
-                      <th>pubkey</th>
-                      <th>operator</th>
-                      <th>capacity</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {relays.relays.map((r) => (
-                      <tr key={r.pubkey}>
-                        <td className={styles.trunc}>{truncHex(r.pubkey)}</td>
-                        <td className={styles.trunc}>{truncHex(r.operator)}</td>
-                        <td>
-                          <AsciiBar
-                            value={Number(r.capacity)}
-                            max={1000}
-                            width={12}
-                            color="var(--color-relays)"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            ) : (
-              <p className={styles.wait}>connecting...</p>
-            )}
-          </section>
-        </div>
-
-        {/* ── right column ── */}
-        <div>
-          {/* LIGHTNING */}
-          <section className={styles.section} id="lightning">
-            <SectionHead label="lightning routing" color="var(--color-lightning)" />
-            {lightning ? (
-              <>
-                <div className={styles.stats}>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>nodes</span>{" "}
-                    <span className={styles.v}>{lightning.totalNodes}</span>
-                  </span>
-                  {seed("lightning")}
-                </div>
-                <table className={styles.tbl}>
-                  <thead>
-                    <tr>
-                      <th>pubkey</th>
-                      <th>capacity</th>
-                      <th>fee</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lightning.nodes.map((n) => (
-                      <tr key={n.pubkey}>
-                        <td className={styles.trunc}>{truncHex(n.pubkey)}</td>
-                        <td>{fmtNum(n.capacity)}</td>
-                        <td>{n.fee} sat</td>
-                        <td>
-                          <StatusDot
-                            color={n.active ? "var(--green)" : "var(--text-dim)"}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            ) : (
-              <p className={styles.wait}>connecting...</p>
-            )}
-          </section>
-
-          {/* AGENTS */}
-          <section className={styles.section} id="agents">
-            <SectionHead label="agent reputation" color="var(--color-agents)" />
-            {agents ? (
-              <>
-                <div className={styles.stats}>
-                  <span className={styles.kv}>
-                    <span className={styles.k}>registered</span>{" "}
-                    <span className={styles.v}>{agents.totalAgents}</span>
-                  </span>
-                  {seed("agents")}
-                </div>
-                <table className={styles.tbl}>
-                  <thead>
-                    <tr>
-                      <th>id</th>
-                      <th>reputation</th>
-                      <th>completions</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {agents.agents.map((a) => (
-                      <tr key={a.id}>
-                        <td className={styles.trunc}>{truncHex(a.id)}</td>
-                        <td>
-                          {a.reputation ? (
-                            <AsciiBar
-                              value={Number(a.reputation.score)}
-                              max={100}
-                              width={10}
-                              color="var(--color-agents)"
-                            />
-                          ) : (
-                            "\u2014"
-                          )}
-                        </td>
-                        <td>{a.reputation?.completions ?? "\u2014"}</td>
-                        <td>
-                          <StatusDot
-                            color={
-                              a.active ? "var(--green)" : "var(--text-dim)"
-                            }
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            ) : (
-              <p className={styles.wait}>connecting...</p>
-            )}
-          </section>
-        </div>
-      </div>
-
-      <hr className={styles.divider} />
-
-      {/* ═══════════ ECOSYSTEM ═══════════ */}
+      {/* ═══════════ FOOTER BRAND ═══════════ */}
       <footer className={styles.ecosystem}>
         <span>The Pura Protocol (MIT)</span>
         <span className={styles.ecosystemSep}>·</span>
@@ -760,3 +338,5 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
     </main>
   );
 }
+
+

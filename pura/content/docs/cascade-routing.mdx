@@ -1,0 +1,81 @@
+---
+title: "Cascade routing"
+order: 3
+description: Start cheap, escalate when needed. Cascade routing cuts LLM costs 40-60% on routine requests.
+---
+
+Cascade routing is an opt-in cost optimization mode in the Pura gateway. Instead of picking a single provider per request, the gateway starts with the cheapest available provider and escalates to a more capable (and expensive) model only when the response confidence is too low.
+
+## How it works
+
+1. Your request goes to the cheapest tier (Groq, Llama 3.3 70B, ~$0.0006/1K tokens)
+2. The gateway scores the response using 4 confidence signals
+3. If confidence >= threshold (default 0.7), the response ships
+4. If confidence is low, the request escalates to the next tier
+5. Escalation chain: Groq → Gemini → OpenAI → Anthropic
+
+Most requests (simple questions, formatting, summarization) resolve at depth 1 with the cheapest provider. Only genuinely hard prompts escalate to expensive models.
+
+## Enable cascade
+
+Add `routing.cascade: true` to your request body:
+
+```bash
+curl https://api.pura.xyz/v1/chat/completions \
+  -H "Authorization: Bearer pura_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{"role": "user", "content": "What is 2+2?"}],
+    "routing": {
+      "cascade": true,
+      "cascade_threshold": 0.7,
+      "cascade_max_depth": 3
+    }
+  }'
+```
+
+Parameters:
+- `cascade` (boolean) — enable cascade routing for this request
+- `cascade_threshold` (0.0-1.0, default 0.7) — minimum confidence to accept a response
+- `cascade_max_depth` (1-4, default 3) — maximum escalation steps
+
+## Confidence scoring
+
+The gateway scores each response across 4 dimensions:
+
+| Signal | Weight | What it measures |
+|--------|--------|-----------------|
+| Length ratio | 0.15 | Response length relative to prompt length |
+| Hedging | 0.25 | Presence of uncertainty language ("I think", "possibly", "it depends") |
+| Refusal | 0.30 | Refusal patterns ("I cannot", "I'm not able to", safety disclaimers) |
+| Completeness | 0.30 | Whether the response appears to fully address the prompt |
+
+Weighted sum produces a score from 0.0 to 1.0. Below the threshold, the gateway tries the next tier with the original prompt plus context about why the previous attempt was insufficient.
+
+## Response headers
+
+Cascade requests include these headers:
+
+| Header | Value |
+|--------|-------|
+| `X-Pura-Cascade-Depth` | Number of providers tried (1 = resolved on first attempt) |
+| `X-Pura-Cascade-Savings` | Cost saved vs. going straight to the final tier |
+| `X-Pura-Confidence` | Confidence score of the accepted response |
+
+Standard routing headers (`X-Pura-Model`, `X-Pura-Cost`, `X-Pura-Tier`) are also present.
+
+## Stats endpoints
+
+**Public:** `GET /api/cascade-stats` returns 24h aggregate statistics (total requests, escalation rate, average depth, total savings).
+
+**Authenticated:** `GET /api/savings` returns per-key savings breakdown with requests by depth and cost per tier.
+
+## Cost comparison
+
+| Request type | Standard routing | Cascade routing | Savings |
+|-------------|-----------------|----------------|---------|
+| Simple Q&A | OpenAI ($0.005/1K) | Groq ($0.0006/1K) | 88% |
+| Code generation | Anthropic ($0.003/1K) | Groq→OpenAI ($0.003/1K avg) | 0-40% |
+| Complex reasoning | Anthropic ($0.003/1K) | Full cascade ($0.003/1K) | ~0% |
+
+The savings depend on your traffic mix. If most of your requests are routine, cascade routing pays for itself immediately.

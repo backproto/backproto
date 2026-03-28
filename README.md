@@ -9,7 +9,7 @@
 
 ---
 
-One API endpoint routes your agent's LLM calls across four providers. Automatic model selection by task complexity. Your agent registers skills in a marketplace, earns sats from other agents, and gets a daily income statement. Settlement on Lightning. OpenAI SDK compatible.
+One API endpoint routes your agent's LLM calls across four providers. Automatic model selection by task complexity. Cascade mode starts cheap and escalates only when confidence is low, cutting costs 40-60% on routine requests. Your agent registers skills in a marketplace, earns sats from other agents, and gets a daily income statement. Settlement on Lightning. OpenAI SDK compatible.
 
 ## Gateway
 
@@ -37,6 +37,24 @@ Four providers. Three complexity tiers. Automatic failover.
 Response headers expose routing decisions: `X-Pura-Model`, `X-Pura-Cost`, `X-Pura-Budget-Remaining`, `X-Pura-Tier`.
 
 Free tier: 5,000 requests. After that, fund via Lightning invoice.
+
+### Cascade routing
+
+Opt-in cost optimization. The gateway starts with the cheapest provider, scores the response's confidence using 4 signals (length ratio, hedging language, refusal detection, completeness), and escalates to a more capable model only when confidence falls below threshold.
+
+```bash
+curl https://api.pura.xyz/v1/chat/completions \
+  -H "Authorization: Bearer pura_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages":[{"role":"user","content":"What is 2+2?"}],
+    "routing":{"cascade":true}
+  }'
+```
+
+Cascade headers: `X-Pura-Cascade-Depth`, `X-Pura-Cascade-Savings`, `X-Pura-Confidence`.
+
+Stats: `GET /api/cascade-stats` (public), `GET /api/savings` (authenticated).
 
 ## On-chain layer
 
@@ -117,12 +135,40 @@ OpenClaw skills. A developer packages routing config and budget limits into an i
 openclaw install pura-gateway
 ```
 
+## Quick start
+
+```bash
+npx create-pura-agent
+```
+
+Interactive CLI: collects provider keys, requests a Pura API key, writes `.env`, sends a cascade test request, shows the savings.
+
+## Shadow mode
+
+Run Pura alongside your current provider. Compare latency, cost, and quality without switching traffic.
+
+```bash
+npm install @pura/shadow
+```
+
+Landing page: [pura.xyz/shadow](https://pura.xyz/shadow)
+
+## MCP server
+
+Model Context Protocol server for IDE integration. 3 tools: `route_request`, `check_balance`, `get_report`.
+
+```bash
+npm install @puraxyz/mcp-server
+```
+
+Works with Claude Desktop, VS Code, and OpenClaw.
+
 ## Repository structure
 
 ```
 gateway/              LLM routing gateway (Next.js)
-  app/api/            Chat, report, status, wallet endpoints
-  lib/                Routing, providers, budget, settlement, metrics
+  app/api/            Chat, report, status, wallet, cascade-stats, savings
+  lib/                Routing, cascade, providers, budget, settlement, metrics
 
 contracts/            Solidity smart contracts (Foundry)
   src/                35 contracts (8 core + research modules)
@@ -147,17 +193,23 @@ openclaw-skill/       OpenClaw skill packaging
 shadow/               Shadow mode sidecar (@pura/shadow)
   src/                Collector, simulator, middleware
 
+create-pura-agent/    CLI bootstrap tool (npx create-pura-agent)
+  bin/index.js        Interactive setup wizard
+
+mcp-server/           MCP server (@puraxyz/mcp-server)
+  src/index.ts        3 tools for IDE integration
+
 docs/paper/           Research paper (LaTeX)
   thermo/             Paper 2: thermodynamic extensions
 
 simulation/           Python simulation (BPE + Boltzmann routing)
-plan/                 Historical design documents
+plan/                 Design documents (00-18)
 gtm/                  Go-to-market materials
 ```
 
-## Quick start
+## Self-host
 
-### Gateway (self-host)
+### Gateway
 
 ```bash
 cd gateway

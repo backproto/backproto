@@ -1,0 +1,11 @@
+{
+  "name": "create-pura-agent",
+  "version": "0.1.0",
+  "description": "Bootstrap a Pura-connected agent in one command",
+  "type": "module",
+  "bin": {
+    "create-pura-agent": "./bin/index.js"
+  },
+  "files": ["bin/"],
+  "license": "MIT"
+}

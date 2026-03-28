@@ -20,6 +20,7 @@ export async function streamGemini(
       messages,
       stream: true,
     }),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!res.ok) {

@@ -1,84 +1,74 @@
 # Outreach DM templates
 
-All DMs first person singular. Short. Specific. No pitch deck language.
+All DMs first person singular. Short. Specific. No pitch deck language. Lead with OpenClaw ecosystem angle.
 
 ---
 
-## AI agent builders (primary target)
+## OpenClaw builders (primary target — skill devs, contributors, startups)
 
-Subject: your agent can get a job now
+Subject: cut your openclaw agent's llm costs
 
-Hey, I saw your work on [specific project/post]. I built something your agent might want.
+Hey, I saw your work on [specific skill/project/PR]. I built an OpenClaw skill that routes your agent's LLM calls across four providers and picks the cheapest model that can handle each request.
 
-Pura is a gateway that routes LLM calls across four providers and picks the best model for each request. But the interesting part: your agent can register skills in a marketplace and earn sats by doing work for other agents. It gets a daily income statement showing costs, earnings, and net income.
+Simple tasks go to Groq at $0.00059/1K tokens instead of GPT-4o at $0.005. If the cheap answer is weak, it automatically escalates. In practice, 70-80% of requests resolve at the cheapest tier.
 
-OpenAI SDK compatible. One URL change. Free tier is 5,000 requests.
+Free for 5,000 requests. One env var change (swap your base URL). Would you try it and tell me what breaks?
 
-Would 15 minutes be useful? I can show you the routing and the income statement.
+pura.xyz/compare
+
+---
+
+## OpenClaw startup founders (revenue-generating, have real LLM costs)
+
+Subject: saving money on llm calls
+
+Hey, saw [company name / product]. Looks like you're running on OpenClaw.
+
+I built a routing layer that sits between your agent and LLM providers. It scores each request's complexity and sends simple ones to Groq ($0.00059/1K) instead of GPT-4o ($0.005). Cascade routing: if the cheap answer is bad, it retries on a better model automatically. In practice, 40-60% savings on total LLM spend.
+
+I can run your last 1,000 requests through the complexity scorer and show you exactly how much you'd save. Takes about 15 minutes. No commitment.
 
 pura.xyz
 
 ---
 
-## AI framework developers (LangChain, CrewAI, AutoGen contributors)
+## OpenClaw GitHub contributors (top committers)
 
-Subject: agents that earn their own operating costs
+Subject: openclaw cost optimization skill
 
-Hey, I have been following your contributions to [framework]. I built a gateway that does two things your framework users probably want.
+Hey, I noticed your contributions to OpenClaw — [specific PR or area]. I built a skill that handles multi-provider LLM routing.
 
-First, it routes to the best-fit model per request based on complexity scoring. GPT-4o for hard problems, Groq for simple ones. Automatic.
+When installed, the agent routes simple tasks to Groq and complex ones to Anthropic/OpenAI. Cascade routing retries on a better model if the cheap answer falls short. Per-request cost headers so the agent tracks spend.
 
-Second, agents can register skills and earn sats from other agents through a marketplace. The goal: an agent that covers its own inference costs from marketplace revenue. We ran this with our own agent (Pura-1) and it generates a real income statement daily.
+I'm looking for feedback on the integration. Free tier is 5,000 requests. Would 15 minutes be useful?
 
-OpenAI SDK compatible. Works with any framework that supports custom base URLs.
-
-pura.xyz/docs/getting-started-gateway
+pura.xyz/compare
 
 ---
 
-## OpenClaw skill developers
+## AI agent builders (LangChain, CrewAI, AutoGen — secondary)
 
-Subject: ship LLM routing + earning with your skill
+Subject: your agent is probably overpaying for simple tasks
 
-Hey, I saw your OpenClaw skill [specific skill]. I built a gateway that OpenClaw skills can bundle.
+Hey, I saw your work on [specific project/post]. Built something that might save you money.
 
-When someone installs your skill, their agent routes LLM calls through the best-fit provider automatically. It also gets access to a marketplace where it can register skills and earn sats from other agents. Budget alerts and income statements are built into the skill config.
+Pura is a gateway that routes LLM calls across four providers. It scores each request's complexity and sends simple ones to models that cost 10x less. If the cheap model's response is weak, it automatically retries on a premium model. OpenAI SDK compatible — one URL change.
 
-The gateway handles GPT-4o, Claude Sonnet, Llama 3.3 on Groq, and Gemini.
-
-Would a 15-minute walkthrough be useful?
+Free for 5,000 requests. Would you try it and tell me what breaks?
 
 pura.xyz
 
 ---
 
-## Base / onchain AI builders
+## LLM infrastructure builders (LiteLLM, cost tracking tools — secondary)
 
-Subject: LLM gateway with on-chain settlement on Base
+Subject: cascade routing integration
 
-Hey, I shipped an LLM routing gateway backed by 35 contracts on Base. The gateway routes inference across four providers, scores complexity to pick the best-fit model, and settles per-request on Lightning.
+Hey, I have been following [project]. I built a gateway that does automatic model selection with cascade routing — tries the cheapest model first, escalates only if the response quality is low (short answer, hedging language, refusals).
 
-Core contracts handle capacity registration, completion verification, and backpressure routing. 319 passing tests. TypeScript SDK with 23 action modules.
+The quality scoring and cascade logic might be useful as a feature in [their project]. Four confidence signals: length ratio, hedging detection, refusal detection, completeness check.
 
-Free tier is 5,000 requests. The gateway is live at api.pura.xyz.
-
-Would you be up for 15 minutes? I can walk through the architecture.
-
-Router contract: 0x8e999a246afea241cf3c1d400dd7786cf591fa88
-
----
-
-## Lightning builders
-
-Subject: per-request LLM settlement on Lightning
-
-Hey, I built an LLM gateway that settles per-request on Lightning via LNbits. No subscriptions, no prepaid credits. Your agent pays exactly what it uses.
-
-The gateway routes across OpenAI, Anthropic, Groq, and Gemini. Cost per request ranges from $0.0003 (simple prompts on Groq) to $0.02 (long-context Claude). Each response includes X-Pura-Cost and X-Pura-Budget-Remaining headers so the agent can track spend.
-
-Funding is via LNURL. Minimum useful deposit is about 1,000 sats.
-
-Would a quick walkthrough be useful?
+Interested in chatting about how this could integrate? All MIT-licensed.
 
 pura.xyz
 
@@ -90,7 +80,7 @@ Subject: Re: [original subject]
 
 Hey, circling back. No pressure.
 
-Quick version: Pura is an LLM gateway. Four providers. Routes by cost and complexity. Settles on Lightning. OpenAI SDK compatible. Free tier is 5,000 requests.
+Quick version: Pura is an OpenClaw skill that routes LLM calls across four providers. Picks the cheapest model per request. Cascade routing retries if the cheap answer is weak. Free tier is 5,000 requests.
 
 15-minute walkthrough is open if you are curious.
 

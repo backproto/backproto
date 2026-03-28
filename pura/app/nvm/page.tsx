@@ -63,7 +63,7 @@ export default function NvmDashboard() {
   const [connected, setConnected] = useState(false);
   const [agents, setAgents] = useState<Map<string, AgentRow>>(new Map());
   const [feed, setFeed] = useState<Array<{ ts: number; label: string; detail: string }>>([]);
-  const [relayUrl, setRelayUrl] = useState("ws://localhost:7777");
+  const [relayUrl, setRelayUrl] = useState("");
   const [eventCount, setEventCount] = useState(0);
   const esRef = useRef<EventSource | null>(null);
 
@@ -162,15 +162,20 @@ export default function NvmDashboard() {
   return (
     <main style={{ maxWidth: 960, margin: "0 auto", padding: "2rem 1rem", fontFamily: "var(--font-inter, sans-serif)" }}>
       <h1 style={{ fontSize: "1.5rem", fontWeight: 600, marginBottom: "0.5rem" }}>NVM dashboard</h1>
-      <p style={{ color: "#666", marginBottom: "1.5rem", fontSize: "0.875rem" }}>
+      <p style={{ color: "#666", marginBottom: "1rem", fontSize: "0.875rem" }}>
         Live view of agent capacity, job routing, and quality scores on the Nostr Virtual Machine.
       </p>
+
+      <div style={{ background: "#1a1a1a", border: "1px solid #d97706", borderRadius: 4, padding: "0.75rem 1rem", marginBottom: "1.5rem", fontFamily: "monospace", fontSize: "0.8rem", color: "#d97706" }}>
+        The NVM relay launches Q3 2026. Connect a local strfry instance below to test.
+      </div>
 
       {/* connection bar */}
       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1.5rem" }}>
         <input
           type="text"
           value={relayUrl}
+          placeholder="ws://your-relay:7777"
           onChange={(e) => setRelayUrl(e.target.value)}
           style={{
             flex: 1,

@@ -9,19 +9,8 @@ import styles from "./Nav.module.css";
 const NAV_LINKS = [
   { href: "/", label: "home" },
   { href: "/gateway", label: "gateway" },
-  { href: "/nvm", label: "relay" },
-  { href: "/explainer", label: "how it works" },
-  { href: "/pricing", label: "pricing" },
   { href: "/docs", label: "docs" },
   { href: "/blog", label: "blog" },
-];
-
-const START_LINKS = [
-  { href: "/docs/getting-started", label: "agents" },
-  { href: "/docs/getting-started-gateway", label: "gateway" },
-  { href: "/docs/getting-started-openclaw", label: "openclaw" },
-  { href: "/docs/getting-started-lightning", label: "lightning" },
-  { href: "/docs/getting-started-relay", label: "relays" },
 ];
 
 export function Nav() {
@@ -47,6 +36,9 @@ export function Nav() {
               {label}
             </Link>
           ))}
+          <Link href="/docs/getting-started-gateway" className={styles.getStarted}>
+            get started
+          </Link>
           <a
             href="https://github.com/puraxyz/puraxyz"
             target="_blank"
@@ -90,23 +82,6 @@ export function Nav() {
         </div>
       )}
 
-      <div className={styles.subnav}>
-        <div className={styles.subnavInner}>
-          <span className={styles.subnavLabel}>get started</span>
-          <div className={styles.subnavLinks}>
-            {START_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={styles.subnavLink}
-                data-active={pathname === href}
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
     </nav>
   );
 }

@@ -72,10 +72,14 @@ export default function MonitorEconomyPage() {
         ))}
       </div>
 
+      <div style={{ background: "var(--surface, #1a1a1a)", border: "1px solid var(--amber, #d97706)", borderRadius: 4, padding: "0.75rem 1rem", marginBottom: "1rem", fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "var(--amber, #d97706)" }}>
+        The agent economy launches with the NVM relay. Data below is simulated.
+      </div>
+
       <div className={s.sourceNote}>
         <span className={s.sourceLabel}>data source</span>
-        <span className={s.sourceValue}>live gateway API</span>
-        <span className={s.sourceCopy}>Pulled from `api.pura.xyz/api/economy` on a 10 second poll.</span>
+        <span className={s.sourceValue}>simulated</span>
+        <span className={s.sourceCopy}>Agent economy data will populate when the NVM relay is deployed.</span>
       </div>
 
       {error && <p style={{ color: "var(--red)", fontFamily: "var(--font-mono)", fontSize: "0.8rem" }}>{error}</p>}

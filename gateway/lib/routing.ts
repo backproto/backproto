@@ -28,6 +28,12 @@ export interface RoutingHints {
   maxCost?: number;
   maxLatency?: number;
   excludeProviders?: string[];
+  /** Enable cascade mode — staged escalation through tiers */
+  cascade?: boolean;
+  /** Confidence threshold for cascade acceptance (0–1, default 0.7) */
+  cascade_threshold?: number;
+  /** Maximum cascade depth (1–3, default 3) */
+  cascade_max_depth?: number;
 }
 
 /** Provider addresses in the pool (set during setup) */
@@ -252,4 +258,14 @@ export function getFallbackProvider(failed: Provider): Provider {
   const available = getProviderConfigs();
   const alt = available.find((c) => c.name !== failed);
   return alt?.name ?? "openai";
+}
+
+/**
+ * Return an ordered list of providers for cascade routing: cheapest → most expensive.
+ * Only includes providers that are actually configured.
+ */
+export function selectCascadeProviders(): Provider[] {
+  const available = new Set(getProviderConfigs().map((c) => c.name));
+  const order: Provider[] = ["groq", "gemini", "openai", "anthropic"];
+  return order.filter((p) => available.has(p));
 }

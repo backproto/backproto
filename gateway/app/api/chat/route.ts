@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/auth";
 import { incrementRequests } from "@/lib/keys";
-import { selectProvider, getFallbackProvider } from "@/lib/routing";
+import { selectProvider, getFallbackProvider, selectCascadeProviders } from "@/lib/routing";
 import type { RoutingHints } from "@/lib/routing";
 import { streamChat } from "@/lib/stream";
 import { collectAnthropicResponse } from "@/lib/providers/anthropic";
@@ -10,27 +10,41 @@ import { maybeRebalance } from "@/lib/rebalance";
 import { checkRateLimitAsync } from "@/lib/ratelimit";
 import { estimateTokens } from "@/lib/tokens";
 import { log } from "@/lib/log";
-import { checkBudget, recordSpend, estimateCostUsd, estimateCostSats } from "@/lib/budget";
+import { checkBudget, recordSpend, estimateCostUsd, estimateCostSats, releaseReserve } from "@/lib/budget";
 import { recordRequest } from "@/lib/metrics";
 import { buildInvoiceLinks } from "@/lib/invoice-links";
 import type { ChatMessage, Provider } from "@/lib/providers";
 import { createHash } from "crypto";
 import { getOrInitSettlement } from "@/lib/settlement";
 import { storePendingInvoice } from "@/lib/invoices";
+import { scoreConfidence, buildEscalationPrompt, DEFAULT_CASCADE_THRESHOLD, DEFAULT_CASCADE_MAX_DEPTH } from "@/lib/cascade";
+import { recordCascade } from "@/lib/cascade-metrics";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Provider-Key",
-  "Access-Control-Expose-Headers":
-    "X-Pura-Provider, X-Pura-Capacity, X-Pura-Request-Id, X-Pura-Model, X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Routed, X-Pura-Tier, X-Pura-Quality, X-Pura-Explored, X-Pura-Experimental, X-RateLimit-Remaining",
-};
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "https://pura.xyz,https://api.pura.xyz").split(",").map((s) => s.trim());
 
-export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
+function corsOrigin(request: Request): string {
+  const origin = request.headers.get("origin") ?? "";
+  if (ALLOWED_ORIGINS.includes(origin)) return origin;
+  // Allow any origin in development
+  if (process.env.NODE_ENV === "development") return origin || "*";
+  return ALLOWED_ORIGINS[0];
+}
+
+function buildCorsHeaders(request: Request) {
+  return {
+    "Access-Control-Allow-Origin": corsOrigin(request),
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Provider-Key",
+    "Access-Control-Expose-Headers":
+      "X-Pura-Provider, X-Pura-Capacity, X-Pura-Request-Id, X-Pura-Model, X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Routed, X-Pura-Tier, X-Pura-Quality, X-Pura-Explored, X-Pura-Experimental, X-Pura-Cascade-Depth, X-Pura-Cascade-Savings, X-Pura-Confidence, X-RateLimit-Remaining",
+  };
+}
+
+export async function OPTIONS(request: Request) {
+  return new Response(null, { status: 204, headers: buildCorsHeaders(request) });
 }
 
 async function createFundingInvoice(origin: string, keyHash: string, amountSats = 10_000) {
@@ -92,6 +106,7 @@ function withUsageFinalizer(
         }
         if (value) controller.enqueue(value);
       } catch (error) {
+        await runFinalize();
         controller.error(error);
       }
     },
@@ -102,7 +117,38 @@ function withUsageFinalizer(
   });
 }
 
+/**
+ * Collect full text content from an SSE stream (OpenAI format).
+ * Returns the assembled completion text.
+ */
+async function collectStreamContent(stream: ReadableStream<Uint8Array>): Promise<string> {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let content = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const text = decoder.decode(value, { stream: true });
+    for (const line of text.split("\n")) {
+      if (!line.startsWith("data: ")) continue;
+      const payload = line.slice(6).trim();
+      if (payload === "[DONE]") return content;
+      try {
+        const chunk = JSON.parse(payload);
+        const delta = chunk.choices?.[0]?.delta?.content;
+        if (delta) content += delta;
+      } catch {
+        // skip malformed chunks
+      }
+    }
+  }
+
+  return content;
+}
+
 export async function POST(request: Request) {
+  const CORS_HEADERS = buildCorsHeaders(request);
   const requestId = crypto.randomUUID();
   const startMs = Date.now();
   const origin = new URL(request.url).origin;
@@ -152,7 +198,12 @@ export async function POST(request: Request) {
   }
 
   // --- Parse body ---
-  let body: { messages?: ChatMessage[]; model?: string; stream?: boolean; routing?: RoutingHints };
+  let body: {
+    messages?: ChatMessage[];
+    model?: string;
+    stream?: boolean;
+    routing?: RoutingHints;
+  };
   try {
     body = await request.json();
   } catch {
@@ -243,8 +294,8 @@ export async function POST(request: Request) {
     }
   }
 
-  // --- Budget check ---
-  const budgetCheck = await checkBudget(keyHash);
+  // --- Budget check (optimistic reserve to prevent concurrent bypass) ---
+  const budgetCheck = await checkBudget(keyHash, estCost);
   if (!budgetCheck.allowed) {
     return NextResponse.json(
       {
@@ -267,7 +318,182 @@ export async function POST(request: Request) {
   // --- BYOK: optional provider key pass-through ---
   const providerKey = request.headers.get("x-provider-key") ?? undefined;
 
-  // --- Stream ---
+  // --- Cascade mode ---
+  if (body.routing?.cascade) {
+    const cascadeStart = Date.now();
+    const threshold = body.routing.cascade_threshold ?? DEFAULT_CASCADE_THRESHOLD;
+    const maxDepth = Math.min(body.routing.cascade_max_depth ?? DEFAULT_CASCADE_MAX_DEPTH, 3);
+    const cascadeProviders = selectCascadeProviders();
+
+    if (cascadeProviders.length === 0) {
+      return NextResponse.json(
+        { error: { message: "No providers configured for cascade" } },
+        { status: 503, headers: CORS_HEADERS },
+      );
+    }
+
+    let currentMessages = messages;
+    let finalContent = "";
+    let finalProvider: Provider = cascadeProviders[0];
+    let cascadeDepth = 0;
+    let totalCascadeCostUsd = 0;
+    const providersUsed: Provider[] = [];
+    const confidenceScores: number[] = [];
+
+    // Cost cap: cascade should never exceed what direct-to-premium would cost
+    const premiumProvider = cascadeProviders[cascadeProviders.length - 1];
+    const baseTokens = estimateTokens(messages.map((m) => m.content).join(" ")) * 2;
+    const cascadeCostCap = estimateCostUsd(premiumProvider, baseTokens);
+
+    for (let i = 0; i < Math.min(maxDepth, cascadeProviders.length); i++) {
+      // Abort if accumulated cost already exceeds direct-premium cost
+      if (i > 0 && totalCascadeCostUsd >= cascadeCostCap) {
+        log.info("cascade.cost_cap_hit", { requestId, totalCascadeCostUsd, cascadeCostCap });
+        break;
+      }
+      const tierProvider = cascadeProviders[i];
+      cascadeDepth = i + 1;
+      providersUsed.push(tierProvider);
+
+      try {
+        let content: string;
+        if (tierProvider === "anthropic") {
+          try {
+            content = await collectAnthropicResponse(currentMessages, body.model, providerKey);
+          } catch {
+            const s = await streamChat(tierProvider, currentMessages, body.model, providerKey);
+            content = await collectStreamContent(s);
+          }
+        } else {
+          const s = await streamChat(tierProvider, currentMessages, body.model, providerKey);
+          content = await collectStreamContent(s);
+        }
+
+        const tierTokens = estimateTokens(currentMessages.map((m) => m.content).join(" ")) +
+          estimateTokens(content);
+        totalCascadeCostUsd += estimateCostUsd(tierProvider, tierTokens);
+
+        const { score } = scoreConfidence(messages, content);
+        confidenceScores.push(score);
+
+        finalContent = content;
+        finalProvider = tierProvider;
+
+        log.info("cascade.tier_result", {
+          requestId,
+          tier: cascadeDepth,
+          provider: tierProvider,
+          confidence: score.toFixed(3),
+          threshold,
+          contentLength: content.length,
+        });
+
+        if (score >= threshold || i === Math.min(maxDepth, cascadeProviders.length) - 1) {
+          break;
+        }
+
+        // Build escalation prompt for next tier
+        currentMessages = buildEscalationPrompt(messages, content);
+      } catch (e) {
+        log.warn("cascade.tier_failed", {
+          requestId,
+          tier: cascadeDepth,
+          provider: tierProvider,
+          error: (e as Error).message,
+        });
+        // Continue to next tier on failure
+        continue;
+      }
+    }
+
+    // Cost if sent directly to premium (already computed above as cascadeCostCap)
+    const costIfDirectUsd = cascadeCostCap;
+    const savingsUsd = Math.max(0, costIfDirectUsd - totalCascadeCostUsd);
+    const savingsPct = costIfDirectUsd > 0 ? (savingsUsd / costIfDirectUsd) * 100 : 0;
+
+    // Record cascade metrics
+    recordCascade({
+      timestamp: Date.now(),
+      requestId,
+      cascadeDepth,
+      providersUsed,
+      finalProvider,
+      costUsd: totalCascadeCostUsd,
+      costIfDirectUsd,
+      confidenceScores,
+      latencyMs: Date.now() - cascadeStart,
+    });
+
+    // Finalize usage
+    const cascadeTotalTokens = Math.ceil(totalCascadeCostUsd / (estimateCostUsd(finalProvider, 1000) / 1000));
+    await recordSpend(keyHash, finalProvider, cascadeTotalTokens);
+    if (paidTier && settlement) {
+      const debitSats = Math.max(1, Math.ceil(totalCascadeCostUsd * 2500));
+      await settlement.deductBalance(keyHash, debitSats);
+    }
+
+    incrementRequests(raw);
+    recordCompletionEpoch(finalProvider).catch(() => {});
+    maybeRebalance().catch(() => {});
+
+    const cascadeLatencyMs = Date.now() - startMs;
+    recordRequest(finalProvider, cascadeLatencyMs, true);
+
+    const cascadeHeaders: Record<string, string> = {
+      ...CORS_HEADERS,
+      "X-Pura-Provider": finalProvider,
+      "X-Pura-Model": body.model ?? finalProvider,
+      "X-Pura-Cost": totalCascadeCostUsd.toFixed(6),
+      "X-Pura-Budget-Remaining": budgetCheck.remainingUsd.toFixed(4),
+      "X-Pura-Routed": tier,
+      "X-Pura-Tier": tier,
+      "X-Pura-Request-Id": requestId,
+      "X-Pura-Cascade-Depth": String(cascadeDepth),
+      "X-Pura-Cascade-Savings": `${savingsPct.toFixed(1)}%`,
+      "X-Pura-Confidence": confidenceScores[confidenceScores.length - 1]?.toFixed(3) ?? "0",
+      "X-RateLimit-Remaining": String(rl.remaining),
+    };
+
+    log.info("cascade.complete", {
+      requestId,
+      depth: cascadeDepth,
+      finalProvider,
+      totalCostUsd: totalCascadeCostUsd.toFixed(6),
+      savingsPct: savingsPct.toFixed(1),
+      latencyMs: cascadeLatencyMs,
+    });
+
+    return NextResponse.json(
+      {
+        id: `chatcmpl-${Date.now()}`,
+        object: "chat.completion",
+        created: Math.floor(Date.now() / 1000),
+        model: body.model ?? finalProvider,
+        choices: [
+          {
+            index: 0,
+            message: { role: "assistant", content: finalContent },
+            finish_reason: "stop",
+          },
+        ],
+        usage: {
+          prompt_tokens: estimateTokens(messages.map((m) => m.content).join(" ")),
+          completion_tokens: estimateTokens(finalContent),
+          total_tokens: estimateTokens(messages.map((m) => m.content).join(" ")) + estimateTokens(finalContent),
+        },
+        cascade: {
+          depth: cascadeDepth,
+          providers_used: providersUsed,
+          confidence_scores: confidenceScores.map((s) => Number(s.toFixed(3))),
+          savings_pct: Number(savingsPct.toFixed(1)),
+          cost_usd: Number(totalCascadeCostUsd.toFixed(6)),
+        },
+      },
+      { headers: cascadeHeaders },
+    );
+  }
+
+  // --- Stream (non-cascade) ---
   const wantStream = body.stream !== false; // default true
   let stream: ReadableStream<Uint8Array>;
 

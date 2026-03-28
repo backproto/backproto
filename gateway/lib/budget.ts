@@ -105,17 +105,44 @@ export interface BudgetCheck {
 
 /**
  * Check if a key has remaining budget for today.
+ * Optimistically reserves estimatedCostUsd to prevent concurrent requests
+ * from bypassing the budget. Call releaseReserve() if the request fails
+ * before reaching recordSpend().
  */
-export async function checkBudget(keyHash: string): Promise<BudgetCheck> {
+export async function checkBudget(
+  keyHash: string,
+  estimatedCostUsd = 0,
+): Promise<BudgetCheck> {
   const cap = Number(process.env.PURA_DAILY_CAP_USD ?? DEFAULT_DAILY_CAP_USD);
   const budget = await loadBudget(keyHash);
   const remaining = Math.max(0, cap - budget.spentUsd);
+  if (remaining <= 0) {
+    return { allowed: false, spentUsd: budget.spentUsd, remainingUsd: 0, capUsd: cap };
+  }
+  // Optimistic reserve: deduct now to block concurrent requests
+  if (estimatedCostUsd > 0) {
+    budget.spentUsd += estimatedCostUsd;
+    await saveBudget(keyHash, budget);
+  }
   return {
-    allowed: remaining > 0,
+    allowed: true,
     spentUsd: budget.spentUsd,
-    remainingUsd: remaining,
+    remainingUsd: Math.max(0, cap - budget.spentUsd),
     capUsd: cap,
   };
+}
+
+/**
+ * Release a previously reserved amount (e.g. when the request fails before completion).
+ */
+export async function releaseReserve(
+  keyHash: string,
+  reservedUsd: number,
+): Promise<void> {
+  if (reservedUsd <= 0) return;
+  const budget = await loadBudget(keyHash);
+  budget.spentUsd = Math.max(0, budget.spentUsd - reservedUsd);
+  await saveBudget(keyHash, budget);
 }
 
 /**

@@ -20,11 +20,12 @@ export async function streamOpenAI(
       messages,
       stream: true,
     }),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`OpenAI ${res.status}: ${body}`);
+    await res.text().catch(() => {});
+    throw new Error(`OpenAI returned ${res.status}`);
   }
 
   return res.body!;

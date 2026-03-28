@@ -56,14 +56,32 @@ If you don't use the skill scripts, point your agent's LLM client at Pura:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.pura.xyz/api",
+    base_url="https://api.pura.xyz/v1",
     api_key=os.environ["PURA_API_KEY"]
 )
 ```
 
+## Verify it works
+
+Run the verification script to confirm end-to-end connectivity:
+
+```bash
+bash ~/.openclaw/workspace/skills/pura/scripts/verify.sh
+```
+
+This generates a key (if you don't have one), sends a real inference request, and prints the response with the model that handled it.
+
+## That's it for basic usage
+
+Your agent is routing LLM calls through Pura. Costs are tracked per-request, and you can pull reports anytime with `report.sh`.
+
+Everything below is optional — on-chain reputation for agents that need verifiable execution history.
+
+---
+
 ## On-chain reputation (advanced)
 
-The rest of this guide covers registering agents on-chain, verifying executions, and building reputation scores.
+This section covers registering agents on-chain, verifying executions, and building reputation scores. Requires the `@puraxyz/sdk` package (not yet published to npm — contact us for early access).
 
 ## Install the SDK
 

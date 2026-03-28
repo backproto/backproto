@@ -1,14 +1,12 @@
 ---
-title: Why streaming payments need backpressure
-date: "2026-03-01"
+title: "The $200 overnight API bill problem (and how to fix it)"
+date: "2026-03-13"
 description: Streaming payments are a UX improvement. Backpressure routing is a mechanism design improvement. They need each other.
 ---
 
-Streaming payments are one of the better ideas to come out of DeFi. Instead of lump-sum transfers, money flows continuously from sender to receiver. The amount accrues per second. Either party can stop the stream at any time.
+You set up a Superfluid stream to pay an LLM provider. Fixed rate, runs 24/7. Friday night the provider goes down. The stream keeps paying. By Monday you've burned $200 on a service that returned nothing for 60 hours.
 
-Superfluid built the infrastructure for this. Their protocol handles the accounting, the flow rate management, the token wrapping. It works. Agents, DAOs, and payroll systems use it today.
-
-But streaming payments have a structural gap that shows up the moment you try to use them for work allocation.
+Streaming payments work. They just have no feedback loop. Pura adds one.
 
 ## The gap
 

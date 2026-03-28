@@ -1,46 +1,104 @@
-# Next steps: ship to mainnet
+# Next steps
 
 ## Where things stand
 
-The codebase has 35 contracts (319 tests), a streaming LLM gateway with four providers (OpenAI, Anthropic, Groq, Gemini), an SDK with 23 action modules, and a full documentation site. Everything compiles and passes. What's left is operational: deploy, verify, publish, and push the word out.
+The gateway runs at api.pura.xyz with four providers (OpenAI, Anthropic, Groq, Gemini) and cascade routing for cost optimization. The site is at pura.xyz. Contracts (35, 319 tests) compile and pass. NVM base (31900-31905) and advanced systems (31910-31922) are implemented with 87 tests. Shadow sidecar, CLI bootstrap, MCP server, and operator playbook are all in the repo.
 
-### What's done (code)
+### What shipped in this cycle
 
-- `contracts/script/DeployMainnet.s.sol` — deploys 12 contracts (core 8 + demurrage 2 + relay 2) to Base mainnet using real USDC
-- Gateway hardened: Upstash KV key storage (JSON fallback for local dev), Redis-backed rate limiting, Groq as third provider, token estimation, structured JSON logging
-- SDK relay actions exported, reference integration script at `sdk/scripts/relay-register.ts`
-- Grant applications updated with current numbers (35 contracts, 319 tests, 23 modules)
-- NVM advanced systems: 7 economic systems (credit, futures, spawning, reputation, bridging, protocol negotiation, genome), 13 new event kinds (31910-31922), all with typed interfaces and builder functions
-- 82 NVM tests passing across 10 test files (unit tests against mock Nostr events)
-- Credit graph and reputation publisher wired into AgentRelay and RoutingService
-- Evolution dashboard at `/evolution` (force-directed phylogeny visualization)
-- 16 blog posts, full docs site, products page, getting-started guides
+- Cascade routing engine (opt-in, staged escalation: groq → gemini → openai → anthropic, confidence heuristic with 4 signals)
+- Homepage rewrite (15 sections down to 5: hero, proof/income, how-it-works, comparison, go-deeper)
+- Nav cleanup (7 links to 4, subnav removed)
+- Shadow mode landing page at `/shadow`
+- 17 blog posts with consecutive dates (Mar 12-28), 7 rewritten
+- `create-pura-agent` CLI bootstrap tool
+- `@puraxyz/mcp-server` with 3 tools (route_request, check_balance, get_report)
+- `OPERATOR-PLAYBOOK.md` (Pura-1 directive)
+- 4 new NVM spec documents (kinds 31930-31935): artifact royalty graphs, specification bonds, dead letter vaults, blend gradient scoring
+- Protocol design constraints document (Lightning liquidity, blend-diversity tension, correlation verification, hitchhiker bids)
+- Cascade stats endpoint (`/api/cascade-stats`), savings endpoint (`/api/savings`)
+- Monitor pages tagged with launch banners
 
-### What's left (operations)
+### What's left
 
-Everything below requires manual steps: wallet funding, Vercel deploys, form submissions, content publishing. Ordered by dependency chain.
+Ordered by priority. Operational steps that need manual intervention are marked.
 
 ---
 
-## 0. Verify public content (pre-commit gate)
+## 1. Verify builds
 
-Before committing, confirm that all public-facing pages are consistent with the source of truth in `nvm/src/events/kinds.ts`:
+Run `tsc --noEmit` and `next build` for gateway and pura. Run `vitest` for nvm. All must pass before committing.
 
-- Event kind numbers match across README, blog, docs, NVM dashboard, and plan documents
-- Base NVM table (31900–31905) labels are correct: capacity, completion receipt, quality score, job assignment, pipeline spec, pipeline state
-- Advanced systems table (31910–31922) assigns each kind to the correct system
-- Status markers distinguish "live" (gateway), "implemented" (NVM + advanced systems), and "stubbed" (network-level operations like bridge forwarding, futures settlement)
-- No claims that imply production deployment of NVM relay or advanced systems
+```bash
+cd gateway && npx tsc --noEmit && npx next build
+cd ../pura && npx tsc --noEmit && npx next build
+cd ../nvm && npx vitest run
+```
 
-Run `npx tsc --noEmit` in nvm, pura, and gateway. Run `npx vitest run` in nvm (82 tests). All must pass.
+## 2. Commit and tag
 
-## 1. Commit and tag
+Push all unstaged changes. Tag `v0.2.0-cascade`.
 
-Push all unstaged changes as a single commit. Tag `v0.1.0-pre-mainnet`.
+## 3. Deploy gateway update
 
-## 2. Deploy contracts to Base mainnet
+Gateway is already live at api.pura.xyz on Vercel. Push to main triggers auto-deploy. After deploy:
 
-Fund deployer wallet with ~0.05 ETH on Base. Then:
+- Verify `curl https://api.pura.xyz/api/health`
+- Verify `curl https://api.pura.xyz/api/cascade-stats` returns valid JSON
+- Send a cascade request: `routing.cascade: true` in the request body
+- Check response headers for `X-Pura-Cascade-Depth`, `X-Pura-Cascade-Savings`, `X-Pura-Confidence`
+
+## 4. Deploy site update
+
+Site is at pura.xyz on Vercel. Auto-deploys on push. After deploy:
+
+- Verify homepage loads with 5-section layout
+- Verify `/shadow` page renders
+- Verify blog post dates are consecutive (Mar 12-28)
+- Verify nav has 4 links (home, gateway, docs, blog)
+
+## 5. End-to-end cascade proof
+
+This is the "cascade saves money" moment.
+
+```bash
+# Generate key
+curl -X POST https://api.pura.xyz/api/keys \
+  -H "Content-Type: application/json" \
+  -d '{"label":"cascade-test"}'
+
+# Send cascade request
+curl https://api.pura.xyz/v1/chat/completions \
+  -H "Authorization: Bearer pura_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages":[{"role":"user","content":"What is 2+2?"}],
+    "routing":{"cascade":true}
+  }'
+```
+
+Simple questions should resolve at depth 1 (Groq). Hard questions should escalate. Check `X-Pura-Cascade-Savings` header for cost delta.
+
+Run 10+ requests with varying complexity. Verify `/api/cascade-stats` aggregates correctly.
+
+## 6. Publish CLI and MCP server
+
+```bash
+cd create-pura-agent && npm publish --access public
+cd ../mcp-server && npm publish --access public
+```
+
+Test the CLI: `npx create-pura-agent` should walk through key setup and send a cascade test request.
+
+## 7. Publish SDK
+
+```bash
+cd sdk && npm version patch && npm run build && npm publish --access public
+```
+
+## 8. Deploy contracts to Base mainnet (manual)
+
+Fund deployer wallet with ~0.05 ETH on Base.
 
 ```bash
 cd contracts
@@ -51,152 +109,50 @@ forge script script/DeployMainnet.s.sol \
   --etherscan-api-key $BASESCAN_API_KEY
 ```
 
-After deployment:
-- Copy addresses to `contracts/deployments/base-mainnet.json`
-- Update `sdk/src/addresses.ts` chain 8453 entries (currently all zeros)
-- Rebuild SDK, then rebuild consuming apps
+Copy addresses to `contracts/deployments/base-mainnet.json` and `sdk/src/addresses.ts`.
 
-## 3. Deploy gateway to Vercel
+## 9. GTM execution — OpenClaw-first
 
-Generate a fresh operator wallet (separate from deployer). Fund with ~0.01 ETH on Base.
+All materials in `gtm/`. Strategy: penetrate the OpenClaw ecosystem (250K stars, 1.5M agents, 129 startups) as the default cost-optimization layer. 60-day plan.
 
-Register sinks and create pool:
+Phase 1 (days 1-7): Run personal agents through gateway, collect real cost data, verify /compare page and install flow.
+Phase 2 (days 1-14): OpenClaw community immersion — GitHub issues, Discord, identify target builders. No self-promotion yet.
+Phase 3 (days 7-21): LinkedIn content push — 5 posts, cost savings angle, real experiment data.
+Phase 4 (days 7-28): Direct outreach — DMs to OpenClaw builders, startup founders, top contributors.
+Phase 5 (days 14-28): Reddit + HN — product-first posts on r/LocalLLaMA, r/OpenClaw, Show HN.
+Phase 6 (days 28-60): Expand if beachhead is working — grants, secondary communities, SDK publish.
 
-```bash
-cd gateway
-CHAIN_ID=8453 \
-RPC_URL=https://mainnet.base.org \
-OPERATOR_PRIVATE_KEY=0x... \
-OPENAI_SINK_ADDRESS=<EOA> \
-ANTHROPIC_SINK_ADDRESS=<EOA> \
-GROQ_SINK_ADDRESS=<EOA> \
-npx tsx scripts/setup.ts
-```
+Full plan: `gtm/ROADMAP.md`
 
-Create Vercel project linked to `gateway/`. Set env vars: `CHAIN_ID=8453`, `RPC_URL`, `OPERATOR_PRIVATE_KEY`, all three provider API keys, all three sink addresses, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`. Domain: `api.pura.xyz`.
+## 10. NVM relay deployment
 
-Set provider spend caps ($100/mo per provider).
+Deploy strfry relay + NVM relay to a VPS. Connect gateway with `NVM_ENABLED=true`. Full infra guide in OWNERS-MANUAL.md section 18.
 
-Verify: `curl https://api.pura.xyz/api/health` should return `{"status":"ok","chain":"8453"}`.
+## 11. Shadow mode beta
 
-## 4. Deploy pura.xyz to Vercel
-
-Create Vercel project linked to `pura/`. Set `NEXT_PUBLIC_GATEWAY_URL=https://api.pura.xyz`. Domain: `pura.xyz`.
-
-Compile lite paper PDF (`cd docs/paper/lite && pdflatex main.tex && pdflatex main.tex`), host at `pura/public/bpe-lite.pdf`.
-
-## 5. End-to-end proof
-
-This is the "anyone can interact" moment.
-
-```bash
-# Generate key
-curl -X POST https://api.pura.xyz/api/keys \
-  -H "Content-Type: application/json" \
-  -d '{"label":"first-mainnet-key"}'
-
-# Send completion
-curl https://api.pura.xyz/v1/chat/completions \
-  -H "Authorization: Bearer pura_..." \
-  -H "Content-Type: application/json" \
-  -d '{"messages":[{"role":"user","content":"What is backpressure routing?"}],"stream":true}'
-```
-
-Check response headers (`X-Pura-Provider`, `X-Pura-Request-Id`). Query `/api/state` for pool data. Look up operator wallet on Basescan for completion epoch transactions.
-
-Screen-record the whole flow. Cut to under 2 minutes.
-
-## 6. Publish SDK + paper
-
-```bash
-cd sdk && npm publish --access public
-# publishes @puraxyz/sdk@0.1.0
-```
-
-Post lite paper PDF on pura.xyz. Consider arXiv submission.
-
-## 7. GTM execution (days 4-21)
-
-All materials exist in `gtm/`.
-
-**Grants** (days 4-7): Submit to Base Builders, Superfluid Ecosystem, OpenClaw. Each grant doc is in `gtm/grant-*.md` — adapt to platform format, include mainnet tx links.
-
-**LinkedIn** (days 4-7): 4 posts — problem statement, product announcement, building in public, three-project vision. Link blog post from `gtm/blog-post.md`.
-
-**Twitter/Bluesky/Nostr** (days 4-14): 8-tweet core thread from `gtm/twitter-thread.md`, standalone tweets, reply-first engagement.
-
-**Reddit** (days 7-14): Comments first in r/ethereum, r/defi, r/MachineLearning, r/LocalLLaMA. Then staggered posts from `gtm/community-posts.md`.
-
-**Direct outreach** (days 7-14): 3-5 DMs/day using `gtm/outreach-dm.md` templates. Focus on AI agent builders, Base ecosystem, Superfluid builders, relay operators.
-
-**Catalini window** (days 4-18, time-sensitive): Follow `gtm/swarm-catalini.md` playbook — verification-bottleneck framing on LinkedIn, connection request, 7-tweet mapping thread.
-
-**Show HN** (day ~14): "Show HN: Open-source LLM gateway with on-chain capacity routing (live on Base)". Tuesday/Wednesday, 9-10am ET.
-
-**Feedback form** (day 4): Deploy 9-question form from `gtm/feedback-form.md` on Tally. Link from pura.xyz footer.
-
-## 8. Nostr relay integration (days 14-28)
-
-The relay contracts deploy in step 2. This step proves BPE generalizes beyond LLMs.
-
-Reference script at `sdk/scripts/relay-register.ts` shows: register relay → join pool → verify capacity. Run it against a live Nostr relay (strfry or nostream) to submit periodic capacity attestations.
-
-Write a blog post: how BPE generalizes from LLMs to relays. Post in Nostr developer channels.
-
-## 9. Ongoing hardening
-
-- **Monitoring**: Forward Vercel logs to Axiom (free tier). Set up Checkly on `api.pura.xyz/api/health`. Alert on gateway down, provider error rate > 10%, operator balance < 0.005 ETH.
-- **Formal audit**: Commission Cyfrin or Code4rena for the 12 mainnet contracts before opening to external stakers. Budget $15-30k, timeline 2-4 weeks.
-
-## 9a. NVM integration tests (parallel with step 8)
-
-Unit tests (82 across 10 files) verify logic against mock Nostr events. Integration tests verify the same logic against a real relay.
-
-**Tier 1 — base NVM round-trip:**
-Spin up a `strfry` relay in Docker (`nvm/docker-compose.yml`). Connect `AgentRelay`, publish kind-31900 capacity from 3 test agents, submit a job request, verify kind-31903 assignment and kind-31901 receipt appear on the relay.
-
-**Tier 2 — credit + reputation:**
-Publish kind-31910 credit lines between test agents. Route a job, verify credit dispatch was used (not atomic). Wait for reputation cycle, verify kind-31913 profile published.
-
-**Tier 3 — spawning + genome:**
-Feed synthetic capacity data with skill gaps into `SpawningManager`. Verify kind-31912 and kind-31917 events appear on relay. Verify `GenomeTracker` ingests them.
-
-Infrastructure: Docker compose with strfry, test keypair fixtures, `nvm/test/integration/` directory. Optional Playwright tests for the evolution dashboard.
+Run shadow sidecar alongside gateway. Collect comparison data for the cascade-routing-savings blog post. Update the placeholder at `pura/content/blog/cascade-routing-savings.mdx` with real numbers.
 
 ---
 
 ## Critical path
 
 ```
-commit → deploy contracts → deploy gateway → e2e proof
-                           ↘ deploy pura.xyz ↗
-                             publish SDK
-                             GTM (start day 4)
-                             relay integration (start day 14)
-                             hardening (ongoing)
+verify builds → commit → deploy gateway + site → cascade proof
+                                                → publish CLI + MCP + SDK
+                                                → deploy contracts (manual)
+                                                → GTM (start after proof)
+                                                → NVM relay (parallel)
+                                                → shadow beta (parallel)
 ```
-
-Gateway and pura.xyz deploy in parallel. GTM starts as soon as the e2e proof works. Relay integration and hardening are independent tracks.
 
 ## Scope boundaries
 
-Included: everything needed to make a live, usable system on Base mainnet that anyone can interact with, plus GTM to get people to do so.
+Included: cascade routing, UI cleanup, shadow mode, blog, CLI/MCP, operator playbook, NVM specs, documentation updates, build verification.
 
-Excluded: thermodynamic layer (v0.2), V2 composition contracts, Lightning contracts (separate phase).
+Excluded: thermodynamic layer (v0.2), V2 composition contracts, mainnet contract deployment (manual step after audit).
 
-Advanced NVM systems: implemented and tested locally, deployment deferred to relay integration phase (step 8). Blog, docs, and homepage describe these systems with explicit "implemented, not yet deployed" status markers.
+Advanced NVM systems (31910-31922): implemented and tested locally. New specs (31930-31935): designed, not implemented. Deployment deferred to relay integration phase.
 
----
-
-## Advanced NVM systems (implemented)
-
-Seven economic systems built on top of the base NVM relay. All have typed event definitions (kinds 31910-31922), builder functions, and working TypeScript implementations. See `plan/14-ADVANCED-NVM-SYSTEMS.md` for the full spec.
-
-**Working code (tested):**
-- Agent credit / web of trust — bilateral credit lines, BFS transitive routing, settlement/default tracking
-- Reputation substrate — receipt aggregation into portable AgentProfiles, cross-network attestations
-- Self-spawning agents — market opportunity detection, eligibility checks, 5-stage spawn pipeline
-- Skill genome / evolutionary optimization — population tracking, phylogeny tree, ancestry chains
 
 **Stubs (interfaces + ingestion, no execution):**
 - Capacity futures — orderbook, buy/sell matching, price oracle

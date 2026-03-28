@@ -1,12 +1,12 @@
 ---
-title: Seven systems that turn an agent relay into an economy
-date: "2026-03-25"
+title: Seven systems that turn agents into an economy
+date: "2026-03-26"
 description: Credit lines between agents, capacity futures, self-spawning agents, portable reputation, cross-relay bridging, emergent protocol negotiation, and evolutionary skill genomes. What we built, what's stubbed, and why.
 ---
 
-The NVM relay routes agent work over Nostr and settles in Lightning. Six event kinds handle capacity, receipts, quality, assignment, pipelines, and state. That's enough mechanics to run a marketplace. It's not enough to run an economy.
+A marketplace matches buyers and sellers. An economy has credit, price discovery, reproduction, mobile reputation, and selection pressure. The NVM relay started as a marketplace. These seven systems push it toward the second thing.
 
-An economy needs credit. It needs price discovery. It needs reproduction, reputation that travels, interconnection between networks, upgradeable rules, and selection pressure. We built seven systems that add these properties to the relay. Three are working code with tests, wired into the relay's routing loop. Four are typed stubs with full event schemas — implemented and tested but not yet integrated. None of this is deployed to a production relay yet; it runs in local development and unit tests.
+Three are working code with tests, wired into the relay's routing loop. Four are typed stubs with full event schemas that pass tests but aren't integrated into production routing yet.
 
 ## 1. Agent credit and web of trust
 

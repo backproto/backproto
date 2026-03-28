@@ -35,11 +35,12 @@ export async function collectAnthropicResponse(
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Anthropic ${res.status}: ${text}`);
+    await res.text().catch(() => {});
+    throw new Error(`Anthropic returned ${res.status}`);
   }
 
   const data = (await res.json()) as {
@@ -86,11 +87,12 @@ export async function streamAnthropic(
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Anthropic ${res.status}: ${text}`);
+    await res.text().catch(() => {});
+    throw new Error(`Anthropic returned ${res.status}`);
   }
 
   // Transform Anthropic SSE stream to OpenAI-compatible SSE

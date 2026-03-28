@@ -7,6 +7,7 @@ import {
   type DiagramCatalogEntry,
 } from "@/lib/diagramCatalog";
 import styles from "./page.module.css";
+import { CopyAnchor } from "./CopyAnchor";
 
 export const metadata = { title: "Diagrams" };
 
@@ -52,7 +53,7 @@ export default function DiagramsPage() {
                       <p className={styles.cardMeta}>{entry.kind === "sequence" ? "sequence" : "diagram"}</p>
                       <h2>{entry.title}</h2>
                     </div>
-                    <span className={styles.anchorTag}>#{entry.id}</span>
+                    <CopyAnchor id={entry.id} />
                   </div>
                   <p className={styles.summary}>{entry.summary}</p>
                   <div className={styles.preview}>{renderEntry(entry)}</div>

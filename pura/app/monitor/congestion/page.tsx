@@ -99,10 +99,14 @@ export default function CongestionPage() {
         ))}
       </div>
 
+      <div style={{ background: "var(--surface, #1a1a1a)", border: "1px solid var(--amber, #d97706)", borderRadius: 4, padding: "0.75rem 1rem", marginBottom: "1rem", fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "var(--amber, #d97706)" }}>
+        Congestion pricing goes live with the NVM relay. Data below is simulated.
+      </div>
+
       <div className={s.sourceNote}>
         <span className={s.sourceLabel}>data source</span>
         <span className={s.sourceValue}>simulated</span>
-        <span className={s.sourceCopy}>This pricing and queue data is generated locally to illustrate congestion behavior. It is not yet wired to live routing pressure.</span>
+        <span className={s.sourceCopy}>Generated locally to illustrate congestion behavior. Not yet wired to live routing pressure.</span>
       </div>
 
       <div className={s.section}>

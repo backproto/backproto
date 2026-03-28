@@ -104,10 +104,14 @@ export default function CapacityPage() {
         ))}
       </div>
 
+      <div style={{ background: "var(--surface, #1a1a1a)", border: "1px solid var(--amber, #d97706)", borderRadius: 4, padding: "0.75rem 1rem", marginBottom: "1rem", fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "var(--amber, #d97706)" }}>
+        Capacity attestations go live with the NVM relay. Data below is simulated.
+      </div>
+
       <div className={s.sourceNote}>
         <span className={s.sourceLabel}>data source</span>
         <span className={s.sourceValue}>simulated</span>
-        <span className={s.sourceCopy}>This view is seeded locally in the page and updates on a timer. It is not reading live capacity attestations yet.</span>
+        <span className={s.sourceCopy}>Seeded locally and updated on a timer. Not reading live capacity attestations yet.</span>
       </div>
 
       <div className={s.section}>

@@ -1,44 +1,37 @@
-# GTM execution plan
+# GTM execution plan — OpenClaw-first
 
-Current state and next steps. Updated March 2026.
+60-day plan. One beachhead: OpenClaw. Updated April 2026.
 
 ---
 
 ## What exists today
 
-- 32 Solidity contracts on Base Sepolia (8 core + 5 v2 + 3 thermodynamic + 16 research/adapter), verified on Basescan
-- 319 passing tests across all test suites
-- TypeScript SDK with 24 action modules
-- LLM inference gateway at api.pura.xyz with 4 providers (OpenAI, Anthropic, Groq, Gemini)
-- Automatic task complexity scoring: routes cheap tasks to Groq/Gemini, complex tasks to OpenAI/Anthropic
+- Gateway live at api.pura.xyz — 4 providers (OpenAI, Anthropic, Groq, Gemini), cascade routing, complexity scoring
 - Per-request cost headers (X-Pura-Model, X-Pura-Cost, X-Pura-Tier, X-Pura-Budget-Remaining)
 - Daily budget enforcement with 402 Payment Required on exhaustion
-- Lightning settlement via LNbits (prepaid sat wallet, async deduction, no inference blocking)
-- 5,000 free requests per key before payment wall
-- OpenClaw skill for agent distribution (auth, budget alerts, cost reports, wallet management)
+- Lightning settlement via LNbits (prepaid sat wallet, async deduction)
+- 5,000 free requests per key, no credit card
+- OpenClaw skill in `openclaw-skill/` — one env var install, cascade routing, cost reports
 - Cost report endpoint (GET /api/report) with per-model spend breakdowns
 - Provider status endpoint (GET /api/status) with time-bucketed latency/availability
-- Next.js site (pura.xyz) with docs, blog, paper, interactive playground, status page, gateway page
+- Comparison page at pura.xyz/compare — head-to-head cascade vs direct pricing
+- 35 contracts on Base Sepolia, 319 tests, TypeScript SDK
+- Next.js site (pura.xyz) with docs, blog, paper, gateway page, status page
 - Research paper with formal Lyapunov proofs
-- Agent-based simulation validating throughput optimality
-- Self-audit + Aderyn static analysis complete (0 exploitable findings)
-- 11 blog posts covering gateway, protocol theory, relay economics, Lightning, OpenClaw, verification
-- Three reference dashboards: relay-dash, lightning-dash, agent-explorer
-- NVM advanced systems: credit graph, capacity futures, self-spawning agents, reputation substrate, cross-relay bridging, protocol negotiation, skill genomes (7 systems, 13 new event kinds 31910-31922)
-- Evolution dashboard at /evolution (force-directed phylogeny visualization)
-- 82 passing NVM tests across 10 test files
+- Self-audit + Aderyn static analysis (0 exploitable findings)
 
-The product is the gateway. The protocol and contracts are the mechanism underneath.
+The product is the OpenClaw skill + gateway. The protocol and contracts are the mechanism underneath.
 
 ---
 
-## Lessons learned (March 2026)
+## Lessons learned
 
-- HN Show HN posted with protocol-math-first angle — no traction. The retry leads with the gateway product.
-- Discord community posting triggered an immediate 24h timeout. Discord channels dropped permanently.
-- Twitter/Bluesky/Nostr accounts have <30 followers — standalone posts get zero organic reach. Engagement-first until follower base grows.
-- LinkedIn (~3000 followers) is the only channel with real distribution. Primary posting channel.
-- Protocol framing ("backpressure routing for AI agent payments") does not convert. Product framing ("LLM gateway that saves you money") does.
+- HN Show HN with protocol-math-first angle — no traction. Retry leads with the product.
+- Discord channels (LangChain, Superfluid, Base) — account timed out on first post. Dropped.
+- Twitter/Bluesky/Nostr have <30 followers — standalone posts get zero reach. Engagement-first.
+- LinkedIn (~3K followers) is the only channel with real distribution.
+- Protocol framing ("backpressure routing for AI agent payments") does not convert. Product framing ("cut your agent's LLM costs 40-60%") does.
+- OpenClaw is the beachhead: 250K stars, 1.5M agents, 129 startups, $283K revenue/month. Pura has a skill already built. Focus here and nowhere else until it works.
 
 ---
 
@@ -46,115 +39,101 @@ The product is the gateway. The protocol and contracts are the mechanism underne
 
 | Action | Status |
 |--------|--------|
-| Gateway with 4 providers, complexity scoring, budget enforcement | Done |
+| Gateway with 4 providers, cascade routing, budget enforcement | Done |
 | Lightning settlement via LNbits | Done |
-| OpenClaw skill | Done |
+| OpenClaw skill (openclaw-skill/) | Done |
 | Cost report + status endpoints | Done |
-| Homepage rewrite: gateway-first hero, OpenClaw/Lightning CTAs | Done |
-| Gateway landing page at /gateway | Done |
-| Status page at /status | Done |
-| Getting-started docs for gateway, OpenClaw, full protocol | Done |
-| Blog post: "We built 32 contracts. The first product is an LLM gateway." | Done |
-| All content AISLOP-compliant | Done |
+| Comparison page at /compare | Done |
+| Homepage, gateway page, status page, getting-started docs | Done |
+| SKILL.md rewritten for OpenClaw-first framing | Done |
+| Community posts, outreach DMs rewritten for OpenClaw-first | Done |
 
-## Phase 1: LinkedIn + content (days 1-7)
+## Phase 1: make the skill installable and demoable (days 1-7)
 
-LinkedIn is the primary distribution channel (~3000 followers). All other channels are secondary.
-
-| Action | Asset |
-|--------|-------|
-| Post LinkedIn 1 — the gateway product | `gtm/community-posts.md` |
-| Post LinkedIn 2 — cost savings data | `gtm/community-posts.md` |
-| Post LinkedIn 3 — building in public | `gtm/community-posts.md` |
-| Post LinkedIn 4 — OpenClaw + Lightning | `gtm/community-posts.md` |
-| Publish blog post (website + Mirror/Paragraph cross-post) | `pura/content/blog/power-grid-agents.mdx` |
-| Deploy feedback form on Tally | `gtm/feedback-form.md` |
-
-Space LinkedIn posts 2-3 days apart. URLs in first comment only. Do not post on weekends.
-
-## Phase 2: Twitter/Bluesky/Nostr engagement (days 1-14, parallel)
-
-With <30 followers, original posts get no reach. Strategy is engagement-first.
+Before any outreach, the skill has to work end-to-end and produce a cost report someone can screenshot.
 
 | Action | Notes |
 |--------|-------|
-| Identify 20-30 accounts posting about LLM routing, AI infra, agent frameworks | — |
-| Reply with substantive takes daily | Actual insight, not self-promotion |
-| Quote-tweet relevant threads with gateway angle | Shows up in THEIR followers' feeds |
-| Post 1 original tweet/day as building-in-public breadcrumbs | For profile credibility |
-| Cross-post identical content to Bluesky and Nostr | Zero marginal effort |
-| Post Twitter thread when follower count breaks ~100 | `gtm/twitter-thread.md` |
+| Run 3 personal agents through the gateway for 48h | Collect real tier distribution data |
+| Screenshot the cost report showing per-model breakdown | For LinkedIn post 2 |
+| Verify /compare page loads with accurate numbers | pura.xyz/compare |
+| Test install flow: env var change → first request → cost header in response | Time it, target <60 seconds |
+| Record the install flow as a 30-second screen capture | For DMs and posts |
 
-## Phase 3: Reddit (days 7-14, staggered)
+Success signal: cost report showing 40-60% savings with real data, install time under 60 seconds.
 
-Reddit replaces Discord. Space posts 5-7 days apart.
+## Phase 2: OpenClaw community immersion (days 1-14, parallel)
+
+Get known in the OpenClaw ecosystem before posting about your own stuff.
 
 | Action | Notes |
 |--------|-------|
-| Comment on existing posts in target subs first | Build comment history |
-| Post to r/LocalLLaMA — "I built an LLM gateway that picks the cheapest model for each task" | Feedback request, not announcement |
-| Post to r/LangChain — OpenClaw skill integration angle | — |
-| Post to r/ethereum or r/ethdev — on-chain capacity routing mechanism | Different audience |
+| Follow top 30 OpenClaw contributors on GitHub | Check who's active in issues/discussions |
+| Comment on 2-3 GitHub issues per week with real technical input | Cost optimization, routing, provider selection topics |
+| Join OpenClaw Discord and participate without self-promotion for 7 days | Build history first |
+| Identify 10 people from the 129 startups who ship LLM-heavy agents | They spend the most on inference |
+| Track names and projects in a spreadsheet | For phase 4 outreach |
 
-## Phase 4: direct outreach (days 1-14, parallel — highest ROI)
+Do not mention Pura in any of these interactions until phase 4.
+
+## Phase 3: LinkedIn content push (days 7-21)
+
+5 posts, spaced 2-3 days apart. URLs in first comment only. No weekends.
+
+| Post | Angle | Asset |
+|------|-------|-------|
+| 1 | Cost savings with data — "I cut my agent's LLM costs 60%" | `gtm/community-posts.md` |
+| 2 | The experiment — real tier distribution from 48h run | `gtm/community-posts.md` |
+| 3 | OpenClaw LLM cost breakdown — offer free analysis | `gtm/community-posts.md` |
+| 4 | Security angle — API key isolation for untrusted plugins | `gtm/community-posts.md` |
+| 5 | Building in public — from protocol to product | `gtm/community-posts.md` |
+
+Post 2 cannot go out until phase 1 produces real data. Post 3 is the conversion post (free analysis offer).
+
+## Phase 4: direct outreach (days 7-28, parallel — highest ROI)
 
 DMs work regardless of follower count. Highest-conversion channel.
 
 | Action | Asset |
 |--------|-------|
-| Identify 10 people to DM (agent framework builders, OpenClaw devs, LLM-heavy operators) | `gtm/outreach-dm.md` |
-| Send 3-5 personalized DMs per day (Twitter + LinkedIn) | Templates in `gtm/outreach-dm.md` |
-| LinkedIn connection requests with note | Leverages 3k network |
-| Pinata/OpenClaw in-person outreach (Omaha connection) | `gtm/outreach-dm.md` |
-| Offer live pairing sessions ("try the gateway in 2 minutes") | pura.xyz/gateway as call script |
-| Track funnel: DMs sent, replies, calls booked, API keys created, cost reports generated | Spreadsheet |
-| Follow up once after 5 days on unanswered DMs | — |
+| DM 10 OpenClaw builders identified in phase 2 | `gtm/outreach-dm.md` template 1 |
+| DM 5 OpenClaw startup founders (from 129 startups list) | `gtm/outreach-dm.md` template 2 |
+| DM 5 top GitHub contributors | `gtm/outreach-dm.md` template 3 |
+| LinkedIn connection requests with cost-savings note | Leverages 3K network |
+| Offer 15-minute pairing sessions ("try it, I'll watch, tell me what breaks") | pura.xyz/gateway as call script |
+| Track funnel: DMs sent → replies → calls → API keys → cost reports | Spreadsheet |
+| Follow up once after 5 days on unanswered DMs | One follow-up only |
 
-Target: people running agents that make LLM calls. The pitch: "Your agents are probably overpaying for simple tasks. Here's a gateway that routes cheap tasks to Groq and complex ones to Anthropic. Free for 5,000 requests."
+Pitch: "Your agent sends every request to GPT-4o. 70-80% of those requests are simple enough for a model that costs 10x less. Free for 5K requests. Would you try it and tell me what breaks?"
 
-Success signal: 1+ external agent running through the gateway overnight with a cost report showing savings.
+Success signal: 3+ external agents running through the gateway with cost reports showing savings.
 
-## Phase 5: grants (days 1-14, parallel)
+## Phase 5: Reddit + HN (days 14-28)
 
-| Action | Asset |
-|--------|-------|
-| Submit Base Builder Grant | `gtm/grant-base.md` |
-| Submit Superfluid Ecosystem Grant | `gtm/grant-superfluid.md` |
-| Submit OpenClaw Grant | `gtm/grant-openclaw.md` |
-
-Lead every grant touchpoint with the gateway demo and a real cost report. Show the E2E proof: agent ran overnight, gateway routed across 4 providers, cost report shows per-model breakdown, Lightning settled.
-
-## Phase 6: HN retry + paper (days 14-28)
+Reddit replaces Discord. Space posts 5-7 days apart. Comment on existing threads first.
 
 | Action | Asset |
 |--------|-------|
-| Repost to HN with product-first framing | `gtm/community-posts.md` |
-| Split paper: Paper 1 (core BPE), Paper 2 (thermodynamic extensions) | `docs/paper/` |
-| Submit Paper 1 to arXiv (cs.GT primary, cs.DC secondary) | — |
-| Announce paper on LinkedIn + X/Bluesky | — |
-| Identify conference CFP (AFT 2026, IEEE S&B, token engineering) | — |
+| Comment on 5+ existing r/LocalLLaMA threads about model costs | Build karma first |
+| Post to r/LocalLLaMA — routing layer for multi-provider cost optimization | `gtm/community-posts.md` |
+| Post to r/OpenClaw (or GitHub Discussions) — OpenClaw skill announcement | `gtm/community-posts.md` |
+| HN Show HN — product-first, lead with the cost savings and curl example | `gtm/community-posts.md` |
 
-## Phase 7: harden from feedback (days 14-30)
+## Phase 6: expand from beachhead (days 28-60)
+
+Only if phases 1-5 produced 5+ active users and at least one cost report from someone else's agent.
 
 | Action | Asset |
 |--------|-------|
-| Triage pilot feedback: blockers first, then UX friction | — |
-| Publish SDK to npm | `sdk/` |
+| Submit OpenClaw grant application | `gtm/grant-openclaw.md` |
+| Submit Base Builder grant | `gtm/grant-base.md` |
+| Submit Superfluid grant | `gtm/grant-superfluid.md` |
+| Twitter thread (post when follower count > 100) | `gtm/twitter-thread.md` |
+| Secondary communities: LangChain, CrewAI, AutoGen builders | `gtm/outreach-dm.md` templates 4-5 |
 | Add providers based on demand (Mistral, Cohere, local models) | `gateway/lib/providers/` |
-| On-chain settlement rail (Superfluid streaming) as second SettlementProvider | `gateway/lib/settlement.ts` |
+| Publish SDK to npm | `sdk/` |
 
-## Phase 8: NVM advanced systems content (days 14-30)
-
-| Action | Asset |
-|--------|-------|
-| Publish blog post: "Seven systems that turn an agent relay into an economy" | `pura/content/blog/nvm-advanced-systems.mdx` |
-| LinkedIn post: agent credit, spawning, evolution viz | `gtm/community-posts.md` |
-| Twitter thread: the 7 systems + evolution dashboard demo | `gtm/twitter-thread.md` |
-| Post to r/LocalLLaMA or r/autonomous_agents — self-spawning agents angle | Feedback request |
-| Grant update to Base/Superfluid with advanced systems progress | — |
-| Demo video: evolution dashboard with live spawn events | pura.xyz/evolution |
-
-Lead with the evolution visualization — it's the most visually striking output. Credit lines and spawning are the two systems most likely to resonate with agent framework builders.
+Do not spray across communities until the OpenClaw beachhead is working.
 
 ---
 
@@ -163,39 +142,43 @@ Lead with the evolution visualization — it's the most visually striking output
 | Channel | Reason | Revisit? |
 |---------|--------|----------|
 | Discord (LangChain, Superfluid, Base) | Account timed out on first post | No |
-| HN (protocol-math angle) | Posted March 2026, no traction | Yes — product-first retry |
+| HN (protocol-math angle) | Posted March 2026, no traction | Yes — product-first in phase 5 |
+| Nostr/Lightning communities | Deferred until gateway has traction | Maybe |
 
 ## Explicitly deferred
 
-- Mainnet deployment: until 3+ gateway users and grant funding confirmed
+- Mainnet deployment: until 5+ gateway users and grant funding confirmed
 - Third-party security audit: until grant funding lands
 - Python SDK: until builders specifically ask for it
-- Nostr relay and Lightning domain pilots: until gateway has traction
+- Nostr relay and Lightning domain pilots: until OpenClaw beachhead is working
 - NIP-XX standardization: until relay operators are engaged
 - Stripe/card payments: Lightning-only for now, revisit at 10+ paid users
 - Revenue infrastructure: until 10+ active users
+- NVM advanced systems content: after OpenClaw traction established
+- arXiv paper submission: after real usage data exists
 
 ---
 
 ## Decisions made
 
-- Voice: first person singular for DMs, third person for public content
-- Primary target: developers running LLM-heavy agents (OpenClaw, LangChain, CrewAI)
-- Lead with the gateway product, not the protocol math
-- Lightning-only settlement, no Stripe. Free tier (5,000 requests) covers adoption friction.
-- Non-AI domains (relay economics, Lightning routing): research modules, ship after gateway traction
+- Beachhead: OpenClaw ecosystem, nothing else until it works
+- Voice: first person singular everywhere (DMs, posts, threads)
+- Lead with cost savings ("40-60% reduction"), not the protocol
+- Lightning-only settlement, no Stripe. Free tier covers adoption friction.
+- Non-AI domains (relay economics, Lightning routing): deferred indefinitely
 - All content complies with AISLOP.md
 
 ## Quick reference
 
 | Asset | Location |
 |-------|----------|
-| Gateway blog post | `pura/content/blog/power-grid-agents.mdx` |
-| Advanced systems blog post | `pura/content/blog/nvm-advanced-systems.mdx` |
+| OpenClaw skill | `openclaw-skill/SKILL.md` |
+| Comparison page | `pura/app/compare/page.tsx` |
 | Twitter thread | `gtm/twitter-thread.md` |
 | Community posts | `gtm/community-posts.md` |
 | Outreach DMs | `gtm/outreach-dm.md` |
 | Feedback form | `gtm/feedback-form.md` |
+| OpenClaw grant | `gtm/grant-openclaw.md` |
 | Base grant | `gtm/grant-base.md` |
 | Superfluid grant | `gtm/grant-superfluid.md` |
 | OpenClaw grant | `gtm/grant-openclaw.md` |

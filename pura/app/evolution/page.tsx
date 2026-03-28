@@ -43,7 +43,7 @@ export default function EvolutionPage() {
   const [nodes, setNodes] = useState<Map<string, GenomeNode>>(new Map());
   const [spawns, setSpawns] = useState<SpawnEvent[]>([]);
   const [connected, setConnected] = useState(false);
-  const [relayUrl, setRelayUrl] = useState("ws://localhost:7777");
+  const [relayUrl, setRelayUrl] = useState("");
   const [selected, setSelected] = useState<GenomeNode | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
@@ -266,6 +266,7 @@ export default function EvolutionPage() {
             <input
               className="bg-zinc-900 border border-zinc-700 rounded px-3 py-1 text-sm font-mono w-64"
               value={relayUrl}
+              placeholder="ws://your-relay:7777"
               onChange={(e) => setRelayUrl(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && connect()}
             />
@@ -273,6 +274,10 @@ export default function EvolutionPage() {
               className={`w-2 h-2 rounded-full ${connected ? "bg-green-500" : "bg-red-500"}`}
             />
           </div>
+        </div>
+
+        <div style={{ background: "#1a1a1a", border: "1px solid #d97706", borderRadius: 4, padding: "0.75rem 1rem", marginBottom: "1rem", fontFamily: "monospace", fontSize: "0.8rem", color: "#d97706" }}>
+          Evolution tracking launches with the NVM relay. Connect a local strfry instance above to test.
         </div>
 
         {/* Stats bar */}

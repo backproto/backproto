@@ -1,102 +1,115 @@
 # Twitter/X thread
 
-Copy-paste each numbered block as a separate tweet. Post from personal account using "I" voice.
+Copy-paste each numbered block as a separate tweet. Post from personal account using "I" voice. Hold this thread until follower count is >100 (engagement-first strategy until then).
 
 ---
 
 1/
 
-I built an LLM gateway that routes your inference calls across four providers and settles on Lightning.
+I built an OpenClaw skill that cut my agent's LLM costs 60%.
 
-One API key. OpenAI-compatible. You send a prompt, the gateway picks the cheapest model that can handle it, streams the response, and pays per-token via Lightning.
+Most agents send every request to GPT-4o. Simple tasks, complex tasks, all billed the same. I made a routing layer that scores complexity and sends the cheap stuff to models that cost 10x less.
 
-pura.xyz
+pura.xyz/compare
 
 ---
 
 2/
 
-The problem: every AI agent app hard-codes one provider. When that provider goes down or gets expensive, your agent stops working.
+The problem: every OpenClaw agent hard-codes one LLM provider. When that model is overkill for the task, you're overpaying. When it goes down, your agent stops.
 
-Pura sits between your agent and the LLM. It picks the best available provider for each request based on cost, latency, and task complexity.
+Pura sits between your agent and the LLM. It picks the cheapest model that can handle each request.
 
 ---
 
 3/
 
-How routing works:
+How cascade routing works:
 
-Simple prompt? Goes to Groq (Llama 3.3 70B) at $0.00059/1K tokens.
-Needs code or structured output? GPT-4o at $0.005/1K.
-Long-context analysis? Claude Sonnet at $0.003/1K.
-Fallback? Gemini catches overflow.
+Every request starts at Groq (Llama 3.3 70B, $0.00059/1K tokens). If the response is weak — too short, hedging, refusal — it automatically retries on the next tier.
 
-You see one endpoint. The gateway decides.
+Groq → Gemini → OpenAI → Anthropic.
+
+70-80% of requests resolve at tier 1. The rest escalate.
 
 ---
 
 4/
 
-Payment is per-request via Lightning. No subscriptions. No prepaid credits that expire. Your agent pays exactly what it uses and can stop at any time.
+Four signals determine whether to escalate:
 
-The gateway exposes balance and cost in response headers: X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Model.
+- Length ratio (response vs expected)
+- Hedging language ("I think", "it depends")
+- Refusal detection
+- Completeness check
+
+If all four pass, the cheap answer stands. If any fail, the request moves up a tier. You pay premium prices only when the cheap answer was genuinely not good enough.
 
 ---
 
 5/
 
-Free tier: 5,000 requests. No credit card. Takes 30 seconds to get an API key.
+The install is one env var change.
 
-After that, fund your account with a Lightning invoice. The smallest useful deposit is about 1,000 sats (~$0.30), good for roughly 500 routed completions.
+```python
+from openai import OpenAI
+client = OpenAI(
+  base_url="https://api.pura.xyz/v1",
+  api_key="pura_YOUR_KEY"
+)
+```
+
+OpenAI SDK compatible. Every response includes cost headers: X-Pura-Model, X-Pura-Cost, X-Pura-Tier.
 
 ---
 
 6/
 
-Why not just use OpenRouter or LiteLLM?
+Security angle: your LLM API keys stay on the Pura server. They never touch the agent runtime.
 
-Because they charge you platform margin on top of provider costs, and they keep your usage data. Pura runs open source. You can self-host the gateway, bring your own provider keys, and pay nothing except raw model costs.
+If you run OpenClaw agents with third-party plugins, those plugins cannot access your provider keys. The agent talks to one URL. That is it.
 
 ---
 
 7/
 
-Under the hood: 35 contracts on Base. 319 passing tests. The on-chain layer handles capacity registration, completion verification, and backpressure routing. The gateway is the first consumer of that protocol.
+Free tier is 5,000 requests. No credit card. Takes 30 seconds to get a key.
 
-Research paper: pura.xyz/paper
+After that, fund via Lightning. Smallest useful deposit is ~1,000 sats ($0.30), good for roughly 500 routed completions.
 
 ---
 
 8/
 
-Try it now. Drop-in replacement for the OpenAI SDK:
+Head-to-head comparison: pura.xyz/compare
 
-```
-from openai import OpenAI
-client = OpenAI(base_url="https://api.pura.xyz/v1", api_key="pura_...")
-```
+Open source, MIT licensed. Looking for OpenClaw builders willing to try it and tell me what breaks.
 
-pura.xyz/docs/getting-started-gateway
+pura.xyz
 github.com/puraxyz/puraxyz
 
 ---
 
 ## Notes
 
-- Post from personal account, use "I" voice throughout
+- Post from personal account, "I" voice throughout
 - Screenshot the DemoTerminal from pura.xyz for tweet 3
-- Tag: @BuildOnBase, @OpenClaw
-- Pin the thread after posting
+- Do not post until follower count > 100 (engagement-first)
+- Cross-post to Bluesky and Nostr
 
 ---
 
 ## One-off posts
 
-Post individually. Not a thread. Same "I" voice. Each stands alone.
+Post individually. Not a thread. Same "I" voice. Each stands alone. Use these for daily building-in-public breadcrumbs while doing engagement-first.
 
 ---
 
-Every AI agent framework picks one LLM provider and hard-codes it. That works until the provider raises prices, goes down, or rate-limits you at 2am. I built a gateway that routes around all three problems. pura.xyz
+If your OpenClaw agent calls GPT-4o for every request including "what time is it," you are burning money. I built a skill that scores complexity and routes simple requests to Llama 3.3 on Groq. The agent does not notice. The bill drops 80%.
+
+---
+
+Every OpenClaw agent has the same problem: one provider, one model, one price for everything. Simple QA, complex reasoning, code generation — all billed at the same rate. Cascade routing fixes this. pura.xyz/compare
 
 ---
 

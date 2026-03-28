@@ -134,10 +134,14 @@ export default function AuditPage() {
         ))}
       </div>
 
+      <div style={{ background: "var(--surface, #1a1a1a)", border: "1px solid var(--amber, #d97706)", borderRadius: 4, padding: "0.75rem 1rem", marginBottom: "1rem", fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "var(--amber, #d97706)" }}>
+        Audit log goes live with on-chain protocol events. Data below is simulated.
+      </div>
+
       <div className={s.sourceNote}>
         <span className={s.sourceLabel}>data source</span>
         <span className={s.sourceValue}>demo log</span>
-        <span className={s.sourceCopy}>These protocol events are seeded in the page for now. They illustrate the target audit surface, not a live event feed.</span>
+        <span className={s.sourceCopy}>Seeded protocol events illustrating the target audit surface.</span>
       </div>
 
       <div className={s.section}>

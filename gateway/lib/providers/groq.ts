@@ -20,11 +20,12 @@ export async function streamGroq(
       messages,
       stream: true,
     }),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Groq ${res.status}: ${body}`);
+    await res.text().catch(() => {});
+    throw new Error(`Groq returned ${res.status}`);
   }
 
   return res.body!;

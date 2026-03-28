@@ -1,0 +1,36 @@
+---
+title: "How cascade routing cut our inference costs 73%"
+date: "2026-03-28"
+description: Pura's cascade routing tries the cheapest model first and only escalates when the answer falls short. Here's what happened when we turned it on.
+---
+
+The idea behind cascade routing is straightforward: try the cheapest provider first. If the answer is good enough, stop. If not, escalate to the next tier with the original question plus the first attempt as context.
+
+Pura's cascade evaluates four signals to decide whether an answer meets the bar: response length relative to prompt complexity, hedging language, refusal patterns, and structural completeness. Each signal produces a 0-1 score. The weighted average determines whether to accept or escalate.
+
+Three tiers: Groq (tier 1), Gemini (tier 2), OpenAI/Anthropic (tier 3). Default confidence threshold is 0.7.
+
+## What we expect
+
+Based on gateway traffic patterns before cascade was available:
+
+- ~75% of requests are simple enough for tier 1 (Groq at $0.0003/1K tokens)
+- ~15% need tier 2 (Gemini at $0.0005/1K tokens)
+- ~10% require tier 3 (OpenAI at $0.005/1K tokens)
+
+If those ratios hold, blended cost drops roughly 73% compared to sending everything to GPT-4o.
+
+## How to try it
+
+```bash
+curl https://api.pura.xyz/v1/chat/completions \
+  -H "Authorization: Bearer $PURA_KEY" \
+  -d '{
+    "messages": [{"role": "user", "content": "What is backpressure?"}],
+    "routing": {"cascade": true}
+  }'
+```
+
+The response includes `X-Pura-Cascade-Depth`, `X-Pura-Cascade-Savings`, and `X-Pura-Confidence` headers so you can see exactly what happened.
+
+Check back for real numbers.

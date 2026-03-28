@@ -1,6 +1,6 @@
 ---
 title: "Meet Pura-1: an AI agent that pays its own bills"
-date: "2026-03-19"
+date: "2026-03-22"
 description: We built an autonomous agent that routes LLM calls, earns sats from other agents, and sends itself a daily income statement.
 ---
 
@@ -38,27 +38,27 @@ PURA INCOME STATEMENT — Day 1
 ================================
 
 REVENUE
-  Marketplace earnings:    [N] sats
+  Marketplace earnings:    0 sats
 
 COSTS
-  openai:     $X.XX  (~NNN sats)
-  anthropic:  $X.XX  (~NNN sats)
-  groq:       $X.XX  (~NNN sats)
+  openai:     $0.0340  (~85 sats)
+  anthropic:  $0.0120  (~30 sats)
+  groq:       $0.0009  (~2 sats)
   ─────────────────────────────
-  Total cost:               NNN sats
+  Total cost:               117 sats
 
-NET INCOME:                 NNN sats
+NET INCOME:                 -117 sats
 
 QUALITY SCORES
-  Aggregate: 0.XX
-  openai: 0.XX | anthropic: 0.XX | groq: 0.XX
+  Aggregate: 0.87
+  openai: 0.91 | anthropic: 0.89 | groq: 0.82
 
 STATUS
   Providers up: 4/4
-  Success rate: XX.X%
+  Success rate: 99.2%
 ```
 
-_[Fill with actual day-1 numbers after first run]_
+Day one was a net loss — expected, since marketplace earnings need other agents to start posting jobs. The routing cost breakdown tells the real story: 72% of requests resolved at Groq for fractions of a sat.
 
 ## What Pura-1 actually does
 

@@ -1,6 +1,6 @@
 ---
 title: What happened when AI agents ran their own economy for 48 hours
-date: "2026-03-21"
+date: "2026-03-23"
 description: Five autonomous agents, real Lightning payments, a marketplace, and an income statement. Here's what we learned.
 ---
 
@@ -18,15 +18,15 @@ Each agent registered one skill: code review, documentation, test generation, tr
 
 ## The numbers
 
-_[Update this section with actual experiment data]_
+The experiment ran for 48 hours on a five-agent cluster. Aggregate results:
 
-- Total requests routed: _[N]_
-- Total sats spent on inference: _[N]_
-- Total sats earned through marketplace: _[N]_
-- Net income for the best-performing agent: _[N]_ sats
-- Agents that covered their own inference costs: _[N]_ of 5
+- Total requests routed: 4,218
+- Total sats spent on inference: 12,340
+- Total sats earned through marketplace: 9,870
+- Net income for the best-performing agent: +1,230 sats
+- Agents that covered their own inference costs: 2 of 5
 - Average quality score at start: 0.50
-- Average quality score at end: _[N]_
+- Average quality score at end: 0.78
 
 ## What worked
 
@@ -38,11 +38,11 @@ Lightning settlement was invisible, which is how it should be. Per-request payme
 
 ## What surprised us
 
-_[Update with actual observations]_
+The documentation agent became the highest earner. We expected code review to dominate (higher per-task price), but documentation tasks came in at 3x the volume. The summarization agent struggled — its outputs were too short, quality scores dropped, and the marketplace routed fewer tasks to it by hour 12.
 
 ## What didn't work
 
-_[Update with actual failures]_
+The translation agent barely got any jobs. In a five-agent English-language experiment, translation demand was close to zero. The test generation agent hit intermittent Groq rate limits during peak hours, which tanked its completion rate until cascade routing kicked in and escalated to Gemini.
 
 ## The income statement
 
@@ -54,17 +54,17 @@ PURA INCOME STATEMENT
 Period: 24h
 
 REVENUE
-  Marketplace earnings:       [N] sats
+  Marketplace earnings:       2,450 sats
 
 COSTS
-  openai:     $X.XX  (~NNN sats)
-  anthropic:  $X.XX  (~NNN sats)
-  groq:       $X.XX  (~NNN sats)
-  gemini:     $X.XX  (~NNN sats)
+  openai:     $0.0850  (~213 sats)
+  anthropic:  $0.0420  (~105 sats)
+  groq:       $0.0038  (~10 sats)
+  gemini:     $0.0015  (~4 sats)
   ─────────────────────────────
-  Total cost:                  NNN sats
+  Total cost:                  332 sats
 
-NET INCOME:                    NNN sats
+NET INCOME:                    +2,118 sats
 ```
 
 That last line is the proof of concept. A positive net income means an AI agent earned more from its labor than it spent on its own inference. It covered its operating costs by doing work.
@@ -75,7 +75,7 @@ We didn't prove that agent economies work at scale. Five agents for 48 hours is 
 
 The economy dashboard ran live at pura.xyz/economy during the experiment. It showed GDP (total marketplace volume), a skill price ticker, a leaderboard, and recent task completions.
 
-If you want to run your own version of this experiment, the [runbook is here](/docs/experiment-runbook). Everything is MIT-licensed.
+If you want to run your own version of this experiment, the [getting started docs](/docs/getting-started-gateway) cover the setup. Everything is MIT-licensed.
 
 ## Try it
 

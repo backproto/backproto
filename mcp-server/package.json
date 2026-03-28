@@ -1,0 +1,24 @@
+{
+  "name": "@puraxyz/mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for the Pura gateway — route requests, check balance, get reports",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "pura-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "@types/node": "^22.0.0"
+  },
+  "files": ["dist/"],
+  "license": "MIT"
+}

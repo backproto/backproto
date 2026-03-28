@@ -1,42 +1,25 @@
 ---
 name: pura
-description: Route LLM calls through the Pura gateway — automatic model selection, cost tracking, quality-weighted routing, Lightning settlement. Supports both HTTP gateway and Nostr NVM (NIP-90 DVM) modes.
-emoji: ⚡
-homepage: https://pura.xyz
-metadata:
-  requires:
-    env:
-      - PURA_API_KEY
-  optional_env:
-    - PURA_GATEWAY_URL
-    - NVM_PRIVATE_KEY
-    - NVM_RELAYS
-    - NVM_SKILLS
-    - LIGHTNING_BACKEND
-    - LIGHTNING_ALBY_TOKEN
-    - LIGHTNING_LND_MACAROON
-    - LIGHTNING_LND_HOST
-  tags:
-    - llm
-    - routing
-    - lightning
-    - ai-agent
-    - nostr
-    - nip-90
-    - dvm
+description: Cut your OpenClaw agent's LLM costs 40-60%. Automatic model selection routes simple tasks to cheap providers, complex tasks to premium ones. Free for 5,000 requests.
+metadata: {"openclaw": {"requires": {"env": ["PURA_API_KEY"]}, "optional_env": ["PURA_GATEWAY_URL"], "primaryEnv": "PURA_API_KEY", "emoji": "⚡", "homepage": "https://pura.xyz", "tags": ["llm", "routing", "cost-optimization", "ai-agent", "openclaw"]}}
 ---
 
-# Pura — intelligent inference gateway
+# Pura — cut your agent's LLM costs 40-60%
 
-Route LLM requests across OpenAI, Anthropic, Groq, and Gemini. Pura picks the best model for each task, tracks per-key spend, and settles on Lightning. Drop-in OpenAI-compatible.
+Your OpenClaw agent probably sends every request to GPT-4o. Most of those requests are simple enough for a model that costs 10x less. Pura sits between your agent and the LLM providers, scores each request's complexity, and routes it to the cheapest model that can handle it.
 
-## Dual-mode operation
+Cascade routing: tries Groq first ($0.00059/1K tokens). If the response looks weak (too short, hedging language, refusal), it escalates to Gemini, then OpenAI, then Anthropic. Your agent gets a good answer. You pay the minimum.
 
-Pura supports two transport modes. Both use the same BPE routing algorithm and quality scoring math. Use whichever fits your deployment:
+Drop-in OpenAI-compatible. One env var change.
 
-**HTTP gateway** — OpenAI-compatible REST API at `api.pura.xyz`. Familiar, works with any OpenAI SDK. Centralized relay point.
+## What you get
 
-**Nostr NVM** — Decentralized agent-to-agent routing over Nostr events (NIP-90 DVM protocol). Agents publish capacity attestations (kind-31900), accept job requests, and settle with Lightning zaps (NIP-57). No central server required.
+- 4 providers (Groq, Gemini, OpenAI, Anthropic) behind one endpoint
+- Automatic complexity scoring — no manual model selection
+- Cascade routing — cheapest sufficient tier per request
+- Per-request cost headers so your agent tracks spend
+- Daily cost reports and income statements
+- Free tier: 5,000 requests, no credit card
 
 ## Setup
 
@@ -56,7 +39,7 @@ export PURA_API_KEY="pura_your_key_here"
 
 ## Sending requests
 
-Pura is OpenAI SDK-compatible. Swap your base URL:
+Pura is OpenAI SDK-compatible. Change your base URL and you're done:
 
 ```python
 from openai import OpenAI
@@ -68,27 +51,18 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="auto",  # let Pura pick the best model
+    model="auto",  # Pura picks the cheapest capable model
     messages=[{"role": "user", "content": "Hello"}]
 )
 ```
 
-Or with curl (OpenAI-compatible path):
+Or with curl:
 
 ```bash
 curl -s -X POST https://api.pura.xyz/v1/chat/completions \
   -H "Authorization: Bearer $PURA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"messages": [{"role": "user", "content": "Hello"}], "stream": false}'
-```
-
-Direct gateway path also works:
-
-```bash
-curl -s -X POST https://api.pura.xyz/api/chat \
-  -H "Authorization: Bearer $PURA_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"messages": [{"role": "user", "content": "Hello"}]}'
 ```
 
 ## Response headers
@@ -132,6 +106,12 @@ curl -s https://api.pura.xyz/api/wallet/balance \
   -H "Authorization: Bearer $PURA_API_KEY" | python3 -m json.tool
 ```
 
+## Model behavior
+
+Set `model="auto"` or omit the model field entirely — both trigger cascade routing, where Pura scores your request's complexity and picks the cheapest provider that can handle it.
+
+If you specify a model name directly (e.g. `gpt-4o`, `claude-sonnet-4-20250514`), Pura skips the cascade and routes straight to that provider.
+
 ## Explicit model routing
 
 Override auto-routing by specifying a model:
@@ -162,73 +142,31 @@ Influence provider selection without forcing a specific model:
 }
 ```
 
-## Marketplace
-
-Register skills to earn sats from other agents:
-
-```bash
-# Register a skill
-curl -s -X POST https://api.pura.xyz/api/marketplace/register \
-  -H "Authorization: Bearer $PURA_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"skillType": "code-review", "price": 1500, "capacity": 10, "description": "Review PRs for bugs and style"}'
-
-# Search for available agents
-curl -s "https://api.pura.xyz/api/marketplace/search?skill=code-review&maxPrice=2000" \
-  -H "Authorization: Bearer $PURA_API_KEY"
-```
-
 ## How routing works
 
 Pura scores each request's complexity based on message length, code blocks, reasoning triggers, and conversation depth. Simple tasks go to Groq or Gemini. Complex reasoning goes to Anthropic or OpenAI. Quality scores (derived from recent success rate and latency) weight the selection so underperforming providers get fewer requests until they recover.
 
-## Nostr NVM mode
+Cascade routing adds a second layer: if the cheapest provider's response looks bad (too short, hedging, refusal, incomplete), Pura automatically retries at the next tier up. You only pay premium prices when the cheap answer was genuinely insufficient.
 
-For decentralized operation without the HTTP gateway. Agents talk directly to each other via Nostr relays.
+## Typical cost savings
 
-### Setup
+| Request type | Direct GPT-4o cost | Pura cascade cost | Savings |
+|---|---|---|---|
+| Simple Q&A ("What is X?") | $0.005 | $0.00059 (Groq) | 88% |
+| Code explanation | $0.005 | $0.00125 (Gemini) | 75% |
+| Complex reasoning | $0.005 | $0.005 (GPT-4o) | 0% |
+| Long-context analysis | $0.005 | $0.003 (Claude) | 40% |
 
-```bash
-# Generate a Nostr keypair (or provide your own)
-export NVM_PRIVATE_KEY=""  # hex private key; leave blank to auto-generate
+In practice, 70-80% of agent requests are simple enough for the cheapest tier.
 
-# Which relays to connect to
-export NVM_RELAYS="wss://relay.damus.io,wss://nos.lol"
+## Security note
 
-# Skills this agent offers (NIP-90 job kinds)
-export NVM_SKILLS="nip90-5100,nip90-5050"
-
-# Lightning backend for zap settlement
-export LIGHTNING_BACKEND="mock"  # alby, lnd, cln, cashu, mock
-```
-
-### Running as a DVM worker
-
-```bash
-# Start capacity reporter (publishes kind-31900 every 5 min)
-npx ts-node openclaw-skill/scripts/capacity-reporter.ts
-
-# Start DVM listener (accepts NIP-90 job requests and returns results)
-npx ts-node openclaw-skill/scripts/nostr-dvm.ts
-
-# Monitor income from zap receipts
-npx ts-node openclaw-skill/scripts/income-tracker.ts
-```
-
-### NVM event kinds
-
-| Kind | Purpose | Equivalent contract |
-|------|---------|-------------------|
-| 31900 | Capacity attestation | CapacityRegistry.sol |
-| 31901 | Completion receipt | CompletionTracker.sol |
-| 31902 | Quality score | ReputationLedger.sol |
-| 31903 | Job assignment | BackpressurePool.sol |
-| 31904 | Pipeline spec | Pipeline.sol |
-| 31905 | Pipeline state | (no on-chain equiv) |
+Your API keys for OpenAI, Anthropic, Groq, and Gemini stay on the Pura server. They never touch your agent or the OpenClaw runtime. If you are running an OpenClaw agent with plugins from untrusted sources, routing through Pura means those plugins cannot access your provider API keys.
 
 ## Links
 
 - Gateway: <https://api.pura.xyz>
 - Website: <https://pura.xyz>
+- Compare cascade routing: <https://pura.xyz/compare>
 - Docs: <https://pura.xyz/docs>
 - GitHub: <https://github.com/puraxyz/puraxyz>

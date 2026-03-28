@@ -108,6 +108,15 @@
   font-family: var(--font-mono);
   font-size: 0.68rem;
   color: var(--text-dim);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.anchorTag:hover {
+  color: var(--text);
 }
 
 .summary {
