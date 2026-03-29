@@ -3,6 +3,10 @@ import { generateKey } from "@/lib/keys";
 
 export const runtime = "nodejs";
 
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204 });
+}
+
 // Simple in-memory rate limit for key generation: 5 keys per IP per hour
 const KEY_GEN_WINDOW_MS = 60 * 60 * 1000;
 const KEY_GEN_MAX = 5;
