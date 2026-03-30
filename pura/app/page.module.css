@@ -22,8 +22,9 @@
 }
 
 .heroImage {
-  flex: 0 0 420px;
+  flex: 0 0 210px;
   display: block;
+  margin-left: auto;
 }
 
 .heroImage canvas {
