@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import styles from "./page.module.css";
+
+const BackpressureFlow = dynamic(
+  () => import("./components/BackpressureFlow"),
+  { ssr: false }
+);
 import { DemoTerminal } from "./components/DemoTerminal";
 
 function SectionHead({
@@ -205,13 +210,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className={styles.heroImage}>
-          <Image
-            src="/pura.png"
-            alt="Pura mascot"
-            width={340}
-            height={340}
-            priority
-          />
+          <BackpressureFlow />
         </div>
         <DemoTerminal />
       </header>
