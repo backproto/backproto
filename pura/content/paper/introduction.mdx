@@ -16,6 +16,6 @@ We introduce *Backpressure Economics* (BPE), a cryptoeconomic mechanism that ada
 
 2.  **Throughput optimality** (Throughput Optimality): We prove that BPE achieves throughput-optimal payment allocation within the capacity region, using a Lyapunov drift argument modified to handle the no-drop monetary constraint via a bounded overflow buffer.
 
-3.  **Protocol design** (Protocol Design): We implement BPE using Superfluid's General Distribution Agreement (GDA) on Base, with commit-reveal capacity signaling, stake-weighted Sybil resistance, and multi-stage pipeline composition.
+3.  **Protocol design** (Protocol Design): We implement BPE using Superfluid's General Distribution Agreement (GDA) on Base, with commit-reveal capacity signaling, stake-bounded capacity with Sybil friction, and multi-stage pipeline composition.
 
 4.  **Simulation** (Evaluation): We evaluate BPE in a 50-sink, 10-source agent economy, demonstrating 95.7% allocation efficiency versus 93.5% for round-robin and 79.7% for random allocation.

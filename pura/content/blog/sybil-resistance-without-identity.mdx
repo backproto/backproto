@@ -1,7 +1,7 @@
 ---
-title: Why fake agents can't game the system
+title: Why splitting stake doesn't pay
 date: "2026-03-16"
-description: How a concave square root function makes fake identities unprofitable
+description: Stake-bounded capacity caps create economic friction against identity splitting — but not a hard block
 ---
 
 Split your stake across five wallets. Register five agents. Capture five times the payment flow. That's the obvious attack on any decentralized routing protocol, and most of them have no answer for it.
@@ -46,7 +46,7 @@ Proof-of-personhood, KYC, or decentralized identity would work. One human, one a
 
 There are two problems with this approach in practice. First, identity is expensive and inaccessible for pseudonymous developers who might be the most prolific agent operators. Second, identity systems introduce trusted third parties, which is what on-chain protocols are designed to avoid.
 
-The stake-based approach does not eliminate Sybil attacks. It makes them economically unprofitable at the margins that matter. An attacker who wants to capture 3x the payment flow needs to do 3x the work and risk 3x the stake in independent slashing pools. At that point they are just a large operator, not an attacker.
+The stake-based approach does not eliminate Sybil attacks. Splitting stake across addresses does increase raw aggregate capacity — that much is true. What it cannot do is increase capacity without increasing the obligation to perform work. An attacker who wants to capture 3x the payment flow needs to do 3x the work and risk 3x the stake in independent slashing pools. At that point they are just running a larger service, not gaming the protocol.
 
 ## Trade-offs
 

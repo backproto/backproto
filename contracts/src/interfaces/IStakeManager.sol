@@ -3,7 +3,8 @@ pragma solidity ^0.8.26;
 
 /// @title IStakeManager
 /// @notice Interface for staking, capacity cap computation, and slashing.
-///         Sybil resistance: minimum per-sink stake + concave (sqrt) capacity cap.
+///         Stake-bounded capacity: concave sqrt cap dampens per-address concentration;
+///         minimum per-sink stake creates Sybil friction alongside independent slashing.
 interface IStakeManager {
     // ──────────────────── Events ────────────────────
 
@@ -38,12 +39,12 @@ interface IStakeManager {
     function getStake(address sink) external view returns (uint256 stakeAmount);
 
     /// @notice Compute the maximum capacity a sink can declare given their stake.
-    ///         Formula: sqrt(stake / STAKE_UNIT) (concave to resist Sybil fragmentation).
+    ///         Formula: sqrt(stake / STAKE_UNIT) (concave; dampens per-address concentration).
     /// @param sink The sink address.
     /// @return cap Maximum declarable capacity.
     function getCapacityCap(address sink) external view returns (uint256 cap);
 
-    /// @notice The minimum stake required per sink registration (Sybil resistance).
+    /// @notice The minimum stake required per sink registration (Sybil friction).
     /// @return minStake The minimum per-sink stake.
     function minSinkStake() external view returns (uint256 minStake);
 

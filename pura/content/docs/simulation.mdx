@@ -30,9 +30,9 @@ Simulates 20% node-kill events and measures recovery time. BPE recovers within *
 
 Sensitivity analysis of the smoothing parameter $\alpha \in [0.05, 0.95]$ on allocation efficiency and stability.
 
-### 4. Sybil resistance
+### 4. Stake splitting analysis
 
-Confirms that stake fragmentation yields strictly negative net profit for all split counts $n > 1$ under the $\sqrt{\text{stake}}$ capacity cap.
+Shows that under the minimum-stake and slashing regime, stake fragmentation yields declining net profit as split count grows. Raw aggregate capacity grows as $\sqrt{n}$; the friction is economic, not structural.
 
 ### 5. Buffer utilization
 
@@ -50,7 +50,7 @@ Outputs are saved as PDF figures in `docs/paper/figures/`:
 - `convergence.pdf` - Allocation efficiency over time
 - `shock.pdf` - Shock response and recovery
 - `ewma_sweep.pdf` - EWMA parameter sensitivity
-- `sybil.pdf` - Sybil cost analysis
+- `sybil.pdf` - Stake splitting cost analysis
 - `buffer.pdf` - Buffer utilization dynamics
 
 ## Source

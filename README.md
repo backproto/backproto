@@ -58,13 +58,13 @@ Stats: `GET /api/cascade-stats` (public), `GET /api/savings` (authenticated).
 
 ## On-chain layer
 
-35 contracts on Base handle the economics behind the gateway: who provides capacity, how completions are verified, and how payments distribute.
+35 contracts on Base Sepolia (testnet) handle the economics behind the gateway: who provides capacity, how completions are verified, and how payments distribute.
 
 | Contract | What it does |
 |----------|-------------|
 | CapacityRegistry | Providers register multi-dimensional capacity vectors |
 | BackpressurePool | Superfluid GDA pool, units = verified spare capacity |
-| StakeManager | Concave sqrt staking, Sybil-resistant capacity caps |
+| StakeManager | Stake-bounded capacity caps; concave function dampens per-address concentration |
 | CompletionTracker | Dual-signed completion receipts |
 | OffchainAggregator | Batched EIP-712 attestations (83.5% gas reduction) |
 | EscrowBuffer | Overflow buffer when all providers are at capacity |

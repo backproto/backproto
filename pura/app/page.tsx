@@ -38,35 +38,35 @@ const STEPS = [
   },
   {
     num: "3",
-    name: "earn",
-    desc: "Register skills in the marketplace. Other agents hire yours. Get paid in sats.",
+    name: "track",
+    desc: "Per-request cost breakdown, daily spend reports, and budget caps. Lightning funding when credits run out.",
   },
 ];
 
 const COMPARE_ROWS = [
   {
     metric: "Model routing",
-    vals: ["None", "None", "Manual", "None", "None", "Auto by complexity"],
+    vals: ["None", "Manual", "None", "Auto by complexity"],
   },
   {
     metric: "Cost optimization",
-    vals: ["None", "None", "Markup pricing", "None", "None", "Cascade — cheapest sufficient tier"],
+    vals: ["None", "Markup pricing", "None", "Cascade — cheapest sufficient tier"],
   },
   {
     metric: "Flow control",
-    vals: ["None", "Temp MPP", "None", "None", "None", "Backpressure + Boltzmann"],
+    vals: ["Temp MPP", "None", "None", "Backpressure + Boltzmann"],
   },
   {
     metric: "Capacity signal",
-    vals: ["None", "None", "Server-side", "Server-side", "None", "On-chain, EWMA-smoothed"],
+    vals: ["None", "Server-side", "Server-side", "On-chain, EWMA-smoothed"],
   },
   {
     metric: "Completion verification",
-    vals: ["None", "None", "None", "None", "None", "Dual-signed receipts"],
+    vals: ["None", "None", "None", "Dual-signed receipts"],
   },
   {
     metric: "Settlement",
-    vals: ["HTTP 402", "ILP", "Stripe", "Credit", "HTTP 402", "Lightning"],
+    vals: ["ILP", "Stripe", "Credit", "Lightning"],
   },
 ];
 
@@ -201,7 +201,7 @@ export default function Dashboard() {
           <p className={styles.subtitle}>
             One API endpoint. Automatic model selection. Cascade routing
             tries the cheapest provider first and escalates only when needed.
-            Per-request cost tracking. Your agent earns sats.
+            Per-request cost tracking. Lightning-settled, OpenAI-compatible.
           </p>
           <div className={styles.heroCtas}>
             <a href="#demo" className={styles.ctaPrimary}>try the gateway →</a>
@@ -264,17 +264,18 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
 
       {/* ═══════════ COMPARISON TABLE ═══════════ */}
       <section className={styles.section}>
-        <SectionHead label="how it compares" color="var(--text-dim)" />
+        <SectionHead label="what pura replaces" color="var(--text-dim)" />
+        <p className={styles.desc} style={{ marginBottom: "1rem" }}>
+          x402, AP2, ACP, and TAP are payment authorization rails — they answer whether an agent can pay. Pura sits above them and answers where the payment should go: routing, cost optimization, and capacity-aware flow control on top of any settlement layer.
+        </p>
         <div style={{ overflowX: "auto" }}>
           <table className={styles.tbl}>
             <thead>
               <tr>
                 <th></th>
-                <th>x402</th>
                 <th>Tempo MPP</th>
                 <th>load balancer</th>
                 <th>OpenRouter</th>
-                <th>AP2 / TAP</th>
                 <th className={styles.highlightCol}>pura</th>
               </tr>
             </thead>
@@ -286,7 +287,7 @@ const openai = new OpenAI({ baseURL: "https://api.pura.xyz/v1" });`}</pre>
                     <td
                       key={i}
                       className={
-                        i === 5
+                        i === 3
                           ? styles.highlightCol
                           : v === "None"
                             ? styles.noneCell

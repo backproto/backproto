@@ -1,12 +1,12 @@
 ---
 title: Security Analysis
 order: 6
-description: Sybil resistance, MEV protection, slashing
+description: Stake splitting analysis, MEV protection, slashing
 ---
 
-## Sybil Resistance
+## Stake Splitting and Sybil Friction
 
-BPE's Sybil resistance derives from two mechanisms: a minimum per-sink stake $S_{\min}$ and a concave capacity cap $\text{cap}(S) = \sqrt{S/u}$.
+Under permissionless unlinkable identities, BPE does not claim full Sybil resistance. The per-address cap $\text{cap}(S) = \sqrt{S/u}$ is concave, which dampens concentration by a single large staker, but splitting total stake $S$ across $n$ addresses increases aggregate capacity by $\sqrt{n}$. Economic friction comes from two sources: a minimum per-sink stake $S_{\min}$ and independent slashing exposure per identity.
 
 An attacker splitting total stake $S$ into $n$ identities, each with stake $S/n$ (plus $S_{\min}$ overhead per identity), achieves total capacity:
 $$

@@ -8,6 +8,8 @@ The Pura gateway is an OpenAI-compatible API that routes across four LLM provide
 
 Today those costs are <Accent tone="muted">estimated gateway costs</Accent>, not exact upstream provider invoices. The gateway estimates tokens, applies a static per-provider rate card, and exposes that number in headers and reports so you have one consistent figure to bill against.
 
+> **Two API surfaces:** `/v1/chat/completions` is the OpenAI-compatible endpoint — use this with the OpenAI SDK or any tool that expects an OpenAI-style base URL. `/api/chat` is the native Pura endpoint used in the curl examples below. Both are live; the `/v1` route is the better default if your code also talks to OpenAI directly.
+
 The shortest useful path looks like this:
 
 1. Create a key.

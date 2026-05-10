@@ -9,7 +9,8 @@ import { IStakeManager } from "./interfaces/IStakeManager.sol";
 
 /// @title StakeManager
 /// @notice Manages staking, capacity cap computation (sqrt), and slashing for BPE sinks.
-///         Sybil resistance: minimum per-sink stake + concave capacity cap.
+///         Stake-bounded capacity: concave sqrt cap dampens per-address concentration;
+///         minimum per-sink stake creates Sybil friction alongside independent slashing.
 contract StakeManager is IStakeManager, Ownable {
     using SafeERC20 for IERC20;
 
@@ -17,7 +18,7 @@ contract StakeManager is IStakeManager, Ownable {
 
     IERC20 public immutable STAKE_TOKEN;
     uint256 public immutable STAKE_UNIT; // Denominator for sqrt cap: cap = sqrt(stake / STAKE_UNIT)
-    uint256 public immutable MIN_SINK_STAKE; // Minimum stake per sink (Sybil resistance)
+    uint256 public immutable MIN_SINK_STAKE; // Minimum stake per sink (Sybil friction)
 
     mapping(address sink => uint256 amount) private _stakes;
     mapping(address slasher => bool authorized) public authorizedSlashers;

@@ -28,13 +28,13 @@ BPE converges to near-optimal allocation within ~50 timesteps as the EWMA smooth
 
 At $t=500$, 20% of sinks are killed (capacity set to zero). BPE's efficiency drops momentarily as the EWMA-smoothed signals lag the true capacity change, then recovers within $\sim 1/\alpha \approx 3$ epochs to a new equilibrium.
 
-## E3: Sybil Resistance
+## E3: Stake Splitting Analysis
 
-![Sybil attack profitability. Net gain decreases as the number of fragments n grows, due to sqrt cap concavity and per-identity minimum stake cost.](/paper/figures/sybil.png)
+![Stake splitting analysis. Raw aggregate capacity grows as √n (the concave cap is anti-whale but not anti-split), while net profit decreases because per-identity minimum stake costs accumulate linearly.](/paper/figures/sybil.png)
 
-*Sybil attack profitability. Net gain decreases as the number of fragments $n$ grows, due to $\sqrt{\cdot}$ cap concavity and per-identity minimum stake cost.*
+*Stake splitting analysis. Raw aggregate capacity grows as $\sqrt{n}$ while net profit decreases as per-identity minimum stake costs accumulate linearly, becoming unprofitable at moderate $n$.*
 
-We fix total attacker stake $S$ and split into $n \in \{1, 2, 5, 10, 20\}$ identities. Each identity pays $S_{\min}$ overhead. Total capacity scales as $\sqrt{n}$ while cost scales linearly. The attack becomes unprofitable at moderate $n$, validating the theoretical analysis in Security Analysis.
+We fix total attacker stake $S$ and split into $n \in \{1, 2, 5, 10, 20\}$ identities. Each identity pays $S_{\min}$ overhead. Total capacity scales as $\sqrt{n}$ while cost scales linearly. The attack becomes unprofitable at moderate $n$ — not because splitting reduces capacity (it increases it by $\sqrt{n}$), but because per-identity costs grow linearly while marginal capacity gains shrink. This validates the frictional analysis in Security Analysis.
 
 ## E4: EWMA Parameter Sweep
 
