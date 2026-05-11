@@ -1,0 +1,56 @@
+---
+title: "Admission control and flow control for the agent economy"
+date: "2026-05-10"
+description: Proof-of-human admits demand. Backpressure routes it. Lightning settles it. Receipts prove it.
+---
+
+Most discussions about proof-of-human stop at bot filtering. That misses the harder system problem.
+
+Agent traffic needs admission control and flow control at the same time.
+
+Admission control answers one question: who can create demand in the first place. Flow control answers another question: where admitted demand goes when capacity is limited.
+
+Pura already does flow control. Requests hit one endpoint, then route across providers under cost and confidence constraints. Settlement happens over Lightning. Receipts provide an audit trail.
+
+Proof-of-human complements that layer. It does not replace it.
+
+## The stack, in order
+
+1. Proof-of-human: establish whether demand is tied to a unique human under a scoped policy.
+2. Budget controls: cap spend and quota before routing begins.
+3. Backpressure routing: allocate scarce model capacity under load.
+4. Settlement: collect and distribute value for completed work.
+5. Receipts: provide verifiable records of what ran and what was paid.
+
+A system that only has proof-of-human still melts under load. A system that only has routing still struggles with free-tier abuse and delegation trust. The stack works when both layers are present.
+
+## Where Pura fits
+
+Pura should not become a biometric issuer and should not claim global identity resolution.
+
+Pura is the enforcement and routing layer that consumes signals from issuers and converts them into useful controls:
+
+- quota policy,
+- budget policy,
+- routing priority,
+- marketplace eligibility,
+- settlement rights,
+- signed receipts.
+
+That lets Pura stay issuer-plural. World ID, Human Passport, and future issuers can plug into one enforcement surface instead of forcing every app to rebuild the same control plane.
+
+## Bridge to existing protocol mechanics
+
+Pura already models stake-bounded capacity with `cap_i = sqrt(S_i / u_i)`.
+
+and minimum-stake friction. That mechanism is one form of admission control because it prices demand against committed collateral.
+
+Verified personhood is another form of admission control with different trade-offs. One is economic collateral, one is uniqueness credentials. Both can feed the same flow-control and settlement path.
+
+## Why this matters now
+
+The market has distinct products for issuance, payment mandates, and content credentials. What is still sparse is a gateway that enforces all of them during live agent execution.
+
+That is the wedge: consume proofs, enforce limits, route requests, settle in real time, and emit receipts.
+
+Admission control and flow control are different jobs. The agent economy needs both.

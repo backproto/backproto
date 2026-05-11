@@ -30,6 +30,7 @@ export interface TaskPost {
   completedAt: number | null;
   qualityRating: number | null;
   paymentHash: string | null;
+  result: string | null;
 }
 
 // ─── Redis helpers ───
@@ -196,6 +197,7 @@ export async function createTask(
     completedAt: null,
     qualityRating: null,
     paymentHash: null,
+    result: null,
   };
 
   if (useRedis()) {
@@ -211,6 +213,15 @@ export async function createTask(
 export async function assignTask(taskId: string, agentId: string): Promise<TaskPost | null> {
   const task = await getTask(taskId);
   if (!task || task.status !== "open") return null;
+
+  if (task.skillType === "review") {
+    task.assignedTo = agentId;
+    task.status = "assigned";
+    if (useRedis()) {
+      await redisSet(`pura:mp:task:${taskId}`, JSON.stringify(task));
+    }
+    return task;
+  }
 
   const regs = await getAgentSkills(agentId);
   const reg = regs.find((r) => r.skillType === task.skillType);
@@ -234,6 +245,7 @@ export async function completeTask(
   taskId: string,
   agentId: string,
   qualityRating: number,
+  result?: string,
 ): Promise<TaskPost | null> {
   const task = await getTask(taskId);
   if (!task || task.status !== "assigned" || task.assignedTo !== agentId) return null;
@@ -241,6 +253,7 @@ export async function completeTask(
   task.status = "completed";
   task.completedAt = Date.now();
   task.qualityRating = Math.max(0, Math.min(1, qualityRating));
+  task.result = result ?? null;
 
   // Update agent quality score (exponential moving average)
   const regs = await getAgentSkills(agentId);
@@ -256,6 +269,89 @@ export async function completeTask(
   }
 
   return task;
+}
+
+export interface ReviewTaskInput {
+  prompt: string;
+  candidateResponse: string;
+  confidenceSignals: number[];
+  maxWaitMs: number;
+  rewardSats: number;
+  requesterId: string;
+}
+
+export interface ReviewSubmission {
+  decision: "approve" | "reject" | "edit";
+  editedResponse?: string;
+  notes?: string;
+  qualityRating?: number;
+}
+
+export interface ReviewResult {
+  decision: "approve" | "reject" | "edit";
+  finalResponse: string;
+  notes?: string;
+}
+
+export async function createReviewTask(input: ReviewTaskInput): Promise<TaskPost> {
+  return createTask({
+    skillType: "review",
+    payload: JSON.stringify({
+      prompt: input.prompt,
+      candidate_response: input.candidateResponse,
+      confidence_signals: input.confidenceSignals,
+      max_wait_ms: input.maxWaitMs,
+      reward_sats: input.rewardSats,
+    }),
+    maxPrice: input.rewardSats,
+    requesterId: input.requesterId,
+  });
+}
+
+export async function submitReview(
+  taskId: string,
+  reviewerId: string,
+  submission: ReviewSubmission,
+): Promise<TaskPost | null> {
+  const task = await getTask(taskId);
+  if (!task || task.skillType !== "review" || task.status !== "assigned") return null;
+  if (task.assignedTo !== reviewerId) return null;
+
+  const payload = JSON.parse(task.payload) as {
+    candidate_response: string;
+  };
+
+  const finalResponse = submission.decision === "edit"
+    ? (submission.editedResponse ?? payload.candidate_response)
+    : payload.candidate_response;
+
+  const result: ReviewResult = {
+    decision: submission.decision,
+    finalResponse,
+    notes: submission.notes,
+  };
+
+  return completeTask(taskId, reviewerId, submission.qualityRating ?? 1, JSON.stringify(result));
+}
+
+export async function waitForReview(
+  taskId: string,
+  maxWaitMs: number,
+  pollMs = 1500,
+): Promise<ReviewResult | null> {
+  const start = Date.now();
+  while (Date.now() - start < maxWaitMs) {
+    const task = await getTask(taskId);
+    if (task?.status === "completed" && task.result) {
+      try {
+        return JSON.parse(task.result) as ReviewResult;
+      } catch {
+        return null;
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, pollMs));
+  }
+  return null;
 }
 
 export async function getTask(taskId: string): Promise<TaskPost | null> {

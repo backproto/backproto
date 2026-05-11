@@ -1,6 +1,7 @@
 import { randomBytes, createHash } from "crypto";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
+import type { ProofClass } from "@/lib/proofs/types";
 
 const DATA_DIR = join(process.cwd(), "data");
 const KEYS_FILE = join(DATA_DIR, "keys.json");
@@ -18,10 +19,18 @@ export interface ApiKeyRecord {
   requests: number;
   /** Created timestamp */
   createdAt: string;
+  /** Optional attached proof handle */
+  proofId?: string;
+  /** Optional proof class tied to this key */
+  proofClass?: ProofClass;
 }
 
 function hashKey(raw: string): string {
   return createHash("sha256").update(raw).digest("hex");
+}
+
+export function getKeyHash(raw: string): string {
+  return hashKey(raw);
 }
 
 // ─── Storage backend selection ───
@@ -192,6 +201,33 @@ export function linkWallet(raw: string, wallet: string): boolean {
   const key = keys.find((k) => k.hash === hash);
   if (!key) return false;
   key.wallet = wallet;
+  saveKeysFile(keys);
+  return true;
+}
+
+export async function attachProofToKey(
+  raw: string,
+  proofId: string,
+  proofClass: ProofClass,
+): Promise<boolean> {
+  const hash = hashKey(raw);
+
+  if (useRedis()) {
+    const data = await redisGet(`pura:key:${hash}`);
+    if (!data) return false;
+    const record = JSON.parse(data) as ApiKeyRecord;
+    record.proofId = proofId;
+    record.proofClass = proofClass;
+    await redisSet(`pura:key:${hash}`, JSON.stringify(record));
+    keyCache.set(hash, record);
+    return true;
+  }
+
+  const keys = loadKeysFile();
+  const key = keys.find((k) => k.hash === hash);
+  if (!key) return false;
+  key.proofId = proofId;
+  key.proofClass = proofClass;
   saveKeysFile(keys);
   return true;
 }

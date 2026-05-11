@@ -81,3 +81,23 @@ $$
 > Augment the Lyapunov function with the buffer: $\tilde{L}(t) = L(t) + \sum_\tasktype B(\tasktype, t)^2$. The buffer dynamics mirror a virtual queue with service rate equal to total available capacity. The drift bound carries through identically. ◻
 
 The no-drop constraint distinguishes BPE from standard backpressure. In data networks, excess packets are dropped; here excess payments are buffered. The buffer bound guarantees that this does not cause unbounded accumulation under sufficient aggregate capacity.
+
+## Trust-weighted routing
+
+Proof class can be incorporated as a bounded additive term in route selection:
+
+$$
+	ext{score}_i = w_p \tilde{p}_i + w_t \tau_i + w_u \tilde{u}_i,
+\qquad w_p + w_t + w_u = 1
+$$
+
+where $\tilde{p}_i, \tilde{u}_i \in [0,1]$ and:
+
+$$
+	au_i = \tau_{\min} + (1 - \tau_{\min}) \cdot \mathbf{1}[\text{proof\_class}_i = \text{unique\_human}],
+\qquad \tau_{\min} > 0
+$$
+
+This avoids starvation of unverified traffic while still giving verified-human demand a measurable boost. Budget validity remains a hard feasibility constraint and is not modeled as a weight.
+
+Because $\tau_i$ is bounded and piecewise constant within an epoch, the drift analysis above remains unchanged up to constant factors in the selection weights. Throughput-optimality therefore extends to trust-weighted routing under the same interior-capacity condition.

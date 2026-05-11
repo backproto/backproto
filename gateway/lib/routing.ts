@@ -34,6 +34,12 @@ export interface RoutingHints {
   cascade_threshold?: number;
   /** Maximum cascade depth (1–3, default 3) */
   cascade_max_depth?: number;
+  /** Escalate low-confidence cascades to human review marketplace */
+  human_fallback?: boolean;
+  /** Confidence threshold below which human fallback is triggered */
+  human_threshold?: number;
+  /** Max time to wait for human reviewer result in milliseconds */
+  human_max_wait_ms?: number;
 }
 
 /** Provider addresses in the pool (set during setup) */

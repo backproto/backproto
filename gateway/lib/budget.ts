@@ -5,6 +5,7 @@
  */
 
 import type { Provider } from "./providers";
+import type { ApiKeyRecord } from "./keys";
 import { useRedis, getRedisUrl, getRedisToken } from "./redis-config";
 
 // Approximate cost per 1K tokens by provider (USD)
@@ -18,6 +19,7 @@ const COST_PER_1K: Record<string, number> = {
 const DEFAULT_DAILY_CAP_USD = 10;
 const DEFAULT_SATS_PER_USD = 2500;
 const DAY_MS = 86_400_000;
+const FREE_QUOTA_LIMIT = 5000;
 
 interface DailyBudget {
   spentUsd: number;
@@ -28,6 +30,7 @@ interface DailyBudget {
 
 // In-memory fallback for dev
 const memBudgets = new Map<string, DailyBudget>();
+const memFreeQuota = new Map<string, number>();
 
 function todayWindow(): number {
   return Math.floor(Date.now() / DAY_MS) * DAY_MS;
@@ -166,4 +169,86 @@ export async function recordSpend(
  */
 export async function getDailyReport(keyHash: string): Promise<DailyBudget> {
   return loadBudget(keyHash);
+}
+
+export type QuotaPeriod = "lifetime" | "weekly";
+
+export interface QuotaPolicy {
+  period: QuotaPeriod;
+  limit: number;
+}
+
+function currentIsoWeekEpoch(now = new Date()): string {
+  const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const day = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((date.getTime() - yearStart.getTime()) / DAY_MS) + 1) / 7);
+  return `${date.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+function quotaStorageKey(keyHash: string, period: QuotaPeriod): string {
+  if (period === "lifetime") return `pura:freequota:${keyHash}:lifetime`;
+  return `pura:freequota:${keyHash}:week:${currentIsoWeekEpoch()}`;
+}
+
+function quotaStorageTtl(period: QuotaPeriod): number | undefined {
+  if (period === "lifetime") return undefined;
+  const now = Date.now();
+  const date = new Date();
+  const day = date.getUTCDay() || 7;
+  const daysUntilMonday = 8 - day;
+  date.setUTCDate(date.getUTCDate() + daysUntilMonday);
+  date.setUTCHours(0, 0, 0, 0);
+  return Math.max(3600, Math.ceil((date.getTime() - now + 3_600_000) / 1000));
+}
+
+async function redisIncr(key: string, exSeconds?: number): Promise<number> {
+  const response = await fetch(`${getRedisUrl()}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getRedisToken()}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(["INCR", key]),
+  });
+  const payload = (await response.json()) as { result: number };
+  if (exSeconds !== undefined) {
+    await fetch(`${getRedisUrl()}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getRedisToken()}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(["EXPIRE", key, String(exSeconds)]),
+    });
+  }
+  return payload.result ?? 0;
+}
+
+export function quotaTier(record: ApiKeyRecord | null): QuotaPolicy {
+  if (record?.proofClass?.kind === "unique_human") {
+    return { period: "weekly", limit: FREE_QUOTA_LIMIT };
+  }
+  return { period: "lifetime", limit: FREE_QUOTA_LIMIT };
+}
+
+export async function getFreeQuotaUsage(keyHash: string, policy: QuotaPolicy): Promise<number> {
+  const key = quotaStorageKey(keyHash, policy.period);
+  if (useRedis()) {
+    const raw = await redisGet(key);
+    return raw ? Number(raw) : 0;
+  }
+  return memFreeQuota.get(key) ?? 0;
+}
+
+export async function incrementFreeQuotaUsage(keyHash: string, policy: QuotaPolicy): Promise<number> {
+  const key = quotaStorageKey(keyHash, policy.period);
+  if (useRedis()) {
+    return redisIncr(key, quotaStorageTtl(policy.period));
+  }
+
+  const next = (memFreeQuota.get(key) ?? 0) + 1;
+  memFreeQuota.set(key, next);
+  return next;
 }

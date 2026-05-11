@@ -10,7 +10,15 @@ import { maybeRebalance } from "@/lib/rebalance";
 import { checkRateLimitAsync } from "@/lib/ratelimit";
 import { estimateTokens } from "@/lib/tokens";
 import { log } from "@/lib/log";
-import { checkBudget, recordSpend, estimateCostUsd, estimateCostSats, releaseReserve } from "@/lib/budget";
+import {
+  checkBudget,
+  recordSpend,
+  estimateCostUsd,
+  estimateCostSats,
+  releaseReserve,
+  incrementFreeQuotaUsage,
+  quotaTier,
+} from "@/lib/budget";
 import { recordRequest } from "@/lib/metrics";
 import { buildInvoiceLinks } from "@/lib/invoice-links";
 import type { ChatMessage, Provider } from "@/lib/providers";
@@ -19,6 +27,8 @@ import { getOrInitSettlement } from "@/lib/settlement";
 import { storePendingInvoice } from "@/lib/invoices";
 import { scoreConfidence, buildEscalationPrompt, DEFAULT_CASCADE_THRESHOLD, DEFAULT_CASCADE_MAX_DEPTH } from "@/lib/cascade";
 import { recordCascade } from "@/lib/cascade-metrics";
+import { createReviewTask, waitForReview } from "@/lib/marketplace";
+import { createReceiptToken, sha256Hex } from "@/lib/receipts";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -39,7 +49,7 @@ function buildCorsHeaders(request: Request) {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Provider-Key",
     "Access-Control-Expose-Headers":
-      "X-Pura-Provider, X-Pura-Capacity, X-Pura-Request-Id, X-Pura-Model, X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Routed, X-Pura-Tier, X-Pura-Quality, X-Pura-Explored, X-Pura-Experimental, X-Pura-Cascade-Depth, X-Pura-Cascade-Savings, X-Pura-Confidence, X-RateLimit-Remaining",
+      "X-Pura-Provider, X-Pura-Capacity, X-Pura-Request-Id, X-Pura-Model, X-Pura-Cost, X-Pura-Budget-Remaining, X-Pura-Routed, X-Pura-Tier, X-Pura-Quality, X-Pura-Explored, X-Pura-Experimental, X-Pura-Cascade-Depth, X-Pura-Cascade-Savings, X-Pura-Confidence, X-Pura-Proof-Class, X-Pura-Proof-Issuer, X-Pura-Quota-Period, X-Pura-Quota-Remaining, X-Pura-Receipt, X-RateLimit-Remaining",
   };
 }
 
@@ -169,7 +179,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: {
-          message: `Free tier exhausted (5,000 requests). Fund your account to continue.`,
+          message: auth.error ?? "Free tier exhausted. Fund your account to continue.",
           type: "payment_required",
           code: "free_tier_exceeded",
           funding: fundingInvoice,
@@ -256,12 +266,13 @@ export async function POST(request: Request) {
   }
 
   const promptText = messages.map((m) => m.content).join(" ");
+  const requestHash = sha256Hex(JSON.stringify(messages));
   const promptTokens = estimateTokens(promptText);
   const estimatedTotalTokens = promptTokens * 2;
   const estCost = estimateCostUsd(provider, estimatedTotalTokens);
   const estimatedCostSats = estimateCostSats(provider, estimatedTotalTokens);
 
-  const paidTier = (auth.record?.requests ?? 0) >= 5000;
+  const paidTier = auth.billingTier === "paid";
   const settlement = paidTier ? await getOrInitSettlement() : null;
   if (paidTier) {
     if (!settlement) {
@@ -339,6 +350,9 @@ export async function POST(request: Request) {
     let totalCascadeCostUsd = 0;
     const providersUsed: Provider[] = [];
     const confidenceScores: number[] = [];
+    let humanTaskId: string | null = null;
+    let humanReviewed = false;
+    let reviewerProofClass: "unique_human" | undefined;
 
     // Cost cap: cascade should never exceed what direct-to-premium would cost
     const premiumProvider = cascadeProviders[cascadeProviders.length - 1];
@@ -406,6 +420,27 @@ export async function POST(request: Request) {
       }
     }
 
+    const lastConfidence = confidenceScores[confidenceScores.length - 1] ?? 0;
+    const humanThreshold = body.routing?.human_threshold ?? 0.5;
+    if (body.routing?.human_fallback && lastConfidence < humanThreshold) {
+      const reviewTask = await createReviewTask({
+        prompt: promptText,
+        candidateResponse: finalContent,
+        confidenceSignals: confidenceScores,
+        maxWaitMs: Math.min(body.routing.human_max_wait_ms ?? 60_000, 120_000),
+        rewardSats: Number(process.env.PURA_HUMAN_REVIEW_REWARD_SATS ?? 250),
+        requesterId: keyHash.slice(0, 16),
+      });
+      humanTaskId = reviewTask.taskId;
+
+      const review = await waitForReview(reviewTask.taskId, body.routing.human_max_wait_ms ?? 60_000);
+      if (review) {
+        humanReviewed = true;
+        reviewerProofClass = "unique_human";
+        finalContent = review.finalResponse;
+      }
+    }
+
     // Cost if sent directly to premium (already computed above as cascadeCostCap)
     const costIfDirectUsd = cascadeCostCap;
     const savingsUsd = Math.max(0, costIfDirectUsd - totalCascadeCostUsd);
@@ -433,6 +468,9 @@ export async function POST(request: Request) {
     }
 
     incrementRequests(raw);
+    if (auth.billingTier === "free" && auth.record) {
+      await incrementFreeQuotaUsage(keyHash, quotaTier(auth.record));
+    }
     recordCompletionEpoch(finalProvider).catch(() => {});
     maybeRebalance().catch(() => {});
 
@@ -451,8 +489,28 @@ export async function POST(request: Request) {
       "X-Pura-Cascade-Depth": String(cascadeDepth),
       "X-Pura-Cascade-Savings": `${savingsPct.toFixed(1)}%`,
       "X-Pura-Confidence": confidenceScores[confidenceScores.length - 1]?.toFixed(3) ?? "0",
+      "X-Pura-Proof-Class": auth.record?.proofClass?.kind ?? "unknown",
+      "X-Pura-Proof-Issuer": auth.record?.proofClass?.kind === "unique_human"
+        ? auth.record.proofClass.issuer
+        : "none",
+      "X-Pura-Quota-Period": auth.quotaPeriod,
+      "X-Pura-Quota-Remaining": String(Math.max(0, auth.quotaRemaining - (auth.billingTier === "free" ? 1 : 0))),
       "X-RateLimit-Remaining": String(rl.remaining),
     };
+
+    const cascadeReceipt = createReceiptToken({
+      receipt_type: "pura.chat_completion",
+      proof_class: auth.record?.proofClass?.kind === "unique_human" ? "unique_human" : "unknown",
+      cascade_depth: cascadeDepth,
+      final_provider: finalProvider,
+      human_reviewed: humanReviewed,
+      reviewer_proof_class: reviewerProofClass,
+      cost_sats: Math.max(1, Math.ceil(totalCascadeCostUsd * 2500)),
+      timestamp: new Date().toISOString(),
+      request_hash: requestHash,
+      response_hash: sha256Hex(finalContent),
+    });
+    cascadeHeaders["X-Pura-Receipt"] = cascadeReceipt;
 
     log.info("cascade.complete", {
       requestId,
@@ -487,6 +545,8 @@ export async function POST(request: Request) {
           confidence_scores: confidenceScores.map((s) => Number(s.toFixed(3))),
           savings_pct: Number(savingsPct.toFixed(1)),
           cost_usd: Number(totalCascadeCostUsd.toFixed(6)),
+          human_reviewed: humanReviewed,
+          human_task_id: humanTaskId,
         },
       },
       { headers: cascadeHeaders },
@@ -546,6 +606,9 @@ export async function POST(request: Request) {
 
   // Increment usage
   incrementRequests(raw);
+  if (auth.billingTier === "free" && auth.record) {
+    await incrementFreeQuotaUsage(keyHash, quotaTier(auth.record));
+  }
 
   // Fire-and-forget: advance completion epoch + maybe rebalance
   recordCompletionEpoch(provider).catch(() => {});
@@ -560,8 +623,27 @@ export async function POST(request: Request) {
     "X-Pura-Routed": tier,
     "X-Pura-Tier": tier,
     "X-Pura-Request-Id": requestId,
+    "X-Pura-Proof-Class": auth.record?.proofClass?.kind ?? "unknown",
+    "X-Pura-Proof-Issuer": auth.record?.proofClass?.kind === "unique_human"
+      ? auth.record.proofClass.issuer
+      : "none",
+    "X-Pura-Quota-Period": auth.quotaPeriod,
+    "X-Pura-Quota-Remaining": String(Math.max(0, auth.quotaRemaining - (auth.billingTier === "free" ? 1 : 0))),
     "X-RateLimit-Remaining": String(rl.remaining),
   };
+
+  const streamingReceipt = createReceiptToken({
+    receipt_type: "pura.chat_completion",
+    proof_class: auth.record?.proofClass?.kind === "unique_human" ? "unique_human" : "unknown",
+    cascade_depth: 1,
+    final_provider: provider,
+    human_reviewed: false,
+    cost_sats: Math.max(1, estimatedCostSats),
+    timestamp: new Date().toISOString(),
+    request_hash: requestHash,
+    response_hash: "streaming",
+  });
+  puraHeaders["X-Pura-Receipt"] = streamingReceipt;
 
   if (body.routing?.quality) {
     puraHeaders["X-Pura-Quality"] = body.routing.quality;
@@ -603,6 +685,17 @@ export async function POST(request: Request) {
     try {
       const content = await collectAnthropicResponse(messages, body.model, providerKey);
       await finalizeUsage(promptTokens + estimateTokens(content));
+      const receipt = createReceiptToken({
+        receipt_type: "pura.chat_completion",
+        proof_class: auth.record?.proofClass?.kind === "unique_human" ? "unique_human" : "unknown",
+        cascade_depth: 1,
+        final_provider: provider,
+        human_reviewed: false,
+        cost_sats: estimateCostSats(provider, promptTokens + estimateTokens(content)),
+        timestamp: new Date().toISOString(),
+        request_hash: requestHash,
+        response_hash: sha256Hex(content),
+      });
       return NextResponse.json(
         {
           id: `chatcmpl-${Date.now()}`,
@@ -622,7 +715,7 @@ export async function POST(request: Request) {
             total_tokens: promptTokens + estimateTokens(content),
           },
         },
-        { headers: puraHeaders },
+        { headers: { ...puraHeaders, "X-Pura-Receipt": receipt } },
       );
     } catch (e) {
       // Fall through to stream-based collection
@@ -657,6 +750,17 @@ export async function POST(request: Request) {
   }
 
   await finalizeUsage(promptTokens + estimateTokens(fullContent));
+  const finalReceipt = createReceiptToken({
+    receipt_type: "pura.chat_completion",
+    proof_class: auth.record?.proofClass?.kind === "unique_human" ? "unique_human" : "unknown",
+    cascade_depth: 1,
+    final_provider: provider,
+    human_reviewed: false,
+    cost_sats: estimateCostSats(provider, promptTokens + estimateTokens(fullContent)),
+    timestamp: new Date().toISOString(),
+    request_hash: requestHash,
+    response_hash: sha256Hex(fullContent),
+  });
   return NextResponse.json(
     {
       id: `chatcmpl-${Date.now()}`,
@@ -676,6 +780,6 @@ export async function POST(request: Request) {
         total_tokens: promptTokens + estimateTokens(fullContent),
       },
     },
-    { headers: puraHeaders },
+    { headers: { ...puraHeaders, "X-Pura-Receipt": finalReceipt } },
   );
 }
