@@ -1,0 +1,18 @@
+[package]
+name = "pura-bpe"
+version = "0.1.0"
+edition = "2021"
+description = "Backpressure economics: EWMA smoothing, congestion pricing, Boltzmann routing weights, quality scoring"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/puraxyz/pura-bpe"
+keywords = ["backpressure", "congestion-pricing", "routing", "capacity"]
+categories = ["algorithms", "no-std"]
+
+[features]
+default = ["std"]
+std = []
+
+[dev-dependencies]
+quickcheck = "1"
+quickcheck_macros = "1"
